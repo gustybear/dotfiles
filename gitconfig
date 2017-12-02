@@ -1,0 +1,21 @@
+[user]
+	name = Yao Zheng
+	email = zheng.iao@icloud.com
+[alias]
+	ci = commit
+	st = status
+	br = branch
+	co = checkout
+	ctags = !.git/hooks/ctags
+[color]
+	ui = auto
+[core]
+	editor = vim
+	excludesfile = ~/.gitignore
+[init]
+[push]
+	default = simple
+[credential]
+	helper = osxkeychain
+[include]
+	path = ~/.githubconfig
