@@ -495,7 +495,7 @@ function proj_update
       cd ${dir} && git add -A \
                 && git diff-index --quiet HEAD \
                 || ( LANG=C git -c color.status=false status \
-                    | sed -n -r -e '1,/Changes to be committed:/ d' \
+                    | sed -n -e '1,/Changes to be committed:/ d' \
                      -e '1,1 d' \
                      -e '/^Untracked files:/,$ d' \
                      -e 's/^\s*//' \
