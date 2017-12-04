@@ -531,18 +531,10 @@ function website_update
   local COURSE_DIRS=($(find ${TEACHING_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
 
   if [ -z "${WEBSITES_DIR}" ]; then
-    local WEBSITE_MATERIALS_DIR=${HOME}/tmp
-    # amazon s3 bucket
-    local S3_BUCKET=s3://gustybear-websites
-
-    test -d $(WEBSITE_MATERIALS_DIR) \
-      || mkdir -p $(WEBSITE_MATERIALS_DIR)
     for dir in ${PROJECT_DIRS} ${COURSE_DIRS};
     do
-      (echo "Entering $$dir."; $(MAKE) -C $$dir publish_materials PUBLISH_MATERIALS_DIR=$(WEBSITE_MATERIALS_DIR))
+      (echo "Entering ${dir}."; make -C ${dir} publish_documents)
     done
-    aws s3 sync $(WEBSITE_MATERIALS_DIR) $(S3_BUCKET)/ # --dryrun
-    rm -rf $(WEBSITE_MATERIALS_DIR)
   else
     for dir in ${WEBSITES_DIR};
     do
