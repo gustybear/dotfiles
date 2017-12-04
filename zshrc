@@ -131,21 +131,21 @@ fi
 
 # Theme configurations {{{2
 SPACESHIP_PROMPT_ORDER=(
-  time     #
-  vi_mode  # these sections will be
-  user     # before prompt char
-  host     #
-  char
-  dir
-  git
-  node
-  ruby
-  xcode
-  swift
-  golang
-  docker
-  venv
-  pyenv
+time     #
+vi_mode  # these sections will be
+user     # before prompt char
+host     #
+char
+dir
+git
+node
+ruby
+xcode
+swift
+golang
+docker
+venv
+pyenv
 )
 
 # USER
@@ -424,12 +424,12 @@ function proj_status
       echo "Checking status... "; \
       cd ${dir} &&  git status; \
       echo;
-     fi);
-  done
+  fi);
+done
 
-  if [ "$DEBUG" = "true" ]; then
-    set +x
-  fi
+if [ "$DEBUG" = "true" ]; then
+  set +x
+fi
 }
 
 # Pull update from remote {{{3
@@ -459,12 +459,12 @@ function proj_pull
       echo "Updating... "; \
       cd ${dir} &&  git pull; \
       echo;
-     fi);
-  done
+  fi);
+done
 
-  if [ "$DEBUG" = "true" ]; then
-    set +x
-  fi
+if [ "$DEBUG" = "true" ]; then
+  set +x
+fi
 }
 
 # Commit local changes and push to remote {{{3
@@ -493,22 +493,22 @@ function proj_update
       echo "Entering ${dir}."; \
       echo "Committing ... "; \
       cd ${dir} && git add -A \
-                && git diff-index --quiet HEAD \
-                || LANG=C git -c color.status=false status \
-                    | sed -n -e '1,/Changes to be committed:/ d' \
-                     -e '1,1 d' \
-                     -e '/^Untracked files:/,$ d' \
-                     -e 's/^\s*//' \
-                     -e '/./p' \
-                    | git commit -F - \
-                && git push ;
-      echo;
-     fi);
-  done
+      && git diff-index --quiet HEAD \
+      || LANG=C git -c color.status=false status \
+      | sed -n -e '1,/Changes to be committed:/ d' \
+      -e '1,1 d' \
+      -e '/^Untracked files:/,$ d' \
+      -e 's/^\s*//' \
+      -e '/./p' \
+      | git commit -F - \
+      && git push ;
+    echo;
+  fi);
+done
 
-  if [ "$DEBUG" = "true" ]; then
-    set +x
-  fi
+if [ "$DEBUG" = "true" ]; then
+  set +x
+fi
 }
 
 # Website management {{{2
@@ -522,53 +522,76 @@ function website_update
 
   local SEARCH_DIR=(${HOME} ${HOME}/Documents) #/Volumes/Elements/Documents
   local WEBSITES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "__websites" 2>/dev/null))
-  for dir in ${WEBSITES_DIR};
-  do
-    (echo "Entering ${dir}."; make -C ${dir} clean; make -C ${dir} build; make -C ${dir} upload $1);
-  done
+
+  local RESEARCH_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "research" 2>/dev/null))
+  local TEACHING_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "teaching" 2>/dev/null))
+  local STUDENTS_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "students" 2>/dev/null))
+
+  local PROJECT_DIRS=($(find ${RESEARCH_DIR} ${STUDENTS_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
+  local COURSE_DIRS=($(find ${TEACHING_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
+
+  if [ -z "${WEBSITES_DIR}" ]; then
+    local WEBSITE_MATERIALS_DIR=${HOME}/tmp
+    # amazon s3 bucket
+    local S3_BUCKET=s3://gustybear-websites
+
+    test -d $(WEBSITE_MATERIALS_DIR) \
+      || mkdir -p $(WEBSITE_MATERIALS_DIR)
+    for dir in ${PROJECT_DIRS} ${COURSE_DIRS};
+    do
+      (echo "Entering $$dir."; $(MAKE) -C $$dir publish_materials PUBLISH_MATERIALS_DIR=$(WEBSITE_MATERIALS_DIR))
+    done
+    aws s3 sync $(WEBSITE_MATERIALS_DIR) $(S3_BUCKET)/ # --dryrun
+    rm -rf $(WEBSITE_MATERIALS_DIR)
+  else
+    for dir in ${WEBSITES_DIR};
+    do
+      (echo "Entering ${dir}."; make -C ${dir} clean; make -C ${dir} publish);
+    done
+  fi
 
   if [ "$DEBUG" = "true" ]; then
     set +x
   fi
-}
+  }
 
-# Clean homebrew (mac)
-if [[ $OSTYPE == *darwin* ]]; then
-  declare -A visited_formulas
+  # Clean homebrew (mac)
+  if [[ $OSTYPE == *darwin* ]]; then
+    declare -A visited_formulas
 
-  function check_formulas
-  {
-    for formula in "$@"; do
-      if [[ -z `brew uses --installed $formula` ]] && ! (( ${+visited_formulas[$formula]} )) && [[ $formula != "brew-cask" ]]; then
-        read "input?$formula is not depended on by other formulas. Remove? [Y/n] "
-        visited_formulas[$formula]=1
-        if [[ "$input" == "Y" ]]; then
-          brew remove $formula
-          check_formulas `brew deps --1 --installed $formula`
+    function check_formulas
+    {
+      for formula in "$@"; do
+        if [[ -z `brew uses --installed $formula` ]] && ! (( ${+visited_formulas[$formula]} )) && [[ $formula != "brew-cask" ]]; then
+          read "input?$formula is not depended on by other formulas. Remove? [Y/n] "
+          visited_formulas[$formula]=1
+          if [[ "$input" == "Y" ]]; then
+            brew remove $formula
+            check_formulas `brew deps --1 --installed $formula`
+          fi
         fi
+      done
+    }
+
+    function brew_autoremove
+    {
+      echo "Searching for formulas not depended on by other formulas..."
+
+      check_formulas `brew list`
+    }
+  fi
+
+  # Copy from remote to local (linux) {{{2
+  if [[ $OSTYPE == *linux* ]]; then
+    function cp_to_download
+    {
+      if [ "$DEBUG" = "true" ]; then
+        scp -vP 2222 $1 yao@127.0.0.1:~/Downloads/
+      else
+        scp -P 2222 $1 yao@127.0.0.1:~/Downloads/
       fi
-    done
-  }
 
-  function brew_autoremove
-  {
-    echo "Searching for formulas not depended on by other formulas..."
+    }
+  fi
 
-    check_formulas `brew list`
-  }
-fi
-
-# Copy from remote to local (linux) {{{2
-if [[ $OSTYPE == *linux* ]]; then
-  function cp_to_download
-  {
-    if [ "$DEBUG" = "true" ]; then
-      scp -vP 2222 $1 yao@127.0.0.1:~/Downloads/
-    else
-      scp -P 2222 $1 yao@127.0.0.1:~/Downloads/
-    fi
-
-  }
-fi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
