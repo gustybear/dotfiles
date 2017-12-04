@@ -40,7 +40,7 @@ zplug "plugins/ssh-agent", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
 zplug "plugins/ubuntu", from:oh-my-zsh, if:"[[ $OSTYPE == *linux* ]]"
 
 # GIT repos managed by zplug {{{2
-zplug "andreafabrizi/Dropbox-Uploader", hook-build:"chmod +x ./dropbox_uploader.sh", as:command, use:"dropbox_uploader.sh"
+zplug "gustybear/Dropbox-Uploader", hook-build:"chmod +x ./dropbox_uploader.sh", as:command, use:"dropbox_uploader.sh"
 if [[ $OSTYPE == *darwin* ]]; then
   zplug "gohugoio/hugo", from:gh-r, as:command, use:"*macOS*64bit*"
 fi
@@ -492,18 +492,18 @@ function proj_update
     (if [ -d "${dir}/.git" ]; then \
       echo "Entering ${dir}."; \
       echo "Committing ... "; \
-      cd ${dir} && git add -A \
-      && git diff-index --quiet HEAD \
+      cd ${dir} && git add -A; \
+      cd ${dir} && git diff-index --quiet HEAD \
       || LANG=C git -c color.status=false status \
-      | sed -n -e '1,/Changes to be committed:/ d' \
-      -e '1,1 d' \
-      -e '/^Untracked files:/,$ d' \
-      -e 's/^\s*//' \
-      -e '/./p' \
-      | git commit -F - \
-      && git push ;
-    echo;
-  fi);
+        | sed -n -e '1,/Changes to be committed:/ d' \
+        -e '1,1 d' \
+        -e '/^Untracked files:/,$ d' \
+        -e 's/^\s*//' \
+        -e '/./p' \
+        | git commit -F - ; \
+      cd ${dir} && git push ; \
+      echo; \
+    fi);
 done
 
 if [ "$DEBUG" = "true" ]; then
@@ -587,3 +587,5 @@ function website_update
   fi
 
   [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+  # Run functions when source {{{2
