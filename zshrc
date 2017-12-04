@@ -538,7 +538,7 @@ function website_update
   else
     for dir in ${WEBSITES_DIR};
     do
-      (echo "Entering ${dir}."; make -C ${dir} clean; make -C ${dir} publish);
+      (echo "Entering ${dir}."; make -C ${dir} publish);
     done
   fi
 
