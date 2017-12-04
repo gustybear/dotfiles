@@ -494,13 +494,13 @@ function proj_update
       echo "Committing ... "; \
       cd ${dir} && git add -A \
                 && git diff-index --quiet HEAD \
-                || ( LANG=C git -c color.status=false status \
+                || LANG=C git -c color.status=false status \
                     | sed -n -e '1,/Changes to be committed:/ d' \
                      -e '1,1 d' \
                      -e '/^Untracked files:/,$ d' \
                      -e 's/^\s*//' \
                      -e '/./p' \
-                    | git commit -F - ) \
+                    | git commit -F - \
                 && git push ;
       echo;
      fi);
