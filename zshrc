@@ -298,6 +298,18 @@ function grmake
 }
 
 # Project management {{{2
+# Variables {{{3
+SEARCH_DIR=(${HOME} ${HOME}/Documents) #/Volumes/Elements/Documents
+RESEARCH_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "research" 2>/dev/null))
+TEACHING_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "teaching" 2>/dev/null))
+STUDENTS_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "students" 2>/dev/null))
+
+PROJECT_DIRS=($(find ${RESEARCH_DIR} ${STUDENTS_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
+COURSE_DIRS=($(find ${TEACHING_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
+TEMPLATE_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "_templates" 2>/dev/null))
+WEBSITES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "__websites" 2>/dev/null))
+DOTFILES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name ".dotfiles" 2>/dev/null))
+
 # Initialize project {{{3
 function proj_init
 {
@@ -398,17 +410,6 @@ function proj_init
 }
 
 # Check project status {{{3
-SEARCH_DIR=(${HOME} ${HOME}/Documents) #/Volumes/Elements/Documents
-RESEARCH_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "research" 2>/dev/null))
-TEACHING_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "teaching" 2>/dev/null))
-STUDENTS_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "students" 2>/dev/null))
-
-PROJECT_DIRS=($(find ${RESEARCH_DIR} ${STUDENTS_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
-COURSE_DIRS=($(find ${TEACHING_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
-TEMPLATE_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "_templates" 2>/dev/null))
-WEBSITES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "__websites" 2>/dev/null))
-DOTFILES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name ".dotfiles" 2>/dev/null))
-
 function proj_status
 {
   if [ "$DEBUG" = "true" ]; then
@@ -463,18 +464,19 @@ function proj_update
   do
     (if [ -d "${dir}/.git" ]; then \
       echo "Entering ${dir}."; \
-      echo "Committing ... "; \
-      cd ${dir} && git add -A; \
-      cd ${dir} && git diff-index --quiet HEAD \
-      || LANG=C git -c color.status=false status \
-        | sed -n -e '1,/Changes to be committed:/ d' \
-        -e '1,1 d' \
-        -e '/^Untracked files:/,$ d' \
-        -e 's/^\s*//' \
-        -e '/./p' \
-        | git commit -F - ; \
-      cd ${dir} && git push ; \
-      echo; \
+      cd ${dir}; \
+      if ! git diff-index --quiet HEAD --; then \
+        echo "Committing ... "; \
+        git add -A; \
+        LANG=C git -c color.status=false status \
+         | sed -n -e '1,/Changes to be committed:/ d' \
+           -e '1,1 d' \
+           -e '/^Untracked files:/,$ d' \
+           -e 's/^\s*//' \
+           -e '/./p' \
+         | git commit -F - ; \
+        git push; \
+      fi; \
     fi);
   done
 
