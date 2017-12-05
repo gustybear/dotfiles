@@ -2,8 +2,10 @@
 # ZSH {{{2
 export ZSH_CUSTOM=${HOME}/.config/zsh/custom
 export ZPLUG_HOME=${HOME}/.zplug
+
 # Python {{{2
 [[ ":$PATH:" != *":$HOME/Applications/miniconda/bin:"* ]] && export PATH=$HOME/Applications/miniconda/bin:$PATH
+
 # Local bin {{{2
 [[ ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH=$HOME/.local/bin:$PATH
 
@@ -238,9 +240,9 @@ fi
 # Aliases {{{1
 # Quick edits and loads {{{2
 alias zshrc_edit="vim ${HOME}/.zshrc"
-alias vimrc_edit="vim ${HOME}/.config/nvim/init.vim"
-
 alias zshrc_reload="source ${HOME}/.zshrc"
+
+alias vimrc_edit="vim ${HOME}/.config/nvim/init.vim"
 
 # Safe mv cp {{{2
 alias mv='mv -i'
@@ -259,9 +261,8 @@ fi
 # Functions {{{1
 # To debug, run the function with "DEBUG=true function" {{{1
 # Navigate git {{{2
-
 # cd to the root directory of the repo {{{3
-function git_root_cd
+function grcd
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
@@ -279,7 +280,7 @@ function git_root_cd
 }
 
 # Run the makefile at the root of the git repo {{{3
-function git_root_make
+function grmake
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
@@ -297,7 +298,6 @@ function git_root_make
 }
 
 # Project management {{{2
-
 # Initialize project {{{3
 function proj_init
 {
@@ -398,24 +398,22 @@ function proj_init
 }
 
 # Check project status {{{3
+SEARCH_DIR=(${HOME} ${HOME}/Documents) #/Volumes/Elements/Documents
+RESEARCH_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "research" 2>/dev/null))
+TEACHING_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "teaching" 2>/dev/null))
+STUDENTS_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "students" 2>/dev/null))
+
+PROJECT_DIRS=($(find ${RESEARCH_DIR} ${STUDENTS_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
+COURSE_DIRS=($(find ${TEACHING_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
+TEMPLATE_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "_templates" 2>/dev/null))
+WEBSITES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "__websites" 2>/dev/null))
+DOTFILES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name ".dotfiles" 2>/dev/null))
+
 function proj_status
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
   fi
-
-  local SEARCH_DIR=(${HOME} ${HOME}/Documents) #/Volumes/Elements/Documents
-  local RESEARCH_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "research" 2>/dev/null))
-  local TEACHING_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "teaching" 2>/dev/null))
-  local STUDENTS_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "students" 2>/dev/null))
-
-  local PROJECT_DIRS=($(find ${RESEARCH_DIR} ${STUDENTS_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
-  local COURSE_DIRS=($(find ${TEACHING_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
-  local MATERIAL_SUBDIRS=($(find ${COURSE_DIRS} -maxdepth 1 -mindepth 1 -type d -name "materials*" 2>/dev/null))
-
-  local TEMPLATE_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "_templates" 2>/dev/null))
-  local WEBSITES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "__websites" 2>/dev/null))
-  local DOTFILES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name ".dotfiles" 2>/dev/null))
 
   for dir in ${PROJECT_DIRS} ${COURSE_DIRS} ${TEMPLATE_DIR} ${WEBSITES_DIR} ${DOTFILES_DIR};
   do
@@ -423,13 +421,13 @@ function proj_status
       echo "Entering ${dir}."; \
       echo "Checking status... "; \
       cd ${dir} &&  git status; \
-      echo;
-  fi);
-done
+      echo; \
+    fi);
+  done
 
-if [ "$DEBUG" = "true" ]; then
-  set +x
-fi
+  if [ "$DEBUG" = "true" ]; then
+    set +x
+  fi
 }
 
 # Pull update from remote {{{3
@@ -439,32 +437,19 @@ function proj_pull
     set -x
   fi
 
-  local SEARCH_DIR=(${HOME} ${HOME}/Documents) #/Volumes/Elements/Documents
-  local RESEARCH_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "research" 2>/dev/null))
-  local TEACHING_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "teaching" 2>/dev/null))
-  local STUDENTS_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "students" 2>/dev/null))
-
-  local PROJECT_DIRS=($(find ${RESEARCH_DIR} ${STUDENTS_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
-  local COURSE_DIRS=($(find ${TEACHING_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
-  local MATERIAL_SUBDIRS=($(find ${COURSE_DIRS} -maxdepth 1 -mindepth 1 -type d -name "materials*" 2>/dev/null))
-
-  local TEMPLATE_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "_templates" 2>/dev/null))
-  local WEBSITES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "__websites" 2>/dev/null))
-  local DOTFILES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name ".dotfiles" 2>/dev/null))
-
   for dir in ${PROJECT_DIRS} ${COURSE_DIRS} ${TEMPLATE_DIR} ${WEBSITES_DIR} ${DOTFILES_DIR};
   do
     (if [ -d "${dir}/.git" ]; then \
       echo "Entering ${dir}."; \
       echo "Updating... "; \
       cd ${dir} &&  git pull; \
-      echo;
-  fi);
-done
+      echo; \
+     fi);
+  done
 
-if [ "$DEBUG" = "true" ]; then
-  set +x
-fi
+  if [ "$DEBUG" = "true" ]; then
+    set +x
+  fi
 }
 
 # Commit local changes and push to remote {{{3
@@ -473,19 +458,6 @@ function proj_update
   if [ "$DEBUG" = "true" ]; then
     set -x
   fi
-
-  local SEARCH_DIR=(${HOME} ${HOME}/Documents) #/Volumes/Elements/Documents
-  local RESEARCH_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "research" 2>/dev/null))
-  local TEACHING_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "teaching" 2>/dev/null))
-  local STUDENTS_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "students" 2>/dev/null))
-
-  local PROJECT_DIRS=($(find ${RESEARCH_DIR} ${STUDENTS_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
-  local COURSE_DIRS=($(find ${TEACHING_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
-  local MATERIAL_SUBDIRS=($(find ${COURSE_DIRS} -maxdepth 1 -mindepth 1 -type d -name "materials*" 2>/dev/null))
-
-  local TEMPLATE_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "_templates" 2>/dev/null))
-  local WEBSITES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "__websites" 2>/dev/null))
-  local DOTFILES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name ".dotfiles" 2>/dev/null))
 
   for dir in ${PROJECT_DIRS} ${COURSE_DIRS} ${TEMPLATE_DIR} ${WEBSITES_DIR} ${DOTFILES_DIR};
   do
@@ -504,15 +476,14 @@ function proj_update
       cd ${dir} && git push ; \
       echo; \
     fi);
-done
+  done
 
-if [ "$DEBUG" = "true" ]; then
-  set +x
-fi
+  if [ "$DEBUG" = "true" ]; then
+    set +x
+  fi
 }
 
 # Website management {{{2
-
 # Update website {{{3
 function website_update
 {
@@ -520,20 +491,10 @@ function website_update
     set -x
   fi
 
-  local SEARCH_DIR=(${HOME} ${HOME}/Documents) #/Volumes/Elements/Documents
-  local WEBSITES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "__websites" 2>/dev/null))
-
-  local RESEARCH_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "research" 2>/dev/null))
-  local TEACHING_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "teaching" 2>/dev/null))
-  local STUDENTS_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "students" 2>/dev/null))
-
-  local PROJECT_DIRS=($(find ${RESEARCH_DIR} ${STUDENTS_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
-  local COURSE_DIRS=($(find ${TEACHING_DIR} -maxdepth 1 -mindepth 1 -type d 2>/dev/null))
-
   if [ -z "${WEBSITES_DIR}" ]; then
     for dir in ${PROJECT_DIRS} ${COURSE_DIRS};
     do
-      (echo "Entering ${dir}."; make -C ${dir} publish_documents)
+      (echo "Entering ${dir}."; make -C ${dir} publish_s3)
     done
   else
     for dir in ${WEBSITES_DIR};
@@ -545,47 +506,42 @@ function website_update
   if [ "$DEBUG" = "true" ]; then
     set +x
   fi
+}
+
+# Clean homebrew (mac) {{{2
+if [[ $OSTYPE == *darwin* ]]; then
+  declare -A visited_formulas
+
+  function check_formulas
+  {
+    for formula in "$@"; do
+      if [[ -z `brew uses --installed $formula` ]] && ! (( ${+visited_formulas[$formula]} )) && [[ $formula != "brew-cask" ]]; then
+        read "input?$formula is not depended on by other formulas. Remove? [Y/n] "
+        visited_formulas[$formula]=1
+        if [[ "$input" == "Y" ]]; then
+          brew remove $formula
+          check_formulas `brew deps --1 --installed $formula`
+        fi
+      fi
+    done
   }
 
-  # Clean homebrew (mac)
-  if [[ $OSTYPE == *darwin* ]]; then
-    declare -A visited_formulas
+  function brew_autoremove
+  {
+    echo "Searching for formulas not depended on by other formulas..."
+    check_formulas `brew list`
+  }
+fi
 
-    function check_formulas
-    {
-      for formula in "$@"; do
-        if [[ -z `brew uses --installed $formula` ]] && ! (( ${+visited_formulas[$formula]} )) && [[ $formula != "brew-cask" ]]; then
-          read "input?$formula is not depended on by other formulas. Remove? [Y/n] "
-          visited_formulas[$formula]=1
-          if [[ "$input" == "Y" ]]; then
-            brew remove $formula
-            check_formulas `brew deps --1 --installed $formula`
-          fi
-        fi
-      done
-    }
+# Copy from remote to local (linux) {{{2
+if [[ $OSTYPE == *linux* ]]; then
+  function cp_to_download
+  {
+    if [ "$DEBUG" = "true" ]; then
+      scp -vP 2222 $1 yao@127.0.0.1:~/Downloads/
+    else
+      scp -P 2222 $1 yao@127.0.0.1:~/Downloads/
+    fi
 
-    function brew_autoremove
-    {
-      echo "Searching for formulas not depended on by other formulas..."
-
-      check_formulas `brew list`
-    }
-  fi
-
-  # Copy from remote to local (linux) {{{2
-  if [[ $OSTYPE == *linux* ]]; then
-    function cp_to_download
-    {
-      if [ "$DEBUG" = "true" ]; then
-        scp -vP 2222 $1 yao@127.0.0.1:~/Downloads/
-      else
-        scp -P 2222 $1 yao@127.0.0.1:~/Downloads/
-      fi
-
-    }
-  fi
-
-  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-  # Run functions when source {{{2
+  }
+fi
