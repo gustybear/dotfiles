@@ -11,11 +11,11 @@ fi
 echo "Check and install Miniconda..."
 if ! hash conda 2>/dev/null; then
     if [[ $OSTYPE == *darwin* ]]; then
-        wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O ${HOME}/miniconda.sh
+        curl https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o ${HOME}/miniconda.sh
     fi
 
     if [[ $OSTYPE == *linux* ]]; then
-        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ${HOME}/miniconda.sh
+        curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o ${HOME}/miniconda.sh
     fi
     bash ${HOME}/miniconda.sh -b -p ${HOME}/Applications/miniconda
     rm ${HOME}/miniconda.sh
