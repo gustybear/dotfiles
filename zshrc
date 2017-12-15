@@ -24,6 +24,7 @@ zplug "robbyrussell/oh-my-zsh", use:"lib/*.zsh"
 zplug "plugins/git",   from:oh-my-zsh
 zplug "plugins/vi-mode",   from:oh-my-zsh
 zplug "junegunn/fzf", dir:"${HOME}/.fzf", hook-build:"./install --all"
+zplug "todotxt/todo.txt-cli", hook-build:"make; make install prefix=${HOME}/.local"
 
 # Set the priority when loading
 # e.g., zsh-syntax-highlighting must be loaded
