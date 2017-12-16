@@ -18,13 +18,13 @@ fi
 
 source ${ZPLUG_HOME}/init.zsh
 
-# All platform plugins {{{2
+# Universal plugins {{{2
 # zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 zplug "robbyrussell/oh-my-zsh", use:"lib/*.zsh"
+zplug "plugins/zsh_reload",   from:oh-my-zsh
+zplug "plugins/cp",   from:oh-my-zsh
 zplug "plugins/git",   from:oh-my-zsh
 zplug "plugins/vi-mode",   from:oh-my-zsh
-zplug "junegunn/fzf", dir:"${HOME}/.fzf", hook-build:"./install --all"
-zplug "todotxt/todo.txt-cli", hook-build:"make; make install prefix=${HOME}/.local"
 
 # Set the priority when loading
 # e.g., zsh-syntax-highlighting must be loaded
@@ -36,13 +36,14 @@ zplug "zsh-users/zsh-history-substring-search", defer:3
 # OSX specific plugins {{{2
 zplug "lib/clipboard", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
 zplug "plugins/osx", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
-zplug "plugins/brew", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
 zplug "plugins/ssh-agent", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
 
 # LINUX specific plugins {{{2
 zplug "plugins/ubuntu", from:oh-my-zsh, if:"[[ $OSTYPE == *linux* ]]"
 
 # GIT repos managed by zplug {{{2
+zplug "junegunn/fzf", dir:"${HOME}/.fzf", hook-build:"./install --all"
+zplug "todotxt/todo.txt-cli", hook-build:"make; make install prefix=${HOME}/.local"
 zplug "gustybear/Dropbox-Uploader", hook-build:"chmod +x ./dropbox_uploader.sh", as:command, use:"dropbox_uploader.sh"
 if [[ $OSTYPE == *darwin* ]]; then
   zplug "gohugoio/hugo", from:gh-r, as:command, use:"*macOS*64bit*"
@@ -85,6 +86,14 @@ bindkey -M emacs '^N' history-substring-search-down
 # bind k and j for VI mode
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
+
+# TODO.TXT configurations {{{2
+TODO=$(command -v todo.sh)
+alias tls="$TODO ls"
+alias ta="$TODO a"
+alias trm="$TODO rm"
+alias tdo="$TODO do"
+alias tpri="$TODO pri"
 
 # FZF configurations {{{2
 # ---------
@@ -239,24 +248,51 @@ if [[ $OSTYPE == *darwin* ]]; then
 fi
 
 # Aliases {{{1
-# Quick edits and loads {{{2
-alias zshrc_edit="vim ${HOME}/.zshrc"
-alias zshrc_reload="source ${HOME}/.zshrc"
+# Universal aliases {{{2
+# VIM
+export EDITOR=vim
+VIM=$(command -v vim)
+alias v=$VIM
 
-alias vimrc_edit="vim ${HOME}/.config/nvim/init.vim"
+# Pin to the tail of long commands for an audible alert after long processes
+## curl http://downloads.com/hugefile.zip; lmk
+alias lmk="say 'Process complete.'"
 
-# Safe mv cp {{{2
-alias mv='mv -i'
-alias cp='cp -i'
-
-# Reset dock (osx) {{{2
+# OSX specific aliases {{{2
 if [[ $OSTYPE == *darwin* ]]; then
+  # Desktop Programs
+  alias photoshop="open -a '/Applications/Adobe Photoshop CS3/Adobe Photoshop.app'"
+  alias preview="open -a '$PREVIEW'"
+  alias xcode="open -a '/Applications/XCode.app'"
+  alias safari="open -a safari"
+  alias firefox="open -a firefox"
+  alias f='open -a Finder '
+  alias fh='open -a Finder .'
+
+  # Reset dock
   alias dock_reset='defaults delete com.apple.dock; killall Dock'
-fi
 
-# Reset lanuchpad (osx) {{{2
-if [[ $OSTYPE == *darwin* ]]; then
+  # Reset lanuchpad
   alias launchpad_reset='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
+
+  # Get rid of those pesky .DS_Store files recursively
+  alias dsclean='find . -type f -name .DS_Store -delete'
+
+  # Track who is listening to your iTunes music
+  alias whotunes='lsof -r 2 -n -P -F n -c iTunes -a -i TCP@`hostname`:3689'
+
+  # Flush your dns cache
+  alias flush='dscacheutil -flushcache'
+
+  # From http://apple.stackexchange.com/questions/110343/copy-last-command-in-terminal
+  alias copyLastCmd='fc -ln -1 | awk '\''{$1=$1}1'\'' ORS='\'''\'' | pbcopy'
+
+  # Use Finder's Quick Look on a file (^C or space to close)
+  alias ql='qlmanage -p 2>/dev/null'
+
+  # Mute/Unmute the system volume. Plays nice with all other volume settings.
+  alias mute="osascript -e 'set volume output muted true'"
+  alias unmute="osascript -e 'set volume output muted false'"
 fi
 
 # Functions {{{1
