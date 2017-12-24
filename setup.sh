@@ -65,3 +65,5 @@ fi
 if ! hash nvim 2>/dev/null; then
     echo "Install Neovim at https://github.com/neovim/neovim/wiki/Installing-Neovim"
 fi
+
+exec zsh
