@@ -16,6 +16,6 @@
 [push]
 	default = simple
 [credential]
-	helper = osxkeychain
+	helper = manager
 [include]
 	path = ~/.githubconfig
