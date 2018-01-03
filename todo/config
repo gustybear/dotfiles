@@ -1,4 +1,4 @@
-export TODO_DIR="${HOME}/Dropbox/__TODO__"
+export TODO_DIR="${HOME}/Cloud/Dropbox/__TODO__"
 export TODO_FILE="${TODO_DIR}/TODO.txt"
 export DONE_FILE="${TODO_DIR}/DONE.txt"
 export REPORT_FILE="${TODO_DIR}/REPORT.txt"
