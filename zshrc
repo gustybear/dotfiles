@@ -422,6 +422,7 @@ function proj_init
   else
     dir_name="$project_type"_`date +%Y_%m_%d`_"$project_name"
   fi
+  dir_name="${dir_name%_}"
 
   if [[ "$project_type" == "course" ]]; then
     proj_path=$HOME/Documents/teaching/"$dir_name"
