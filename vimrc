@@ -60,6 +60,8 @@ Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-repeat'
 " Unimpaired: Bracket based mappings for Vim {{{2
 Plug 'tpope/vim-unimpaired'
+" Transpose: Transpose matrices of text (swap lines with columns) {{{2
+Plug 'salsifis/vim-transpose'
 
 " Other {{{2
 " Sensible: Vim Default Settings {{{2
@@ -187,6 +189,7 @@ set showcmd " show current command in the last line
 set nojoinspaces " do not add space after sentences when joining lines
 set complete-=t " do not use tag completion
 set ignorecase " case sensitive search
+set nohlsearch " disable search highlight
 set smartcase " only if pattern contains uppercase characters
 set visualbell " use window flashing instead of beeping
 if has('mouse')
