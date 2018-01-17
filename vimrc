@@ -60,9 +60,6 @@ Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-repeat'
 " Unimpaired: Bracket based mappings for Vim {{{2
 Plug 'tpope/vim-unimpaired'
-" Transpose: Transpose matrices of text (swap lines with columns) {{{2
-Plug 'salsifis/vim-transpose'
-
 " Other {{{2
 " Sensible: Vim Default Settings {{{2
 Plug 'tpope/vim-sensible'
@@ -74,6 +71,12 @@ Plug 'tpope/vim-scriptease'
 Plug 'tpope/vim-sleuth'
 " Tabular: Align Text Based on Regular Expressions
 Plug 'godlygeek/tabular'
+
+" Transpose: Transpose matrices of text (swap lines with columns) {{{2
+Plug 'salsifis/vim-transpose'
+
+" Highlightedyank: Make the yanked region apparent {{{2
+Plug 'machakann/vim-highlightedyank'
 
 " Initialize plugin system {{{2
 call plug#end()
@@ -189,7 +192,7 @@ set showcmd " show current command in the last line
 set nojoinspaces " do not add space after sentences when joining lines
 set complete-=t " do not use tag completion
 set ignorecase " case sensitive search
-set nohlsearch " disable search highlight
+set nohlsearch " disable hlsearch, inccommand and incsearch use their own highlight
 set smartcase " only if pattern contains uppercase characters
 set visualbell " use window flashing instead of beeping
 if has('mouse')
