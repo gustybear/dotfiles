@@ -10,9 +10,6 @@ call plug#begin('~/.local/share/nvim/plugged')
 " Language Plugins {{{2
 " RagTag: Mappings for XML/XHTML Editing {{{2
 Plug 'tpope/vim-ragtag'
-" Grammarous: Grammar Checker for Vim using LanguageTool {{{2
-Plug 'rhysd/vim-grammarous'
-
 " Completion Plugins {{{2
 " Deoplete: Dark Powered Asynchronous Completion Framework for Neovim/Vim8 {{{2
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -36,7 +33,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-tbone'
 " Neomake: Asynchronous linting and make framework for Neovim/Vim {{{2
 Plug 'neomake/neomake'
-" Vinegar: combine with netrw to create a delicious salad dressinga {{{2
+" Vinegar: combine with netrw to create a delicious salad dressing {{{2
 Plug 'tpope/vim-vinegar'
 
 " Interface {{{2
