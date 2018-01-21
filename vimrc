@@ -10,11 +10,16 @@ call plug#begin('~/.local/share/nvim/plugged')
 " Language Plugins {{{2
 " RagTag: Mappings for XML/XHTML Editing {{{2
 Plug 'tpope/vim-ragtag'
+
 " Completion Plugins {{{2
 " Deoplete: Dark Powered Asynchronous Completion Framework for Neovim/Vim8 {{{2
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " Deoplete-Jedi: Deoplete Source for Python {{{2
 Plug 'zchee/deoplete-jedi'
+" UltiSnips: The ultimate snippet solution for Vim. Send pull requests to SirVer/ultisnips! {{{2
+Plug 'SirVer/ultisnips'
+" Vim-Snipmate: default snippets (Previously snipmate-snippets) {{{2
+Plug 'honza/vim-snippets'
 
 " Code Display Plugins {{{2
 " Neoformat: A (Neo)vim plugin for formatting code {{{2
@@ -86,6 +91,13 @@ let g:grammarous#use_vim_spelllang = 1
 " Completion Plugin Configurations {{{2
 " Deoplete: Dark Powered Asynchronous Completion Framework for Neovim/Vim8 {{{2
 let g:deoplete#enable_at_startup = 1
+" UltiSnips: The ultimate snippet solution for Vim. Send pull requests to SirVer/ultisnips! {{{2
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
 
 " Code Display Plugins Configurations {{{2
 

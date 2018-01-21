@@ -44,6 +44,7 @@ zplug "plugins/ubuntu", from:oh-my-zsh, if:"[[ $OSTYPE == *linux* ]]"
 # GIT repos managed by zplug {{{2
 zplug "junegunn/fzf", dir:"${HOME}/.fzf", hook-build:"./install --all"
 zplug "todotxt/todo.txt-cli", hook-build:"make; make install prefix=${HOME}/.local"
+zplug "gpakosz/.tmux", hook-build:"ln -sf ./.tmux.conf ${HOME}/.tmux.conf"
 zplug "gustybear/Dropbox-Uploader", hook-build:"chmod +x ./dropbox_uploader.sh", as:command, use:"dropbox_uploader.sh"
 if [[ $OSTYPE == *darwin* ]]; then
   zplug "gohugoio/hugo", from:gh-r, as:command, use:"*macOS*64bit*"
@@ -512,9 +513,9 @@ function proj_update
            -e '/^Untracked files:/,$ d' \
            -e 's/^\s*//' \
            -e '/./p' \
-           > msg.txt; \
-        git commit -F msg.txt ; \
-        rm -rf msg.txt; \
+           > ${dir}/.git/msg.txt; \
+        git commit -F ${dir}/.git/msg.txt ; \
+        rm -rf ${dir}/.git/msg.txt; \
         git push; \
       fi; \
     fi);
