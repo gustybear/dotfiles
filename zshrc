@@ -504,7 +504,7 @@ function proj_update
     (if [ -d "${dir}/.git" ]; then \
       echo "Entering ${dir}."; \
       cd ${dir}; \
-      if [[ -n "$(git status --porcelain)" ]]; then \
+      if [ -n "$(git status --porcelain)" ]; then \
         echo "Committing ... "; \
         git add -A; \
         LANG=C git -c color.status=false status \
