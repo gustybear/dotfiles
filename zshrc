@@ -504,7 +504,7 @@ function proj_update
     (if [ -d "${dir}/.git" ]; then \
       echo "Entering ${dir}."; \
       cd ${dir}; \
-      if ! git diff-index --quiet HEAD --; then \
+      if ! git diff-index --quiet $(git write-tree) --; then \
         echo "Committing ... "; \
         git add -A; \
         LANG=C git -c color.status=false status \
