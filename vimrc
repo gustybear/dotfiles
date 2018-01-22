@@ -16,7 +16,7 @@ Plug 'tpope/vim-ragtag'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " Deoplete-Jedi: Deoplete Source for Python {{{2
 Plug 'zchee/deoplete-jedi'
-" UltiSnips: The ultimate snippet solution for Vim. Send pull requests to SirVer/ultisnips! {{{2
+" UltiSnips: The ultimate snippet solution for Vim. {{{2
 Plug 'SirVer/ultisnips'
 " Vim-Snipmate: default snippets (Previously snipmate-snippets) {{{2
 Plug 'honza/vim-snippets'
@@ -91,7 +91,7 @@ let g:grammarous#use_vim_spelllang = 1
 " Completion Plugin Configurations {{{2
 " Deoplete: Dark Powered Asynchronous Completion Framework for Neovim/Vim8 {{{2
 let g:deoplete#enable_at_startup = 1
-" UltiSnips: The ultimate snippet solution for Vim. Send pull requests to SirVer/ultisnips! {{{2
+" UltiSnips: The ultimate snippet solution for Vim. {{{2
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
