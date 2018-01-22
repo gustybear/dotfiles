@@ -16,6 +16,5 @@
 [push]
 	default = simple
 [credential]
-	helper = manager
 [include]
 	path = ~/.githubconfig

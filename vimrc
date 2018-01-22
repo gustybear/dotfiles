@@ -197,8 +197,13 @@ if has('nvim')
 endif
 
 " Python for neovim {{{2
-let g:python_host_prog = $HOME."/Applications/miniconda/envs/neovim2/bin/python"
-let g:python3_host_prog = $HOME."/Applications/miniconda/envs/neovim3/bin/python"
+if has('win32')
+  let g:python_host_prog = $HOME."/Applications/miniconda/envs/neovim2/python.exe"
+  let g:python3_host_prog = $HOME."/Applications/miniconda/envs/neovim3/python.exe"
+else
+  let g:python_host_prog = $HOME."/Applications/miniconda/envs/neovim2/bin/python"
+  let g:python3_host_prog = $HOME."/Applications/miniconda/envs/neovim3/bin/python"
+endif
 " Open files from the same directory of the current file  {{{2
 cnoremap <expr> %%  getcmdtype() == ':' ? fnameescape(expand('%:h')).'/' : '%%'
 map <leader>ew :e %%
