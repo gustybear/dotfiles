@@ -15,6 +15,5 @@
 [init]
 [push]
 	default = simple
-[credential]
 [include]
 	path = ~/.githubconfig

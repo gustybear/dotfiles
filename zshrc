@@ -44,7 +44,8 @@ zplug "plugins/ubuntu", from:oh-my-zsh, if:"[[ $OSTYPE == *linux* ]]"
 # GIT repos managed by zplug {{{2
 zplug "junegunn/fzf", dir:"${HOME}/.fzf", hook-build:"./install --all"
 zplug "todotxt/todo.txt-cli", hook-build:"make; make install prefix=${HOME}/.local"
-zplug "gustybear/Dropbox-Uploader", hook-build:"chmod +x ./dropbox_uploader.sh", as:command, use:"dropbox_uploader.sh"
+zplug "gpakosz/.tmux", hook-build:"ln -sf ${ZPLUG_REPOS}/gpakosz/.tmux/.tmux.conf ${HOME}/.tmux.conf"
+zplug "andreafabrizi/Dropbox-Uploader", as:command, use:"dropbox_uploader.sh"
 if [[ $OSTYPE == *darwin* ]]; then
   zplug "gohugoio/hugo", from:gh-r, as:command, use:"*macOS*64bit*"
 fi
@@ -96,18 +97,7 @@ alias tdo="$TODO do"
 alias tpri="$TODO pri"
 
 # FZF configurations {{{2
-# ---------
-if [[ ! "$PATH" == *${HOME}/.fzf/bin* ]]; then
-  export PATH="$PATH:${HOME}/.fzf/bin"
-fi
-
-# Auto-completion
-# ---------------
-[[ $- == *i* ]] && source "${HOME}/.fzf/shell/completion.zsh" 2> /dev/null
-
-# Key bindings
-# ------------
-source "${HOME}/.fzf/shell/key-bindings.zsh"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # fh - repeat history
 fh() {
@@ -422,6 +412,7 @@ function proj_init
   else
     dir_name="$project_type"_`date +%Y_%m_%d`_"$project_name"
   fi
+  dir_name="${dir_name%_}"
 
   if [[ "$project_type" == "course" ]]; then
     proj_path=$HOME/Documents/teaching/"$dir_name"
@@ -502,7 +493,7 @@ function proj_update
     (if [ -d "${dir}/.git" ]; then \
       echo "Entering ${dir}."; \
       cd ${dir}; \
-      if ! git diff-index --quiet HEAD --; then \
+      if ! git diff-index --quiet $(git write-tree) -- || [ -n "$(git status --porcelain)" ]; then \
         echo "Committing ... "; \
         git add -A; \
         LANG=C git -c color.status=false status \
@@ -511,9 +502,9 @@ function proj_update
            -e '/^Untracked files:/,$ d' \
            -e 's/^\s*//' \
            -e '/./p' \
-           > msg.txt; \
-        git commit -F msg.txt ; \
-        rm -rf msg.txt; \
+           > ${dir}/.git/msg.txt; \
+        git commit -F ${dir}/.git/msg.txt ; \
+        rm -rf ${dir}/.git/msg.txt; \
         git push; \
       fi; \
     fi);
@@ -586,5 +577,3 @@ if [[ $OSTYPE == *linux* ]]; then
 
   }
 fi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

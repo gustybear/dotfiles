@@ -10,14 +10,16 @@ call plug#begin('~/.local/share/nvim/plugged')
 " Language Plugins {{{2
 " RagTag: Mappings for XML/XHTML Editing {{{2
 Plug 'tpope/vim-ragtag'
-" Grammarous: Grammar Checker for Vim using LanguageTool {{{2
-Plug 'rhysd/vim-grammarous'
 
 " Completion Plugins {{{2
 " Deoplete: Dark Powered Asynchronous Completion Framework for Neovim/Vim8 {{{2
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " Deoplete-Jedi: Deoplete Source for Python {{{2
 Plug 'zchee/deoplete-jedi'
+" UltiSnips: The ultimate snippet solution for Vim. {{{2
+Plug 'SirVer/ultisnips'
+" Vim-Snipmate: default snippets (Previously snipmate-snippets) {{{2
+Plug 'honza/vim-snippets'
 
 " Code Display Plugins {{{2
 " Neoformat: A (Neo)vim plugin for formatting code {{{2
@@ -36,7 +38,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-tbone'
 " Neomake: Asynchronous linting and make framework for Neovim/Vim {{{2
 Plug 'neomake/neomake'
-" Vinegar: combine with netrw to create a delicious salad dressinga {{{2
+" Vinegar: combine with netrw to create a delicious salad dressing {{{2
 Plug 'tpope/vim-vinegar'
 
 " Interface {{{2
@@ -60,7 +62,6 @@ Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-repeat'
 " Unimpaired: Bracket based mappings for Vim {{{2
 Plug 'tpope/vim-unimpaired'
-
 " Other {{{2
 " Sensible: Vim Default Settings {{{2
 Plug 'tpope/vim-sensible'
@@ -73,6 +74,12 @@ Plug 'tpope/vim-sleuth'
 " Tabular: Align Text Based on Regular Expressions
 Plug 'godlygeek/tabular'
 
+" Transpose: Transpose matrices of text (swap lines with columns) {{{2
+Plug 'salsifis/vim-transpose'
+
+" Highlightedyank: Make the yanked region apparent {{{2
+Plug 'machakann/vim-highlightedyank'
+
 " Initialize plugin system {{{2
 call plug#end()
 
@@ -84,6 +91,13 @@ let g:grammarous#use_vim_spelllang = 1
 " Completion Plugin Configurations {{{2
 " Deoplete: Dark Powered Asynchronous Completion Framework for Neovim/Vim8 {{{2
 let g:deoplete#enable_at_startup = 1
+" UltiSnips: The ultimate snippet solution for Vim. {{{2
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
 
 " Code Display Plugins Configurations {{{2
 
@@ -187,6 +201,7 @@ set showcmd " show current command in the last line
 set nojoinspaces " do not add space after sentences when joining lines
 set complete-=t " do not use tag completion
 set ignorecase " case sensitive search
+set nohlsearch " disable hlsearch, inccommand and incsearch use their own highlight
 set smartcase " only if pattern contains uppercase characters
 set visualbell " use window flashing instead of beeping
 if has('mouse')
