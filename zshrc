@@ -46,6 +46,7 @@ zplug "junegunn/fzf", dir:"${HOME}/.fzf", hook-build:"./install --all"
 zplug "todotxt/todo.txt-cli", hook-build:"make; make install prefix=${HOME}/.local"
 zplug "gpakosz/.tmux", hook-build:"ln -sf ${ZPLUG_REPOS}/gpakosz/.tmux/.tmux.conf ${HOME}/.tmux.conf"
 zplug "andreafabrizi/Dropbox-Uploader", as:command, use:"dropbox_uploader.sh"
+zplug "hnarayanan/shpotify", hook-build:"chmod +x ${ZPLUG_REPOS}/hnarayanan/shpotify/spotify", as:command, use:"spotify"
 if [[ $OSTYPE == *darwin* ]]; then
   zplug "gohugoio/hugo", from:gh-r, as:command, use:"*macOS*64bit*"
 fi

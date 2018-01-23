@@ -67,3 +67,11 @@ if ! hash nvim 2>/dev/null; then
 fi
 
 exec zsh
+
+
+if [[ $OSTYPE == *darwin* ]]; then
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    brew install tmux reattach-to-usernamespace
+    brew install neovim
+    brew install pandoc rmtrash rename tree
+fi

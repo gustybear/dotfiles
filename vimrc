@@ -210,6 +210,9 @@ endif
 if has('nvim')
   set inccommand=nosplit " live substitution
 endif
+if has('mac')
+  set clipboard=unnamed " allow direct copy and paste to system clipboard
+endif
 
 " Python for neovim {{{2
 if has('win32')
