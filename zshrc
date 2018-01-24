@@ -22,6 +22,7 @@ source ${ZPLUG_HOME}/init.zsh
 # zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 zplug "robbyrussell/oh-my-zsh", use:"lib/*.zsh"
 zplug "plugins/zsh_reload",   from:oh-my-zsh
+zplug "plugins/tmux",  from:oh-my-zsh
 zplug "plugins/cp",   from:oh-my-zsh
 zplug "plugins/git",   from:oh-my-zsh
 zplug "plugins/vi-mode",   from:oh-my-zsh
@@ -69,7 +70,7 @@ fi
 
 zplug load
 
-# Plugin Configuratoions {{{1
+# Configuratoions {{{1
 # HISTORY-SUBSTRING-SEARCH configurations {{{2
 # bind UP and DOWN arrow keys
 zmodload zsh/terminfo
@@ -125,12 +126,6 @@ __ehc()
     bind '"\e^":'
   fi
 }
-
-# SSH-AGENT (osx) configurations {{{2
-if [[ $OSTYPE == *darwin* ]]; then
-  zstyle :omz:plugins:ssh-agent agent-forwarding on
-  zstyle :omz:plugins:ssh-agent identities id_rsa amazon_aws_2017_03_31.pem
-fi
 
 # Theme configurations {{{2
 SPACESHIP_PROMPT_ORDER=(
@@ -219,7 +214,6 @@ SPACESHIP_PYENV_SYMBOL=""
 # Disable <<< normal mode indicator (from vi-mode in oh-my-zsh)
 export RPS1="%{$reset_color%}"
 
-# Additional Configurations {{{1
 # Project configurations {{{2
 if [[ ! -d ${ZSH_CUSTOM} ]]; then
   mkdir -p ${ZSH_CUSTOM}
@@ -232,10 +226,16 @@ for config_file ($ZSH_CUSTOM/*.zsh(N)); do
 done
 unset config_file
 
-# Iterm shell integration (osx) {{{2
+# Iterm2 (osx) configurations {{{2
 if [[ $OSTYPE == *darwin* ]]; then
   test -e "${HOME}/.iterm2_shell_integration.zsh" \
     && source "${HOME}/.iterm2_shell_integration.zsh"
+fi
+
+# SSH-AGENT (osx) configurations {{{2
+if [[ $OSTYPE == *darwin* ]]; then
+  zstyle :omz:plugins:ssh-agent agent-forwarding on
+  zstyle :omz:plugins:ssh-agent identities id_rsa amazon_aws_2017_03_31.pem
 fi
 
 # Aliases {{{1
@@ -247,6 +247,8 @@ alias v=$VIM
 
 # Pin to the tail of long commands for an audible alert after long processes
 ## curl http://downloads.com/hugefile.zip; lmk
+alias clear_downloads="rmtrash ${HOME}/Downloads/*"
+alias clear_desktop="rmtrash ${HOME}/Desktop/*"
 alias lmk="say 'Process complete.'"
 
 # OSX specific aliases {{{2
@@ -577,4 +579,10 @@ if [[ $OSTYPE == *linux* ]]; then
     fi
 
   }
+fi
+
+# Start tmux if not in already in tmux {{{2
+if [[ ! -n "$TMUX"  || "$ZSH_TMUX_AUTOSTARTED" != "true" ]]; then
+  export ZSH_TMUX_AUTOSTARTED=true
+  _zsh_tmux_plugin_run
 fi
