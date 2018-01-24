@@ -246,13 +246,25 @@ alias v=$VIM
 
 # Pin to the tail of long commands for an audible alert after long processes
 ## curl http://downloads.com/hugefile.zip; lmk
-alias clear_downloads="rmtrash ${HOME}/Downloads/*"
-alias clear_desktop="rmtrash ${HOME}/Desktop/*"
 alias lmk="say 'Process complete.'"
+
+# Aliases for functions
+alias grcd=_git_root_cd
+alias prit=_project_init
+alias prst=_project_status
+alias prpl=_project_pull
+alias prup=_project_update
+alias wbup=_website_update
+alias
 
 # OSX specific aliases {{{2
 if [[ $OSTYPE == *darwin* ]]; then
   # Desktop Programs
+  alias brews='brew list -1'
+  alias bubo='brew update && brew outdated'
+  alias bubc='brew upgrade && brew cleanup'
+  alias bubu='bubo && bubc'
+  alias bco=_brew_clean_orphans
   alias photoshop="open -a '/Applications/Adobe Photoshop CS3/Adobe Photoshop.app'"
   alias preview="open -a '$PREVIEW'"
   alias xcode="open -a '/Applications/XCode.app'"
@@ -261,11 +273,16 @@ if [[ $OSTYPE == *darwin* ]]; then
   alias f='open -a Finder '
   alias fh='open -a Finder .'
 
+  # Clean Trash
+  alias dlclean="rmtrash ${HOME}/Downloads/*"
+  alias declean="rmtrash ${HOME}/Desktop/*"
+  alias trclean='rm -rf ~/.Trash/*'
+
   # Reset dock
-  alias dock_reset='defaults delete com.apple.dock; killall Dock'
+  alias dokreset='defaults delete com.apple.dock; killall Dock'
 
   # Reset lanuchpad
-  alias launchpad_reset='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
+  alias lapreset='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
 
   # Get rid of those pesky .DS_Store files recursively
   alias dsclean='find . -type f -name .DS_Store -delete'
@@ -287,6 +304,11 @@ if [[ $OSTYPE == *darwin* ]]; then
   alias unmute="osascript -e 'set volume output muted false'"
 fi
 
+# Linux specific aliases {{{2
+if [[ $OSTYPE == *linux* ]]; then
+  alias cpth=_cp_to_host
+fi
+
 # Key bindings {{{1
 bindkey "\e." insert-last-word # use "ALT+." to repeat the last argument.
 
@@ -294,7 +316,7 @@ bindkey "\e." insert-last-word # use "ALT+." to repeat the last argument.
 # To debug, run the function with "DEBUG=true function" {{{1
 # Navigate git {{{2
 # cd to the root directory of the repo {{{3
-function grcd
+function _git_root_cd
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
@@ -343,7 +365,7 @@ WEBSITES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "__webs
 DOTFILES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name ".dotfiles" 2>/dev/null))
 
 # Initialize project {{{3
-function proj_init
+function _project_init
 {
   local answer project_type
   local project_name person_name
@@ -443,7 +465,7 @@ function proj_init
 }
 
 # Check project status {{{3
-function proj_status
+function _project_status
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
@@ -465,7 +487,7 @@ function proj_status
 }
 
 # Pull update from remote {{{3
-function proj_pull
+function _project_pull
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
@@ -487,7 +509,7 @@ function proj_pull
 }
 
 # Commit local changes and push to remote {{{3
-function proj_update
+function _project_update
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
@@ -522,7 +544,7 @@ function proj_update
 
 # Website management {{{2
 # Update website {{{3
-function website_update
+function _website_update
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
@@ -563,7 +585,7 @@ if [[ $OSTYPE == *darwin* ]]; then
     done
   }
 
-  function brew_autoremove
+  function _brew_clean_orphans
   {
     echo "Searching for formulas not depended on by other formulas..."
     check_formulas `brew list`
@@ -572,7 +594,7 @@ fi
 
 # Copy from remote to local (linux) {{{2
 if [[ $OSTYPE == *linux* ]]; then
-  function cp_to_download
+  function _cp_to_host
   {
     if [ "$DEBUG" = "true" ]; then
       scp -vP 2222 $1 yao@127.0.0.1:~/Downloads/
