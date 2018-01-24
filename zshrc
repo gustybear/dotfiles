@@ -89,42 +89,55 @@ bindkey -M emacs '^N' history-substring-search-down
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
 
-# TODO.TXT configurations {{{2
-TODO=$(command -v todo.sh)
-alias tls="$TODO ls"
-alias ta="$TODO a"
-alias trm="$TODO rm"
-alias tdo="$TODO do"
-alias tpri="$TODO pri"
 
 # FZF configurations {{{2
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# fh - repeat history
-fh() {
-  print -z $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed 's/ *[0-9]* *//')
+# Use fd (https://github.com/sharkdp/fd) instead of the default find
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+
+# Options to fzf command
+# export FZF_COMPLETION_OPTS=''
+
+# Completion
+# command for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path() {
+  fd --hidden --follow --exclude ".git" . "$1"
 }
 
-# CTRL-R script to insert the selected command from history into the command line/region
-__fzf_history ()
-{
-  __ehc $(history | fzf --tac --tiebreak=index | perl -ne 'm/^\s*([0-9]+)/ and print "!$1"')
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fd --type d --hidden --follow --exclude ".git" . "$1"
 }
 
-__ehc()
-{
-  if
-    [[ -n $1 ]]
-  then
-    bind '"\er": redraw-current-line'
-    bind '"\e^": magic-space'
-    READLINE_LINE=${READLINE_LINE:+${READLINE_LINE:0:READLINE_POINT}}${1}${READLINE_LINE:+${READLINE_LINE:READLINE_POINT}}
-    READLINE_POINT=$(( READLINE_POINT + ${#1} ))
-  else
-    bind '"\er":'
-    bind '"\e^":'
-  fi
+# CTRL-T: paste the selected files and directories onto the command line
+# Preview the content of the file under the cursor using highlight
+# Automatically selects the item if there's only one
+# Automatically exits when the list is empty
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200' --select-1 --exit-0"
+
+# CTRL-R: paste the selected command from history onto the command line
+# Full command on preview window
+# Sorting and exact matching by defaults
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview' --sort --exact"
+
+# ALT-C: cd into the selected directory
+# Uses tree command to show the entries of the directory
+# Automatically selects the item if there's only one
+# Automatically exits when the list is empty
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200' --select-1 --exit-0"
+
+# CTRL-X CTRL-R: directly executing the command
+fzf-history-widget-accept() {
+  fzf-history-widget
+  zle accept-line
 }
+zle     -N     fzf-history-widget-accept
+bindkey '^X^R' fzf-history-widget-accept
+
 
 # Theme configurations {{{2
 SPACESHIP_PROMPT_ORDER=(
@@ -244,6 +257,14 @@ export EDITOR=vim
 VIM=$(command -v vim)
 alias v=$VIM
 
+# TODO.TXT {{{2
+TODO=$(command -v todo.sh)
+alias tls="$TODO ls"
+alias ta="$TODO a"
+alias trm="$TODO rm"
+alias tdo="$TODO do"
+alias tpri="$TODO pri"
+
 # Pin to the tail of long commands for an audible alert after long processes
 ## curl http://downloads.com/hugefile.zip; lmk
 alias lmk="say 'Process complete.'"
@@ -255,7 +276,6 @@ alias prst=_project_status
 alias prpl=_project_pull
 alias prup=_project_update
 alias wbup=_website_update
-alias
 
 # OSX specific aliases {{{2
 if [[ $OSTYPE == *darwin* ]]; then
@@ -476,7 +496,7 @@ function _project_status
     (if [ -d "${dir}/.git" ]; then \
       echo "Entering ${dir}."; \
       echo "Checking status... "; \
-      cd ${dir} &&  git status; \
+      cd ${dir} &&  git status -sb; \
       echo; \
     fi);
   done
@@ -532,7 +552,7 @@ function _project_update
            > ${dir}/.git/msg.txt; \
         git commit -F ${dir}/.git/msg.txt ; \
         rm -rf ${dir}/.git/msg.txt; \
-        git push; \
+        git push -v; \
       fi; \
     fi);
   done
@@ -609,4 +629,8 @@ fi
 if [[ ! -n "$TMUX"  || "$ZSH_TMUX_AUTOSTARTED" != "true" ]]; then
   export ZSH_TMUX_AUTOSTARTED=true
   _zsh_tmux_plugin_run
+fi
+# Start FZF in a tmux split pane if in tmux {{{2
+if [[ -n "$TMUX" ]]; then
+  export FZF_TMUX=1
 fi
