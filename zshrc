@@ -93,6 +93,9 @@ bindkey -M vicmd 'j' history-substring-search-down
 # FZF configurations {{{2
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# Use ~~ as the trigger sequence instead of the default **
+# export FZF_COMPLETION_TRIGGER='~~'
+
 # Use fd (https://github.com/sharkdp/fd) instead of the default find
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 
@@ -257,6 +260,9 @@ export EDITOR=vim
 VIM=$(command -v vim)
 alias v=$VIM
 
+# ZSH
+alias refresh="exec zsh"
+
 # TODO.TXT {{{2
 TODO=$(command -v todo.sh)
 alias tls="$TODO ls"
@@ -285,9 +291,10 @@ if [[ $OSTYPE == *darwin* ]]; then
   alias bubc='brew upgrade && brew cleanup'
   alias bubu='bubo && bubc'
   alias bco=_brew_clean_orphans
-  alias photoshop="open -a '/Applications/Adobe Photoshop CS3/Adobe Photoshop.app'"
+  alias photoshop="open -a '/Applications/Adobe Photoshop CC 2018/Adobe Photoshop CC 2018.app'"
+  alias acrobat="open -a '/Applications/Adobe Acrobat DC/Adobe Acrobat.app'"
   alias preview="open -a '$PREVIEW'"
-  alias xcode="open -a '/Applications/XCode.app'"
+  alias xcode="open -a '/Applications/Xcode.app'"
   alias safari="open -a safari"
   alias firefox="open -a firefox"
   alias f='open -a Finder '
