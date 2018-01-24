@@ -85,8 +85,6 @@ call plug#end()
 
 " Plugin Configurations {{{1
 " Language Plugin Configurations {{{2
-" Grammarous: Grammar Checker for Vim using LanguageTool {{{2
-let g:grammarous#use_vim_spelllang = 1
 
 " Completion Plugin Configurations {{{2
 " Deoplete: Dark Powered Asynchronous Completion Framework for Neovim/Vim8 {{{2
@@ -222,6 +220,14 @@ else
   let g:python_host_prog = $HOME."/Applications/miniconda/envs/neovim2/bin/python"
   let g:python3_host_prog = $HOME."/Applications/miniconda/envs/neovim3/bin/python"
 endif
+
+" Spell check {{{2
+" Toggle spell checking on and off with `,s`
+nmap <silent> <leader>s :set spell!<CR>
+
+" Set region to USA English
+set spelllang=en_us
+
 " Open files from the same directory of the current file  {{{2
 cnoremap <expr> %%  getcmdtype() == ':' ? fnameescape(expand('%:h')).'/' : '%%'
 map <leader>ew :e %%
