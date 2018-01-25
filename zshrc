@@ -23,16 +23,13 @@ source ${ZPLUG_HOME}/init.zsh
 zplug "robbyrussell/oh-my-zsh", use:"lib/*.zsh"
 zplug "plugins/zsh_reload",   from:oh-my-zsh
 zplug "plugins/tmux",  from:oh-my-zsh
-zplug "plugins/cp",   from:oh-my-zsh
-zplug "plugins/git",   from:oh-my-zsh
 zplug "plugins/vi-mode",   from:oh-my-zsh
 
 # Set the priority when loading
 # e.g., zsh-syntax-highlighting must be loaded
 # after executing compinit command and sourcing other plugins
 # (If the defer tag is given 2 or above, run after compinit command)
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-zplug "zsh-users/zsh-history-substring-search", defer:3
+zplug "zsh-users/zsh-syntax-highlighting", defer:1
 
 # OSX specific plugins {{{2
 zplug "lib/clipboard", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
@@ -44,6 +41,7 @@ zplug "plugins/ubuntu", from:oh-my-zsh, if:"[[ $OSTYPE == *linux* ]]"
 
 # GIT repos managed by zplug {{{2
 zplug "junegunn/fzf", dir:"${HOME}/.fzf", hook-build:"./install --all"
+zplug "junegunn/8b572b8d4b5eddd8b85e5f4d40f17236", from:gist
 zplug "todotxt/todo.txt-cli", hook-build:"make; make install prefix=${HOME}/.local"
 zplug "gpakosz/.tmux", hook-build:"ln -sf ${ZPLUG_REPOS}/gpakosz/.tmux/.tmux.conf ${HOME}/.tmux.conf"
 zplug "andreafabrizi/Dropbox-Uploader", as:command, use:"dropbox_uploader.sh"
@@ -70,26 +68,6 @@ fi
 zplug load
 
 # Configuratoions {{{1
-# HISTORY-SUBSTRING-SEARCH configurations {{{2
-# bind UP and DOWN arrow keys
-zmodload zsh/terminfo
-bindkey "$terminfo[kcuu1]" history-substring-search-up
-bindkey "$terminfo[kcud1]" history-substring-search-down
-
-# bind UP and DOWN arrow keys (compatibility fallback
-# for Ubuntu 12.04, Fedora 21, and MacOSX 10.9 users)
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-
-# bind P and N for EMACS mode
-bindkey -M emacs '^P' history-substring-search-up
-bindkey -M emacs '^N' history-substring-search-down
-
-# bind k and j for VI mode
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
-
-
 # FZF configurations {{{2
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -141,6 +119,9 @@ fzf-history-widget-accept() {
 zle     -N     fzf-history-widget-accept
 bindkey '^X^R' fzf-history-widget-accept
 
+# FZF Git key functions
+[ -f ${ZPLUG_REPOS}/junegunn/8b572b8d4b5eddd8b85e5f4d40f17236/functions.sh ] && source ${ZPLUG_REPOS}/junegunn/8b572b8d4b5eddd8b85e5f4d40f17236/functions.sh
+[ -f ${ZPLUG_REPOS}/junegunn/8b572b8d4b5eddd8b85e5f4d40f17236/key-binding.zsh ] && source ${ZPLUG_REPOS}/junegunn/8b572b8d4b5eddd8b85e5f4d40f17236/key-binding.zsh
 
 # Theme configurations {{{2
 SPACESHIP_PROMPT_ORDER=(
@@ -260,10 +241,7 @@ export EDITOR=vim
 VIM=$(command -v vim)
 alias v=$VIM
 
-# ZSH
-alias refresh="exec zsh"
-
-# TODO.TXT {{{2
+# TODO.TXT
 TODO=$(command -v todo.sh)
 alias tls="$TODO ls"
 alias ta="$TODO a"
