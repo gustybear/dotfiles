@@ -618,4 +618,8 @@ fi
 # Start FZF in a tmux split pane if in tmux {{{2
 if [[ -n "$TMUX" ]]; then
   export FZF_TMUX=1
+  # Overwrite fzf-down in tmux
+  fzf-down() {
+  fzf-tmux --height 50% "$@" --border
+  }
 fi
