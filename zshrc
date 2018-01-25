@@ -52,7 +52,7 @@ zplug load
 
 # Configuratoions {{{1
 # Prompt
-PS1=' %{$fg[green]%}%1d → '
+PS1=' → '
 # SSH-AGENT {{{2
 zstyle :omz:plugins:ssh-agent agent-forwarding on
 
