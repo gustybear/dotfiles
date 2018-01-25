@@ -15,45 +15,28 @@ if [[ ! -d ${ZPLUG_HOME} ]]; then
   git clone https://github.com/gustybear/zplug ${ZPLUG_HOME}
   source ${ZPLUG_HOME}/init.zsh && zplug update --self
 fi
-
 source ${ZPLUG_HOME}/init.zsh
 
-# Universal plugins {{{2
+# Global {{{2
 # zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 zplug "robbyrussell/oh-my-zsh", use:"lib/*.zsh"
-zplug "plugins/zsh_reload",   from:oh-my-zsh
-zplug "plugins/tmux",  from:oh-my-zsh
-zplug "plugins/vi-mode",   from:oh-my-zsh
-
-# Set the priority when loading
-# e.g., zsh-syntax-highlighting must be loaded
-# after executing compinit command and sourcing other plugins
-# (If the defer tag is given 2 or above, run after compinit command)
+zplug "plugins/ssh-agent", from:oh-my-zsh
 zplug "zsh-users/zsh-syntax-highlighting", defer:1
 
-# OSX specific plugins {{{2
-zplug "lib/clipboard", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
-zplug "plugins/osx", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
-zplug "plugins/ssh-agent", from:oh-my-zsh, if:"[[ $OSTYPE == *darwin* ]]"
-
-# LINUX specific plugins {{{2
-zplug "plugins/ubuntu", from:oh-my-zsh, if:"[[ $OSTYPE == *linux* ]]"
-
-# GIT repos managed by zplug {{{2
 zplug "junegunn/fzf", dir:"${HOME}/.fzf", hook-build:"./install --all"
 zplug "junegunn/8b572b8d4b5eddd8b85e5f4d40f17236", from:gist
 zplug "todotxt/todo.txt-cli", hook-build:"make; make install prefix=${HOME}/.local"
-zplug "gpakosz/.tmux", hook-build:"ln -sf ${ZPLUG_REPOS}/gpakosz/.tmux/.tmux.conf ${HOME}/.tmux.conf"
 zplug "andreafabrizi/Dropbox-Uploader", as:command, use:"dropbox_uploader.sh"
+# OSX {{{2
 if [[ $OSTYPE == *darwin* ]]; then
+  zplug "plugins/osx", from:oh-my-zsh
   zplug "gohugoio/hugo", from:gh-r, as:command, use:"*macOS*64bit*"
 fi
+# LINUX {{{2
 if [[ $OSTYPE == *linux* ]]; then
+  zplug "plugins/ubuntu", from:oh-my-zsh
   zplug "gohugoio/hugo", from:gh-r, as:command, use:"*Linux*64bit*gz"
 fi
-
-# Theme {{{2
-zplug "denysdovhan/spaceship-zsh-theme", use:spaceship.zsh, from:github, as:theme
 
 # Initialize zplug {{{2
 if ! zplug check --verbose; then
@@ -68,6 +51,11 @@ fi
 zplug load
 
 # Configuratoions {{{1
+# Prompt
+PS1=' %{$fg[green]%}%1d → '
+# SSH-AGENT {{{2
+zstyle :omz:plugins:ssh-agent agent-forwarding on
+
 # FZF configurations {{{2
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -123,92 +111,14 @@ bindkey '^X^R' fzf-history-widget-accept
 [ -f ${ZPLUG_REPOS}/junegunn/8b572b8d4b5eddd8b85e5f4d40f17236/functions.sh ] && source ${ZPLUG_REPOS}/junegunn/8b572b8d4b5eddd8b85e5f4d40f17236/functions.sh
 [ -f ${ZPLUG_REPOS}/junegunn/8b572b8d4b5eddd8b85e5f4d40f17236/key-binding.zsh ] && source ${ZPLUG_REPOS}/junegunn/8b572b8d4b5eddd8b85e5f4d40f17236/key-binding.zsh
 
-# Theme configurations {{{2
-SPACESHIP_PROMPT_ORDER=(
-time     #
-vi_mode  # these sections will be
-user     # before prompt char
-host     #
-char
-dir
-git
-node
-ruby
-xcode
-swift
-golang
-docker
-venv
-pyenv
-)
-
-# USER
-SPACESHIP_USER_PREFIX="" # remove `with` before username
-SPACESHIP_USER_SUFFIX="" # remove space before host
-
-# HOST
-# Result will look like this:
-#   username@:(hostname)
-SPACESHIP_HOST_PREFIX="@:("
-SPACESHIP_HOST_SUFFIX=") "
-
-# DIR
-SPACESHIP_DIR_PREFIX='' # disable directory prefix, cause it's not the first section
-SPACESHIP_DIR_TRUNC='1' # show only last directory
-
-# GIT
-# Disable git symbol
-SPACESHIP_GIT_SYMBOL="" # disable git prefix
-SPACESHIP_GIT_BRANCH_PREFIX="" # disable branch prefix too
-# Wrap git in `git:(...)`
-SPACESHIP_GIT_PREFIX='git:('
-SPACESHIP_GIT_SUFFIX=") "
-SPACESHIP_GIT_BRANCH_SUFFIX="" # remove space after branch name
-# Unwrap git status from `[...]`
-SPACESHIP_GIT_STATUS_PREFIX=""
-SPACESHIP_GIT_STATUS_SUFFIX=""
-
-# NODE
-SPACESHIP_NODE_PREFIX="node:("
-SPACESHIP_NODE_SUFFIX=") "
-SPACESHIP_NODE_SYMBOL=""
-
-# RUBY
-SPACESHIP_RUBY_PREFIX="ruby:("
-SPACESHIP_RUBY_SUFFIX=") "
-SPACESHIP_RUBY_SYMBOL=""
-
-# XCODE
-SPACESHIP_XCODE_PREFIX="xcode:("
-SPACESHIP_XCODE_SUFFIX=") "
-SPACESHIP_XCODE_SYMBOL=""
-
-# SWIFT
-SPACESHIP_SWIFT_PREFIX="swift:("
-SPACESHIP_SWIFT_SUFFIX=") "
-SPACESHIP_SWIFT_SYMBOL=""
-
-# GOLANG
-SPACESHIP_GOLANG_PREFIX="go:("
-SPACESHIP_GOLANG_SUFFIX=") "
-SPACESHIP_GOLANG_SYMBOL=""
-
-# DOCKER
-SPACESHIP_DOCKER_PREFIX="docker:("
-SPACESHIP_DOCKER_SUFFIX=") "
-SPACESHIP_DOCKER_SYMBOL=""
-
-# VENV
-SPACESHIP_VENV_PREFIX="venv:("
-SPACESHIP_VENV_SUFFIX=") "
-
-# PYENV
-SPACESHIP_PYENV_PREFIX="python:("
-SPACESHIP_PYENV_SUFFIX=") "
-SPACESHIP_PYENV_SYMBOL=""
-
-# Disable <<< normal mode indicator (from vi-mode in oh-my-zsh)
-export RPS1="%{$reset_color%}"
+# If within tmux open FZF in seperate window
+if [[ -n "$TMUX" ]]; then
+  export FZF_TMUX=1
+  # Overwrite fzf-down in tmux
+  fzf-down() {
+  fzf-tmux --height 50% "$@" --border
+  }
+fi
 
 # Project configurations {{{2
 if [[ ! -d ${ZSH_CUSTOM} ]]; then
@@ -228,14 +138,8 @@ if [[ $OSTYPE == *darwin* ]]; then
     && source "${HOME}/.iterm2_shell_integration.zsh"
 fi
 
-# SSH-AGENT (osx) configurations {{{2
-if [[ $OSTYPE == *darwin* ]]; then
-  zstyle :omz:plugins:ssh-agent agent-forwarding on
-  zstyle :omz:plugins:ssh-agent identities id_rsa amazon_aws_2017_03_31.pem
-fi
-
 # Aliases {{{1
-# Universal aliases {{{2
+# Global {{{2
 # VIM
 export EDITOR=vim
 VIM=$(command -v vim)
@@ -249,20 +153,7 @@ alias trm="$TODO rm"
 alias tdo="$TODO do"
 alias tpri="$TODO pri"
 
-# Pin to the tail of long commands for an audible alert after long processes
-## curl http://downloads.com/hugefile.zip; lmk
-alias lmk="say 'Process complete.'"
-
-# Aliases for functions
-alias grcd=_git_root_cd
-alias grcd=_git_root_make
-alias prit=_project_init
-alias prst=_project_status
-alias prpl=_project_pull
-alias prup=_project_update
-alias wbup=_website_update
-
-# OSX specific aliases {{{2
+# OSX {{{2
 if [[ $OSTYPE == *darwin* ]]; then
   # Desktop Programs
   alias brews='brew list -1'
@@ -310,19 +201,16 @@ if [[ $OSTYPE == *darwin* ]]; then
   alias unmute="osascript -e 'set volume output muted false'"
 fi
 
-# Linux specific aliases {{{2
+# Linux {{{2
 if [[ $OSTYPE == *linux* ]]; then
   alias cpth=_cp_to_host
 fi
 
-# Key bindings {{{1
-bindkey "\e." insert-last-word # use "ALT+." to repeat the last argument.
-
-# Functions {{{1
+# Short Cut Functions {{{1
 # To debug, run the function with "DEBUG=true function" {{{1
 # Navigate git {{{2
 # cd to the root directory of the repo {{{3
-function _git_root_cd
+function grcd
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
@@ -340,7 +228,7 @@ function _git_root_cd
 }
 
 # Run the makefile at the root of the git repo {{{3
-function _git_root_make
+function grmk
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
@@ -371,8 +259,7 @@ WEBSITES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name "__webs
 DOTFILES_DIR=($(find ${SEARCH_DIR} -maxdepth 1 -mindepth 1 -type d -name ".dotfiles" 2>/dev/null))
 
 # Initialize project {{{3
-function _project_init
-{
+function prit() {
   local answer project_type
   local project_name person_name
   local course_number course_semester course_year
@@ -471,12 +358,7 @@ function _project_init
 }
 
 # Check project status {{{3
-function _project_status
-{
-  if [ "$DEBUG" = "true" ]; then
-    set -x
-  fi
-
+function prst() {
   for dir in ${PROJECT_DIRS} ${COURSE_DIRS} ${TEMPLATE_DIR} ${WEBSITES_DIR} ${DOTFILES_DIR};
   do
     (if [ -d "${dir}/.git" ]; then \
@@ -486,19 +368,10 @@ function _project_status
       echo; \
     fi);
   done
-
-  if [ "$DEBUG" = "true" ]; then
-    set +x
-  fi
 }
 
 # Pull update from remote {{{3
-function _project_pull
-{
-  if [ "$DEBUG" = "true" ]; then
-    set -x
-  fi
-
+function prpl() {
   for dir in ${PROJECT_DIRS} ${COURSE_DIRS} ${TEMPLATE_DIR} ${WEBSITES_DIR} ${DOTFILES_DIR};
   do
     (if [ -d "${dir}/.git" ]; then \
@@ -508,19 +381,10 @@ function _project_pull
       echo; \
      fi);
   done
-
-  if [ "$DEBUG" = "true" ]; then
-    set +x
-  fi
 }
 
 # Commit local changes and push to remote {{{3
-function _project_update
-{
-  if [ "$DEBUG" = "true" ]; then
-    set -x
-  fi
-
+function prup() {
   for dir in ${PROJECT_DIRS} ${COURSE_DIRS} ${TEMPLATE_DIR} ${WEBSITES_DIR} ${DOTFILES_DIR};
   do
     (if [ -d "${dir}/.git" ]; then \
@@ -542,20 +406,11 @@ function _project_update
       fi; \
     fi);
   done
-
-  if [ "$DEBUG" = "true" ]; then
-    set +x
-  fi
 }
 
 # Website management {{{2
 # Update website {{{3
-function _website_update
-{
-  if [ "$DEBUG" = "true" ]; then
-    set -x
-  fi
-
+function wbup() {
   if [ -z "${WEBSITES_DIR}" ]; then
     for dir in ${PROJECT_DIRS} ${COURSE_DIRS};
     do
@@ -567,53 +422,10 @@ function _website_update
       (echo "Entering ${dir}."; make -C ${dir} publish);
     done
   fi
-
-  if [ "$DEBUG" = "true" ]; then
-    set +x
-  fi
 }
 
-# Clean homebrew (mac) {{{2
-if [[ $OSTYPE == *darwin* ]]; then
-  declare -A visited_formulas
-
-  function check_formulas
-  {
-    for formula in "$@"; do
-      if [[ -z `brew uses --installed $formula` ]] && ! (( ${+visited_formulas[$formula]} )) && [[ $formula != "brew-cask" ]]; then
-        read "input?$formula is not depended on by other formulas. Remove? [Y/n] "
-        visited_formulas[$formula]=1
-        if [[ "$input" == "Y" ]]; then
-          brew remove $formula
-          check_formulas `brew deps --1 --installed $formula`
-        fi
-      fi
-    done
-  }
-
-  function _brew_clean_orphans
-  {
-    echo "Searching for formulas not depended on by other formulas..."
-    check_formulas `brew list`
-  }
-fi
-
-# Copy from remote to local (linux) {{{2
-if [[ $OSTYPE == *linux* ]]; then
-  function _cp_to_host
-  {
-    if [ "$DEBUG" = "true" ]; then
-      scp -vP 2222 $1 yao@127.0.0.1:~/Downloads/
-    else
-      scp -P 2222 $1 yao@127.0.0.1:~/Downloads/
-    fi
-
-  }
-fi
-
 # Zotero pdf search {{{2
-
-_fzf_zotero_pdf_search() {
+function fzf-zotero() {
     local DIR open
     declare -A already
     DIR="${HOME}/.cache/pdftotext"
@@ -652,19 +464,19 @@ _fzf_zotero_pdf_search() {
 # Tmux {{{2
 # Use FZF to switch Tmux sessions{{{3
 # bind-key s run "tmux new-window 'bash -ci _fzf_tmux_switch_sessions'"
-_fzf_tmux_switch_sessions() {
-	local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
-	{ tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
-		| awk '!seen[$1]++' \
-		| column -t -s'|' \
-		| fzf -q '$' --reverse --prompt 'switch session: ' -1 \
-		| cut -d':' -f1 \
-		| xargs tmux switch-client -t
+function fzf-tmux-ssession() {
+  local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
+  { tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
+    | awk '!seen[$1]++' \
+    | column -t -s'|' \
+    | fzf -q '$' --reverse --prompt 'switch session: ' -1 \
+    | cut -d':' -f1 \
+    | xargs tmux switch-client -t
 }
 
 # Use FZF to switch Tmux panes{{{3
 # bind-key s run "tmux new-window 'bash -ci _fzf_tmux_switch_panes'"
-_fzf_tmux_swith_panes() {
+function fzf-tmux-spanes() {
   local panes current_window current_pane target target_window target_pane
   panes=$(tmux list-panes -s -F '#I:#P - #{pane_current_path} #{pane_current_command}')
   current_pane=$(tmux display-message -p '#I:#P')
@@ -682,18 +494,3 @@ _fzf_tmux_swith_panes() {
     tmux select-window -t $target_window
   fi
 }
-
-# Start Tmux if not in already in Tmux {{{3
-if [[ ! -n "$TMUX"  || "$ZSH_TMUX_AUTOSTARTED" != "true" ]]; then
-  export ZSH_TMUX_AUTOSTARTED=true
-  _zsh_tmux_plugin_run
-fi
-
-# Start FZF in a Tmux split pane if in tmux {{{3
-if [[ -n "$TMUX" ]]; then
-  export FZF_TMUX=1
-  # Overwrite fzf-down in tmux
-  fzf-down() {
-  fzf-tmux --height 50% "$@" --border
-  }
-fi

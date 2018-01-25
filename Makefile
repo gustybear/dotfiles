@@ -13,7 +13,7 @@ link_files:
 	@find $(CURRENT_DIR) -name "gitconfig" -exec ln -sf {} ${HOME}/.gitconfig \;
 	@find $(CURRENT_DIR) -name "gitignore" -exec ln -sf {} ${HOME}/.gitignore \;
 	@find $(CURRENT_DIR) -name "vimrc" -exec ln -sf {} ${HOME}/.config/nvim/init.vim \;
-	@find $(CURRENT_DIR) -name "tmux" -exec ln -sf {} ${HOME}/.tmux.conf.local \;
+	@find $(CURRENT_DIR) -name "tmux.conf" -exec ln -sf {} ${HOME}/.tmux.conf \;
 	@test -d "${HOME}/.jupyter" && rm -rf ${HOME}/.jupyter
 	@find $(CURRENT_DIR) -name "jupyter" -exec ln -sf {} ${HOME}/.jupyter \;
 	@test -d "${HOME}/.todo" && rm -rf ${HOME}/.todo
