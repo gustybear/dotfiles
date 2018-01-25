@@ -255,6 +255,7 @@ alias lmk="say 'Process complete.'"
 
 # Aliases for functions
 alias grcd=_git_root_cd
+alias grcd=_git_root_make
 alias prit=_project_init
 alias prst=_project_status
 alias prpl=_project_pull
@@ -339,7 +340,7 @@ function _git_root_cd
 }
 
 # Run the makefile at the root of the git repo {{{3
-function grmake
+function _git_root_make
 {
   if [ "$DEBUG" = "true" ]; then
     set -x
@@ -610,12 +611,85 @@ if [[ $OSTYPE == *linux* ]]; then
   }
 fi
 
-# Start tmux if not in already in tmux {{{2
+# Zotero pdf search {{{2
+
+_fzf_zotero_pdf_search() {
+    local DIR open
+    declare -A already
+    DIR="${HOME}/.cache/pdftotext"
+    mkdir -p "${DIR}"
+    if [ "$(uname)" = "Darwin" ]; then
+        open=open
+    else
+        open="gio open"
+    fi
+
+    {
+    ag -g ".pdf$"; # fast, without pdftotext
+    ag -g ".pdf$" \
+    | while read -r FILE; do
+        local EXPIRY HASH CACHE
+        HASH=$(md5sum "$FILE" | cut -c 1-32)
+        # Remove duplicates (file that has same hash as already seen file)
+        [ ${already[$HASH]+abc} ] && continue # see https://stackoverflow.com/a/13221491
+        already[$HASH]=$HASH
+        EXPIRY=$(( 86400 + $RANDOM * 20 )) # 1 day (86400 seconds) plus some random
+        CMD="pdftotext -f 1 -l 1 '$FILE' - 2>/dev/null | tr \"\n\" \"_\" "
+        CACHE="$DIR/$HASH"
+        test -f "${CACHE}" && [ $(expr $(date +%s) - $(date -r "$CACHE" +%s)) -le $EXPIRY ] || eval "$CMD" > "${CACHE}"
+        echo -e "$FILE\t$(cat ${CACHE})"
+    done
+    } | fzf -e  -d '\t' \
+        --preview-window up:75% \
+        --preview '
+                v=$(echo {q} | tr " " "|");
+                echo {1} | grep -E "^|$v" -i --color=always;
+                pdftotext -f 1 -l 1 {1} - | grep -E "^|$v" -i --color=always' \
+        | awk 'BEGIN {FS="\t"; OFS="\t"}; {print "\""$1"\""}' \
+        | xargs $open > /dev/null 2> /dev/null
+}
+
+# Tmux {{{2
+# Use FZF to switch Tmux sessions{{{3
+# bind-key s run "tmux new-window 'bash -ci _fzf_tmux_switch_sessions'"
+_fzf_tmux_switch_sessions() {
+	local -r fmt='#{session_id}:|#S|(#{session_attached} attached)'
+	{ tmux display-message -p -F "$fmt" && tmux list-sessions -F "$fmt"; } \
+		| awk '!seen[$1]++' \
+		| column -t -s'|' \
+		| fzf -q '$' --reverse --prompt 'switch session: ' -1 \
+		| cut -d':' -f1 \
+		| xargs tmux switch-client -t
+}
+
+# Use FZF to switch Tmux panes{{{3
+# bind-key s run "tmux new-window 'bash -ci _fzf_tmux_switch_panes'"
+_fzf_tmux_swith_panes() {
+  local panes current_window current_pane target target_window target_pane
+  panes=$(tmux list-panes -s -F '#I:#P - #{pane_current_path} #{pane_current_command}')
+  current_pane=$(tmux display-message -p '#I:#P')
+  current_window=$(tmux display-message -p '#I')
+
+  target=$(echo "$panes" | grep -v "$current_pane" | fzf +m --reverse) || return
+
+  target_window=$(echo $target | awk 'BEGIN{FS=":|-"} {print$1}')
+  target_pane=$(echo $target | awk 'BEGIN{FS=":|-"} {print$2}' | cut -c 1)
+
+  if [[ $current_window -eq $target_window ]]; then
+    tmux select-pane -t ${target_window}.${target_pane}
+  else
+    tmux select-pane -t ${target_window}.${target_pane} &&
+    tmux select-window -t $target_window
+  fi
+}
+
+# Start Tmux if not in already in Tmux {{{3
 if [[ ! -n "$TMUX"  || "$ZSH_TMUX_AUTOSTARTED" != "true" ]]; then
   export ZSH_TMUX_AUTOSTARTED=true
   _zsh_tmux_plugin_run
 fi
-# Start FZF in a tmux split pane if in tmux {{{2
+
+# Start FZF in a Tmux split pane if in tmux {{{3
 if [[ -n "$TMUX" ]]; then
   export FZF_TMUX=1
   # Overwrite fzf-down in tmux
