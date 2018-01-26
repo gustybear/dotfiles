@@ -56,15 +56,14 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew tap universal-ctags/universal-ctags
   brew install --HEAD universal-ctags
 
-  # brew cask install xquartz iterm2 spectacle virtualbox virtualbox-extension-pack \
-  #   vagrant mat visualvm spotifree flux flycut keycastr fluid
+  brew cask install iterm2
+
 else
   rm -f ~/.tmux.conf
   grep -v reattach-to-user-namespace tmux.conf > ~/.tmux.conf
 fi
 
-# git config --global user.email "junegunn.c@gmail.com"
-# git config --global user.name "Junegunn Choi"
+git config --global user.name "Yao Zheng"
 
 tmux source-file ~/.tmux.conf
 
