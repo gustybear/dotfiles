@@ -39,7 +39,8 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew install \
     fd ag ripgrep ant cmus coreutils cscope exiftool doxygen liboauth \
     fish git graphviz imagemagick leiningen sbt \
-    maven ranger tree vim wget zsh jq macvim ruby python go highlight reattach-to-user-namespace
+    hugo \
+    maven ranger tree neovim wget zsh jq ruby python go highlight reattach-to-user-namespace
   brew install gnuplot --with-qt@5.7
 
   # Patched version of tmux
@@ -56,7 +57,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew tap universal-ctags/universal-ctags
   brew install --HEAD universal-ctags
 
-  brew cask install iterm2
+  brew cask install iterm2 pdftotext
 
 else
   rm -f ~/.tmux.conf
