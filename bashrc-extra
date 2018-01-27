@@ -43,16 +43,15 @@ cmrepo() {
   if ! git diff-index --quiet $(git write-tree) -- || [ -n "$(git status --porcelain)" ]; then
     echo "Attempt automatic commit ... ";
     git add -A;
-    git status;
+    git status -sb;
     echo -n "Input the commit message: ";
     read commit_message;
-    if "$commit_message"; then 
-      echo "$commit_message" | git commit -F -;
-    else
-      LANG=C git -c color.status=false status -s | git commit -F -;
-    fi
+    if [[ ! -n "$commit_message" ]]; then
+      commit_message=$(LANG=C git -c color.status=false status -s);
+    fi;
+    echo "$commit_message" | git commit -F -;
     git push -v;
-  fi;
+  fi
 }
 
 # Create a prject folder based on the input information
