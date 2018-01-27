@@ -47,15 +47,9 @@ cmrepo() {
     echo -n "Input the commit message: ";
     read commit_message;
     if "$commit_message"; then 
-      git commit -m "$commit_message";
+      echo "$commit_message" | git commit -F -;
     else
-      (LANG=C git -c color.status=false status \
-       | sed -n -e '1,/Changes to be committed:/ d' \
-         -e '1,1 d' \
-         -e '/^Untracked files:/,$ d' \
-         -e 's/^\s*//' \
-         -e '/./p' ) \
-       | git commit -F -;
+      LANG=C git -c color.status=false status -s | git commit -F -;
     fi
     git push -v;
   fi;
