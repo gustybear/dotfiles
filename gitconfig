@@ -6,5 +6,3 @@
 	email = zheng.iao@icloud.com
 [include]
 	path = ~/.githubconfig
-[core]
-	excludesfile = ~/.gitignore

@@ -190,6 +190,7 @@ prup() {
   cd ${current_dir}
 }
 
+
 # Update website {{{3
 wbup() {
   local current_dir=${PWD}
@@ -208,9 +209,43 @@ wbup() {
   cd ${current_dir}
 }
 
+# Git
+# --------------------------------------------------------------------
+# Creating or append git ignore by query gitignore.io
+gi() {
+  result=$(curl "https://www.gitignore.io/api/$1" 2>/dev/null)
+
+  if [[ $result =~ ERROR ]]; then
+    echo "Query '$1' has no match. See a list of possible queries with 'gi list'"
+  elif [[ $1 == list ]]; then
+    echo "Possible search keywords: "
+    echo "$result"
+  else
+    echo "Iterms to add:"
+    echo "$result"
+    if [[ -f .gitignore ]]; then
+      result=`echo "$result" | \
+              grep -v -e "# Created by https://www.gitignore.io" \
+                      -e "# End of https://www.gitignore.io" `
+      echo ".gitignore already exists, appending"
+      echo "$result" >> .gitignore
+    else
+      echo "$result" > .gitignore
+    fi
+  fi
+}
+
 
 # fzf extensions
 # --------------------------------------------------------------------
+# cd to the project folders using fzf
+fpr() {
+  local dir
+  dir=$(_fdrepo "${HOME}/Documents/* ${HOME}/.dotfiles" |
+  fzf-tmux --preview-window up:75% \
+    --preview 'tree -C {} | head -200' --select-1 --exit-0)
+  cd ${dir}
+}
 # Safari history search
 fsafari() {
   local cols sep
@@ -223,7 +258,7 @@ fsafari() {
     "select substr(id, 1, $cols), url
      from history_items order by visit_count_score desc" |
   awk -F $sep '{printf "%-'$cols's  \x1b[36m%s\x1b[m\n", $1, $2}'  |
-  fzf --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs open
+  fzf-tmux --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs open
 }
 
 # Zotero pdf search
@@ -253,7 +288,7 @@ fzotero() {
         test -f "${CACHE}" && [ $(expr $(date +%s) - $(date -r "$CACHE" +%s)) -le $EXPIRY ] || eval "$CMD" > "${CACHE}"
         echo -e "$FILE\t$(cat ${CACHE})"
     done
-    } | fzf -e  -d '\t' \
+    } | fzf-tmux -e  -d '\t' \
         --preview-window up:75% \
         --preview '
                 v=$(echo {q} | tr " " "|");
