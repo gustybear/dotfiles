@@ -6,7 +6,7 @@
 #-------------------------------------------------------------------------------
 # Given a path to a folder containing some git repos, compute the
 # names of the folders which actually do contain git repos.
-lsrepo() {
+_fdrepo() {
   local dirname_cmd
   if [ "$PLATFORM" == "Darwin" ]; then  # macOS
     dirname_cmd="gdirname"
@@ -26,9 +26,19 @@ lsrepo() {
   done
 }
 
+# List all the git repos in the path.
+lsrepo () {
+    local path=$1
+    local repo
+    for repo in $(_fdrepo $path) ; do
+        echo ${repo} ":" $(git -C ${repo} symbolic-ref HEAD | sed -e "s/^refs\/heads\///")
+    done
+}
+
 # Make a automatic commit if within a git repo.
 # The commitment message can be from the stdin or generated from git status.
 cmrepo() {
+  local commit_message
   is_in_git_repo || return
   if ! git diff-index --quiet $(git write-tree) -- || [ -n "$(git status --porcelain)" ]; then
     echo "Attempt automatic commit ... ";
@@ -36,7 +46,7 @@ cmrepo() {
     git status;
     echo -n "Input the commit message: ";
     read commit_message;
-    if "$commit_message" ; then 
+    if "$commit_message"; then 
       git commit -m "$commit_message";
     else
       (LANG=C git -c color.status=false status \
@@ -51,8 +61,8 @@ cmrepo() {
   fi;
 }
 
-# Create a repository folder based on the input information
-inrepo() {
+# Create a prject folder based on the input information
+prit() {
   local answer project_type
   local project_name person_name
   local course_number course_semester course_year
@@ -150,49 +160,48 @@ inrepo() {
   fi
 }
 
-# Check repositories' status in a batch
-strepo() {
-  local repos=$(lsrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
+# Check project status in a batch
+prst() {
+  local repos=$(_fdrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
   for dir in ${repos};
   do
-      echo "Entering ${dir}.";
-      echo "Checking status... ";
+      echo "Checking status of ${dir}...";
       cd ${dir} && git status -sb;
   done
 }
 
-# Pull update from remote repositories
-plrepo() {
-  local repos=$(lsrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
+# Pull projects from remote
+prpl() {
+  local repos=$(_fdrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
   for dir in ${repos};
   do
-      echo "Entering ${dir}.";
-      echo "Pulling from remote ...";
+      echo "Pulling updates of ${dir} from remote...";
       cd ${dir} && git pull;
   done
 }
 
-# Commit local changes and push to remote {{{3
-uprepo() {
-  local repos=$(lsrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
+# Update projects to remote
+prup() {
+  local repos=$(_fdrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
   for dir in ${repos};
   do
-      echo "Entering ${dir}.";
+      echo "Updating ${dir} to remote...";
       cd ${dir} && cmrepo;
   done
 }
 
 # Update website {{{3
-upwb() {
+wbup() {
   local web="${HOME}/Documents/__websites"
-  local repos=$(lsrepo "${HOME}/Documents/*")
+  local repos=$(_fdrepo "${HOME}/Documents/*")
   if [ -z  ${web} ]; then
+    echo "No website folder"
     for dir in ${repos};
     do
-      (echo "Entering ${dir}."; make -C ${dir} publish_s3)
+      (echo "Updating materials..."; make -C ${dir} publish_s3)
     done
   else
-    echo "Entering ${web}.";
+    echo "Updating website...";
     make -C ${web} publish;
   fi
 }
