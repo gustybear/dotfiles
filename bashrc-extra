@@ -156,36 +156,43 @@ prit() {
 
 # Check project status in a batch
 prst() {
+  local current_dir=${PWD}
   local repos=$(_fdrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
   for dir in ${repos};
   do
       echo "Checking status of ${dir}...";
       cd ${dir} && git status -sb;
   done
+  cd ${current_dir}
 }
 
 # Pull projects from remote
 prpl() {
+  local current_dir=${PWD}
   local repos=$(_fdrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
   for dir in ${repos};
   do
       echo "Pulling updates of ${dir} from remote...";
       cd ${dir} && git pull;
   done
+  cd ${current_dir}
 }
 
 # Update projects to remote
 prup() {
+  local current_dir=${PWD}
   local repos=$(_fdrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
   for dir in ${repos};
   do
       echo "Updating ${dir} to remote...";
       cd ${dir} && cmrepo;
   done
+  cd ${current_dir}
 }
 
 # Update website {{{3
 wbup() {
+  local current_dir=${PWD}
   local web="${HOME}/Documents/__websites"
   local repos=$(_fdrepo "${HOME}/Documents/*")
   if [ -z  ${web} ]; then
@@ -198,6 +205,7 @@ wbup() {
     echo "Updating website...";
     make -C ${web} publish;
   fi
+  cd ${current_dir}
 }
 
 
