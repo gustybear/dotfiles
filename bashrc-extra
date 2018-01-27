@@ -49,6 +49,8 @@ cmrepo() {
     if [[ ! -n "$commit_message" ]]; then
       commit_message=$(LANG=C git -c color.status=false status -s);
     fi;
+    echo "Commit message: "
+    echo "$commit_message"
     echo "$commit_message" | git commit -F -;
     git push -v;
   fi
