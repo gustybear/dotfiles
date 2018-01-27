@@ -235,7 +235,6 @@ gi() {
   fi
 }
 
-
 # fzf extensions
 # --------------------------------------------------------------------
 # cd to the project folders using fzf
