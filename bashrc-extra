@@ -243,7 +243,11 @@ fpr() {
   local dir
   dir=$(_fdrepo "${HOME}/Documents/* ${HOME}/.dotfiles" |
   fzf-tmux --preview-window up:75% \
-    --preview 'tree -C {} | head -200' --select-1 --exit-0)
+    --preview 'cd {}; echo "git summary";
+              LANG=C git -c color.status=false status -sb; 
+              echo;
+              tree -C {} | head -200' \
+    --select-1) &&
   cd ${dir}
 }
 # Safari history search
