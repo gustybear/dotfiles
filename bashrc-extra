@@ -1,0 +1,239 @@
+# .bashrc-extra for OS X and Ubuntu
+# ====================================================================
+# - zheng.iao@icloud.com
+
+# Repository management
+#-------------------------------------------------------------------------------
+# Given a path to a folder containing some git repos, compute the
+# names of the folders which actually do contain git repos.
+lsrepo() {
+  local dirname_cmd
+  if [ "$PLATFORM" == "Darwin" ]; then  # macOS
+    dirname_cmd="gdirname"
+  elif [ "$PLATFORM" == "Linux" ]; then  # Linux
+    dirname_cmd="dirname"
+  fi
+	# https://stackoverflow.com/questions/23356779/how-can-i-store-find-command-result-as-arrays-in-bash
+	git_directories=()
+	while IFS=  read -r -d $'\0'; do
+		git_directories+=("$REPLY")
+	done < <(find $1 -maxdepth 2 -type 'd' -name ".git" -print0 2>/dev/null)
+
+	for i in ${git_directories[*]}; do
+		if [[ ! -z $i ]]; then
+    		$dirname_cmd -z $i | xargs -0 -L1
+    fi
+  done
+}
+
+# Make a automatic commit if within a git repo.
+# The commitment message can be from the stdin or generated from git status.
+cmrepo() {
+  is_in_git_repo || return
+  if ! git diff-index --quiet $(git write-tree) -- || [ -n "$(git status --porcelain)" ]; then
+    echo "Attempt automatic commit ... ";
+    git add -A;
+    git status;
+    echo -n "Input the commit message: ";
+    read commit_message;
+    if "$commit_message" ; then 
+      git commit -m "$commit_message";
+    else
+      (LANG=C git -c color.status=false status \
+       | sed -n -e '1,/Changes to be committed:/ d' \
+         -e '1,1 d' \
+         -e '/^Untracked files:/,$ d' \
+         -e 's/^\s*//' \
+         -e '/./p' ) \
+       | git commit -F -;
+    fi
+    git push -v;
+  fi;
+}
+
+# Create a repository folder based on the input information
+inrepo() {
+  local answer project_type
+  local project_name person_name
+  local course_number course_semester course_year
+  local dir_name
+  local proj_path
+
+  echo -n "Is this a (r)esearch/(a)ward/(t)alk/(c)ourse/(s)tudent/(p)ersonal? "
+  old_stty_cfg=$(stty -g)
+  stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
+
+  if echo "$answer" | grep -iq "^r" ;then
+    project_type="project"
+  elif echo "$answer" | grep -iq "^a" ;then
+    project_type="award"
+  elif echo "$answer" | grep -iq "^t" ;then
+    project_type="talk"
+  elif echo "$answer" | grep -iq "^c" ;then
+    project_type="course"
+  elif echo "$answer" | grep -iq "^s" ;then
+    project_type="student"
+  elif echo "$answer" | grep -iq "^p" ;then
+    project_type="personal"
+  else
+    echo "invalid semester"
+    exit 1
+  fi
+
+  if echo "$answer" | grep -Eiq "^s|^p" ;then
+    echo -n "\nType in the name of the person(s): "
+    read person_name
+    person_name="${person_name// /_}"
+
+    echo -n "Type in the name of the project: "
+    read project_name
+    project_name="${project_name// /_}"
+
+  elif echo "$answer" | grep -Eiq "^c" ;then
+    echo -n "\nType in the course number: "
+    read course_name
+    course_name="${course_name// /_}"
+
+    echo -n "Type in the year: "
+    read course_year
+    course_year="${course_year// /_}"
+
+    echo -n "Is this a (s)pring/s(u)mmer/(f)all course? "
+    old_stty_cfg=$(stty -g)
+    stty raw -echo ; semester=$(head -c 1) ; stty $old_stty_cfg
+
+    if echo "$semester" | grep -iq "^s" ;then
+      course_semester="spring"
+    elif echo "$semester" | grep -iq "^u" ;then
+      course_semester="summer"
+    elif echo "$semester" | grep -iq "^f" ;then
+      course_semester="fall"
+    else
+      echo "invalid semester"
+      exit 1
+    fi
+  elif echo "$answer" | grep -Eiq "^r|^a|^t" ;then
+    echo -n "\nType in the name of the project: "
+    read project_name
+    project_name="${project_name// /_}"
+  fi
+
+  if [[ -n "$course_name" ]]; then
+    dir_name="$project_type"_"$course_name"_"$course_year"_"$course_semester"
+  elif [[ -n "$person_name" ]]; then
+    dir_name="$project_type"_`date +%Y_%m_%d`_"$person_name"_"$project_name"
+  else
+    dir_name="$project_type"_`date +%Y_%m_%d`_"$project_name"
+  fi
+  dir_name="${dir_name%_}"
+
+  if [[ "$project_type" == "course" ]]; then
+    proj_path=$HOME/Documents/teaching/"$dir_name"
+    git_branch="course"
+  elif [[ "$project_type" == "personal" ]]; then
+    proj_path=$HOME/Documents/personal/"$dir_name"
+    git_branch="project"
+  elif [[ "$project_type" == "student" ]]; then
+    proj_path=$HOME/Documents/students/"$dir_name"
+    git_branch="project"
+  elif [[ ("$project_type" == "project") || ("$project_type" == "award") || ("$project_type" == "talk") ]]; then
+    proj_path=$HOME/Documents/research/"$dir_name"
+    git_branch="project"
+  fi
+
+  if [[ "$project_type" == "personal" ]]; then
+    mkdir -p "$proj_path"
+  else
+    git_repo="https://github.com/gustybear/templates.git"
+    git clone --depth=1 -b "$git_branch" "$git_repo" "$proj_path"
+    make --directory="$proj_path" init
+  fi
+}
+
+# Check repositories' status in a batch
+strepo() {
+  local repos=$(lsrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
+  for dir in ${repos};
+  do
+      echo "Entering ${dir}.";
+      echo "Checking status... ";
+      cd ${dir} && git status -sb;
+  done
+}
+
+# Pull update from remote repositories
+plrepo() {
+  local repos=$(lsrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
+  for dir in ${repos};
+  do
+      echo "Entering ${dir}.";
+      echo "Pulling from remote ...";
+      cd ${dir} && git pull;
+  done
+}
+
+# Commit local changes and push to remote {{{3
+uprepo() {
+  local repos=$(lsrepo "${HOME}/Documents/* ${HOME}/.dotfiles")
+  for dir in ${repos};
+  do
+      echo "Entering ${dir}.";
+      cd ${dir} && cmrepo;
+  done
+}
+
+# Update website {{{3
+upwb() {
+  local web="${HOME}/Documents/__websites"
+  local repos=$(lsrepo "${HOME}/Documents/*")
+  if [ -z  ${web} ]; then
+    for dir in ${repos};
+    do
+      (echo "Entering ${dir}."; make -C ${dir} publish_s3)
+    done
+  else
+    echo "Entering ${web}.";
+    make -C ${web} publish;
+  fi
+}
+
+
+# fzf extensions
+# --------------------------------------------------------------------
+
+# Zotero pdf search
+fzotero() {
+    local DIR open
+    declare -A already
+    DIR="${HOME}/Cloud/Zotero/cache/pdftotext"
+    mkdir -p "${DIR}"
+    if [ "$(uname)" = "Darwin" ]; then
+        open=open
+    else
+        open="gio open"
+    fi
+
+    {
+    ag -ag ".pdf$" "${HOME}/Cloud/Zotero/storage"; # fast, without pdftotext
+    ag -ag ".pdf$" "${HOME}/Cloud/Zotero/storage" \
+    | while read -r FILE; do
+        local EXPIRY HASH CACHE
+        HASH=$(shasum "$FILE" | cut -c 1-32)
+        # Remove duplicates (file that has same hash as already seen file)
+        [ ${already[$HASH]+abc} ] && continue # see https://stackoverflow.com/a/13221491
+        already[$HASH]=$HASH
+        EXPIRY=$(( 86400 + $RANDOM * 20 )) # 1 day (86400 seconds) plus some random
+        CMD="pdftotext -f 1 -l 1 '$FILE' - 2>/dev/null | tr \"\n\" \"_\" "
+        CACHE="$DIR/$HASH"
+        test -f "${CACHE}" && [ $(expr $(date +%s) - $(date -r "$CACHE" +%s)) -le $EXPIRY ] || eval "$CMD" > "${CACHE}"
+        echo -e "$FILE\t$(cat ${CACHE})"
+    done
+    } | fzf -e  -d '\t' \
+        --preview-window up:75% \
+        --preview '
+                v=$(echo {q} | tr " " "|");
+                echo {1} | grep -E "^|$v" -i --color=always;
+                pdftotext -f 1 -l 1 {1} - | grep -E "^|$v" -i --color=always' \
+        | awk 'BEGIN {FS="\t"; OFS="\t"}; {print "\""$1"\""}' \
+        | xargs $open > /dev/null 2> /dev/null
+}
