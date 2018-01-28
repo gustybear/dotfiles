@@ -1,6 +1,10 @@
 # .bashrc-extra for OS X and Ubuntu
 # ====================================================================
 # - zheng.iao@icloud.com
+# Completion
+if [ "$PLATFORM" = 'Darwin' ]; then
+  [ -f $(brew --prefix)/etc/bash_completion ] && . $(brew --prefix)/etc/bash_completion
+fi
 
 # Repository management
 #-------------------------------------------------------------------------------
@@ -277,8 +281,8 @@ fzotero() {
     fi
 
     {
-    ag -ag ".pdf$" "${HOME}/Cloud/Zotero/storage"; # fast, without pdftotext
-    ag -ag ".pdf$" "${HOME}/Cloud/Zotero/storage" \
+    ag -ag ".pdf$|.html$" "${HOME}/Cloud/Zotero/storage"; # fast, without pdftotext or html2text
+    ag -ag ".pdf$|.html$" "${HOME}/Cloud/Zotero/storage" \
     | while read -r FILE; do
         local EXPIRY HASH CACHE
         HASH=$(shasum "$FILE" | cut -c 1-32)
@@ -286,17 +290,21 @@ fzotero() {
         [ ${already[$HASH]+abc} ] && continue # see https://stackoverflow.com/a/13221491
         already[$HASH]=$HASH
         EXPIRY=$(( 86400 + $RANDOM * 20 )) # 1 day (86400 seconds) plus some random
-        CMD="pdftotext -f 1 -l 1 -layout '$FILE' - 2>/dev/null | tr \"\n\" \"_\" "
+        if [ "$(head -c 4 "$FILE")" == "%PDF" ]; then
+          CMD="pdftotext -f 1 -l 1 -layout '$FILE' - 2>/dev/null | tr \"\n\" \"_\" "
+        else
+          CMD="html2text -ascii -nobs '$FILE' - 2>/dev/null | tr \"\n\" \"_\" "
+        fi
         CACHE="$DIR/$HASH"
         test -f "${CACHE}" && [ $(expr $(date +%s) - $(date -r "$CACHE" +%s)) -le $EXPIRY ] || eval "$CMD" > "${CACHE}"
         echo -e "$FILE\t$(cat ${CACHE})"
     done
-    } | fzf-tmux -e  -d '\t' \
+    } | fzf -e -d '\t' \
         --preview-window up:75% \
         --preview '
                 v=$(echo {q} | tr " " "|");
-                echo {1} | grep -E -e "^" -e "$v" -i --color=always;
-                pdftotext -f 1 -l 1 -layout {1} - | grep -E -e "^" -e "$v" -i --color=always' \
+                echo {1} | grep -E -e "^" -e"$v" -i --color=always;
+                if [ "$(head -c 4 {1})" == "%PDF" ]; then pdftotext -f 1 -l 1 -layout {1} - ; else html2text -ascii -nobs {1} - ; fi | grep -E -e"^" -e"$v" -i --color=always' \
         | awk 'BEGIN {FS="\t"; OFS="\t"}; {print "\""$1"\""}' \
         | xargs $open > /dev/null 2> /dev/null
 }
