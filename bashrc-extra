@@ -241,6 +241,10 @@ gi() {
 
 # fzf extensions
 # --------------------------------------------------------------------
+# Use ~~ as the trigger sequence instead of the default **
+# the default seems to confilct bash-completon
+export FZF_COMPLETION_TRIGGER='~~'
+
 # cd to the project folders using fzf
 fpr() {
   local dir
