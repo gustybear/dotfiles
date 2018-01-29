@@ -257,6 +257,19 @@ fpr() {
     --select-1) &&
   cd ${dir}
 }
+
+# Todo.sh task search
+ftodo() {
+  local out task key email
+  todo.sh ls | awk '$1~/^[0-9]+$/' |
+  fzf-tmux --ansi --multi --no-sort --reverse \
+    --bind "ctrl-o:execute:
+        (sed 's#.*(\(message://[^)]\{0,\}\)).*#\1#' <<< {} |
+        xargs open -a Mail) << 'FZF-EOF'
+        {}
+        FZF-EOF"
+}
+
 # Safari history search
 fsafari() {
   local cols sep
@@ -269,7 +282,7 @@ fsafari() {
     "select substr(id, 1, $cols), url
      from history_items order by visit_count_score desc" |
   awk -F $sep '{printf "%-'$cols's  \x1b[36m%s\x1b[m\n", $1, $2}'  |
-  fzf-tmux --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs open
+  fzf-tmux --ansi --multi | sed 's#.*\(https*://\)#\1#' \"{}\" | xargs open
 }
 
 # Zotero pdf search
