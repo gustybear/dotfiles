@@ -6,3 +6,5 @@
 	email = zheng.iao@icloud.com
 [include]
 	path = ~/.githubconfig
+[push]
+	default = simple
