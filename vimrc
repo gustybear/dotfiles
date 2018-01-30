@@ -360,6 +360,9 @@ if has('nvim')
   tnoremap <a-b> <esc>b
   tnoremap <a-d> <esc>d
   tnoremap <a-f> <esc>f
+  set inccommand=nosplit
+  let g:python_host_prog = $HOME.'/.local/share/virtualenvs/neovim2/bin/python'
+  let g:python3_host_prog = $HOME.'/.local/share/virtualenvs/neovim3/bin/python'
 endif
 
 " ----------------------------------------------------------------------------
