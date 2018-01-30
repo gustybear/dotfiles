@@ -363,6 +363,7 @@ if has('nvim')
   set inccommand=nosplit
   let g:python_host_prog = $HOME.'/.local/share/virtualenvs/neovim2/bin/python'
   let g:python3_host_prog = $HOME.'/.local/share/virtualenvs/neovim3/bin/python'
+    let g:ruby_host_prog = 'rvm system do neovim-ruby-host'
 endif
 
 " ----------------------------------------------------------------------------
