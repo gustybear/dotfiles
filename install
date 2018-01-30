@@ -9,7 +9,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 
 BASE=$(pwd)
 touch bashrc-extra
-for rc in *rc *profile tmux.conf agignore rubocop.yml todo; do
+for rc in *rc *profile tmux.conf agignore rubocop.yml; do
   mkdir -pv bak
   [ -e ~/."$rc" ] && mv -v ~/."$rc" bak/."$rc"
   ln -sfv "$BASE/$rc" ~/."$rc"
@@ -19,6 +19,10 @@ done
 if [ ! -e ~/.git-prompt.sh ]; then
   curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
 fi
+
+# todo
+mkdir -p ~/.todo
+ln -svf $BASE/todoconfig ~/.todo/config
 
 # scripts
 mkdir -p ~/bin
@@ -39,7 +43,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew install \
     fd ag ripgrep ant cmus coreutils cscope exiftool doxygen liboauth \
     fish git graphviz imagemagick leiningen sbt \
-    hugo bash-completion html2text pdftotext \
+    hugo bash-completion html2text \
     maven ranger tree neovim wget zsh jq ruby python go highlight reattach-to-user-namespace
   brew install gnuplot --with-qt@5.7
 
