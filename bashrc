@@ -1,7 +1,7 @@
 # .bashrc for OS X and Ubuntu
 # ====================================================================
-# - https://github.com/junegunn/dotfiles
-# - junegunn.c@gmail.com
+# - https://github.com/gustybear/dotfiles
+# - zheng.iao@icloud.com
 
 # System default
 # --------------------------------------------------------------------
@@ -41,10 +41,10 @@ export HISTTIMEFORMAT="%Y/%m/%d %H:%M:%S:   "
 [ -z "$TMPDIR" ] && TMPDIR=/tmp
 
 ### Global
-export GOPATH=~/gosrc
+export GOPATH=~/Documents/gosrc
 mkdir -p $GOPATH
 if [ -z "$PATH_EXPANDED" ]; then
-  export PATH=~/bin:~/ruby:/opt/bin:/usr/local/bin:/usr/local/share/python:$GOPATH/bin:/usr/local/opt/go/libexec/bin:$PATH
+  export PATH=~/.local/bin:/opt/bin:/usr/local/bin:/usr/local/share/python:$GOPATH/bin:/usr/local/opt/go/libexec/bin:$PATH
   export PATH_EXPANDED=1
 fi
 export EDITOR=vim
@@ -432,10 +432,10 @@ if [ -n "$TMUX_PANE" ]; then
   # Bind CTRL-X-CTRL-T to tmuxwords.sh
   bind '"\C-x\C-t": "$(fzf_tmux_words)\e\C-e\er"'
 
-elif [ -d ~/github/iTerm2-Color-Schemes/ ]; then
+elif [ -d ~/Documents/github/iTerm2-Color-Schemes/ ]; then
   ftheme() {
     local base
-    base=~/github/iTerm2-Color-Schemes
+    base=~/Documents/github/iTerm2-Color-Schemes
     $base/tools/preview.rb "$(
       ls {$base/schemes,~/.vim/plugged/seoul256.vim/iterm2}/*.itermcolors | fzf)"
   }
@@ -490,7 +490,7 @@ c() {
 
 # so - my stackoverflow favorites
 so() {
-  $BASE/bin/stackoverflow-favorites |
+  $BASE/.local/bin/stackoverflow-favorites |
     fzf --ansi --reverse --with-nth ..-2 --tac --tiebreak index |
     awk '{print $NF}' | while read -r line; do
       open "$line"

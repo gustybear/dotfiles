@@ -1,6 +1,6 @@
 " vim: set foldmethod=marker foldlevel=0 nomodeline:
 " ============================================================================
-" .vimrc of Junegunn Choi {{{
+" .vimrc of Yao Zheng {{{
 " ============================================================================
 
 " Vim 8 defaults
@@ -1409,7 +1409,7 @@ xmap <Leader>ga   <Plug>(LiveEasyAlign)
 " ----------------------------------------------------------------------------
 " vim-github-dashboard
 " ----------------------------------------------------------------------------
-let g:github_dashboard = { 'username': 'junegunn' }
+let g:github_dashboard = { 'username': 'gustybear' }
 
 " ----------------------------------------------------------------------------
 " indentLine
