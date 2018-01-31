@@ -7,28 +7,29 @@ if [ "$PLATFORM" = 'Darwin' ]; then
 fi
 
 # SSH-Agent
-_start_ssh_agent {
-     local SSH_ENV="$HOME/.ssh/environment"
-     echo "Initialising new SSH agent..."
-     /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
-     echo succeeded
-     chmod 600 "${SSH_ENV}"
-     . "${SSH_ENV}" > /dev/null
-     /usr/bin/ssh-add;
-     /usr/bin/ssh-add -K ~/.ssh/*.pem;
+_start_ssh_agent() {
+  local SSH_ENV="$HOME/.ssh/environment"
+  echo "Initialising new SSH agent..."
+  /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+  echo succeeded
+  chmod 600 "${SSH_ENV}"
+  . "${SSH_ENV}" > /dev/null
+  /usr/bin/ssh-add;
+  /usr/bin/ssh-add -K ~/.ssh/*.pem;
 }
 
-start_ssh_agent {
-if [ -f "${SSH_ENV}" ] ; then
-     . "${SSH_ENV}" > /dev/null
-     #ps ${SSH_AGENT_PID} doesn't work under cywgin
-     ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-         _start_ssh_agent;
-     }
-else
-     _start_ssh_agent;
-fi
-
+start_ssh_agent() {
+  local SSH_ENV="$HOME/.ssh/environment"
+  if [ -f "${SSH_ENV}" ] ; then
+    . "${SSH_ENV}" > /dev/null
+#ps ${SSH_AGENT_PID} doesn't work under cywgin
+    ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+    _start_ssh_agent;
+  }
+    else
+    _start_ssh_agent;
+  fi
+}
 
 # Repository management
 #-------------------------------------------------------------------------------
