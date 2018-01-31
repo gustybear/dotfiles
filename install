@@ -62,10 +62,17 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew install --HEAD universal-ctags
 
   brew cask install iterm2 xquartz spectacle flycut keycastr flux pdftotext
-
+  
+  echo 'if [ -n "$SSH_AGENT_PID" ]; then
+    ssh-add -D
+    ssh-agent -k > /dev/null 2>&1
+    unset SSH_AGENT_PID
+    unset SSH_AUTH_SOCK
+  fi' > ~/.logout
 else
   rm -f ~/.tmux.conf
   grep -v reattach-to-user-namespace tmux.conf > ~/.tmux.conf
+  echo 'pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch' > ~/.logout
 fi
 
 git config --global user.name "Yao Zheng"
