@@ -24,7 +24,11 @@ shopt -s checkwinsize
 [ -x /usr/bin/lesspipe    ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 ### Bash completion
-[ -f /etc/bash_completion ] && . /etc/bash_completion
+if [ "$PLATFORM" = 'Darwin' ]; then
+  [ -f $(brew --prefix)/etc/bash_completion ] && . $(brew --prefix)/etc/bash_completion
+else
+  [ -f /etc/bash_completion ] && . /etc/bash_completion
+fi
 
 ### Disable CTRL-S and CTRL-Q
 [[ $- =~ i ]] && stty -ixoff -ixon

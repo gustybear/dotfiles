@@ -68,11 +68,11 @@ if [ "$(uname -s)" = 'Darwin' ]; then
     ssh-agent -k > /dev/null 2>&1
     unset SSH_AGENT_PID
     unset SSH_AUTH_SOCK
-  fi' > ~/.logout
+  fi' > ~/.bash_logout
 else
   rm -f ~/.tmux.conf
   grep -v reattach-to-user-namespace tmux.conf > ~/.tmux.conf
-  echo 'pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch' > ~/.logout
+  echo 'pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch' > ~/.bash_logout
 fi
 
 git config --global user.name "Yao Zheng"
