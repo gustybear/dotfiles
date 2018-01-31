@@ -6,6 +6,30 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   [ -f $(brew --prefix)/etc/bash_completion ] && . $(brew --prefix)/etc/bash_completion
 fi
 
+# SSH-Agent
+_start_ssh_agent {
+     local SSH_ENV="$HOME/.ssh/environment"
+     echo "Initialising new SSH agent..."
+     /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+     echo succeeded
+     chmod 600 "${SSH_ENV}"
+     . "${SSH_ENV}" > /dev/null
+     /usr/bin/ssh-add;
+     /usr/bin/ssh-add -K ~/.ssh/*.pem;
+}
+
+start_ssh_agent {
+if [ -f "${SSH_ENV}" ] ; then
+     . "${SSH_ENV}" > /dev/null
+     #ps ${SSH_AGENT_PID} doesn't work under cywgin
+     ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+         _start_ssh_agent;
+     }
+else
+     _start_ssh_agent;
+fi
+
+
 # Repository management
 #-------------------------------------------------------------------------------
 # Given a path to a folder containing some git repos, compute the
@@ -325,3 +349,8 @@ fzotero() {
         | awk 'BEGIN {FS="\t"; OFS="\t"}; {print "\""$1"\""}' \
         | xargs $open > /dev/null 2> /dev/null
 }
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*

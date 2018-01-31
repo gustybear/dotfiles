@@ -258,10 +258,6 @@ cheap-bin() {
   [ -n "$PID" ] && jmap -dump:format=b,file=cheap.bin $PID
 }
 
-EXTRA=$BASE/bashrc-extra
-[ -f "$EXTRA" ] && source "$EXTRA"
-
-
 if [ "$PLATFORM" = 'Darwin' ]; then
   resizes() {
     mkdir -p out &&
@@ -555,3 +551,6 @@ if [[ $- =~ i ]]; then
 fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+EXTRA=$BASE/bashrc-extra
+[ -f "$EXTRA" ] && source "$EXTRA"
