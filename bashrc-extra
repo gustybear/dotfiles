@@ -81,8 +81,8 @@ cmrepo() {
     fi;
     echo "Commit message: "; echo "$commit_message"; echo;
     echo "$commit_message" | git commit -F -;
-    git push -v;
   fi
+  git push -v
 }
 
 # Create a prject folder based on the input information
