@@ -72,7 +72,6 @@ if [ "$(uname -s)" = 'Darwin' ]; then
 else
   rm -f ~/.tmux.conf
   grep -v reattach-to-user-namespace tmux.conf > ~/.tmux.conf
-  echo 'pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch' > ~/.bash_logout
 fi
 
 git config --global user.name "Yao Zheng"
