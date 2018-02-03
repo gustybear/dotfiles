@@ -9,7 +9,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 
 BASE=$(pwd)
 touch bashrc-extra
-for rc in *rc *profile tmux.conf agignore rubocop.yml; do
+for rc in *rc *profile tmux.conf agignore Renviron rubocop.yml; do
   mkdir -pv bak
   [ -e ~/."$rc" ] && mv -v ~/."$rc" bak/."$rc"
   ln -sfv "$BASE/$rc" ~/."$rc"
@@ -61,7 +61,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew tap universal-ctags/universal-ctags
   brew install --HEAD universal-ctags
 
-  brew cask install iterm2 xquartz spectacle flycut keycastr flux pdftotext
+  brew cask install iterm2 xquartz dropbox spectacle flycut keycastr flux pdftotext
   
   echo 'if [ -n "$SSH_AGENT_PID" ]; then
     ssh-add -D

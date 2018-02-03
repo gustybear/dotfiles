@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-matlab -nosplash -nodesktop "$@"
+${HOME}/Applications/MATLAB/R2017b/bin/matlab -nosplash -nodesktop "$@"
