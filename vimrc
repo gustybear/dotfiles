@@ -262,7 +262,7 @@ if exists('&fixeol')
 endif
 
 if has('gui_running')
-  set guifont=Menlo:h14 columns=80 lines=40
+  set guifont=Monaco:h18 columns=80 lines=40
   silent! colo seoul256-light
 else
   silent! colo seoul256
