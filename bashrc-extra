@@ -93,7 +93,7 @@ prit() {
   local dir_name
   local proj_path
 
-  echo -n "Is this a (r)esearch/(a)ward/(t)alk/(c)ourse/(s)tudent/(p)ersonal? "
+  echo -n "Is this a (r)esearch/(a)ward/(t)alk/s(e)rvice/(c)ourse/(s)tudent/(p)ersonal? "
   old_stty_cfg=$(stty -g)
   stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
 
@@ -103,6 +103,8 @@ prit() {
     project_type="award"
   elif echo "$answer" | grep -iq "^t" ;then
     project_type="talk"
+  elif echo "$answer" | grep -iq "^e" ;then
+    project_type="service"
   elif echo "$answer" | grep -iq "^c" ;then
     project_type="course"
   elif echo "$answer" | grep -iq "^s" ;then
@@ -169,6 +171,9 @@ prit() {
     git_branch="project"
   elif [[ "$project_type" == "student" ]]; then
     proj_path=$HOME/Documents/students/"$dir_name"
+    git_branch="project"
+  elif [[ "$project_type" == "services" ]]; then
+    proj_path=$HOME/Documents/services/"$dir_name"
     git_branch="project"
   elif [[ ("$project_type" == "project") || ("$project_type" == "award") || ("$project_type" == "talk") ]]; then
     proj_path=$HOME/Documents/research/"$dir_name"
