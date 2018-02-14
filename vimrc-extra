@@ -13,7 +13,9 @@ if has('nvim')
 endif
 
 " ----------------------------------------------------------------------------
-" linux/unix
+" ssh
 " ----------------------------------------------------------------------------
-if has('unix')
+let g:remoteSession = ($STY == "")
+if g:remoteSession
+  let g:clipboard = {}
 endif
