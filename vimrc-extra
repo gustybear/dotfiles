@@ -15,7 +15,18 @@ endif
 " ----------------------------------------------------------------------------
 " ssh
 " ----------------------------------------------------------------------------
-let g:remoteSession = ($STY == "")
+let g:remoteSession = ($SSH_CLIENT != "")
 if g:remoteSession
-  let g:clipboard = {}
+  let g:clipboard = {
+        \   'name': 'myClipboard',
+        \   'copy': {
+        \      '+': 'tmux load-buffer -',
+        \      '*': 'tmux load-buffer -',
+        \    },
+        \   'paste': {
+        \      '+': 'tmux save-buffer -',
+        \      '*': 'tmux save-buffer -',
+        \   },
+        \   'cache_enabled': 1,
+        \ }
 endif
