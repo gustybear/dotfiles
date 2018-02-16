@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+m_file=$1
+if [ -f "$m_file" ]; then
+  unset DISPLAY
+  nohup matlab -r $m_file;quit -nodisplay -nosplash -nojvm -nodesktop > & ! matlab.out < matlab_job_log.txt &
+fi

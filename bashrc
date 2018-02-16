@@ -45,10 +45,16 @@ export HISTTIMEFORMAT="%Y/%m/%d %H:%M:%S:   "
 [ -z "$TMPDIR" ] && TMPDIR=/tmp
 
 ### Global
+# --------------------------------------------------------------------
+if [ -f /etc/profile ]; then
+  PATH=""
+  PATH_EXPANDED=""
+  source /etc/profile
+fi
 export GOPATH=~/Documents/gosrc
 mkdir -p $GOPATH
 if [ -z "$PATH_EXPANDED" ]; then
-  export PATH=~/.local/bin:/opt/bin:/usr/local/bin:/usr/local/share/python:$GOPATH/bin:/usr/local/opt/go/libexec/bin:$PATH
+  export PATH=~/.local/bin:/usr/local/opt/python/libexec/bin:$GOPATH/bin:/usr/local/opt/go/libexec/bin:$PATH
   export PATH_EXPANDED=1
 fi
 export EDITOR=vim
