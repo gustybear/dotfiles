@@ -46,10 +46,12 @@ export HISTTIMEFORMAT="%Y/%m/%d %H:%M:%S:   "
 
 ### Global
 # --------------------------------------------------------------------
-if [ -f /etc/profile ]; then
-  PATH=""
-  PATH_EXPANDED=""
-  source /etc/profile
+if [ "$PLATFORM" = 'Darwin' ] && [ "$TERM" = "screen" ] && [ -n "$TMUX" ]; then
+  if [ -f /etc/profile ]; then
+    PATH=""
+    PATH_EXPANDED=""
+    source /etc/profile
+  fi
 fi
 export GOPATH=~/Documents/gosrc
 mkdir -p $GOPATH
