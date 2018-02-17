@@ -46,27 +46,34 @@ export HISTTIMEFORMAT="%Y/%m/%d %H:%M:%S:   "
 
 ### Global
 # --------------------------------------------------------------------
-if [ "$PLATFORM" = 'Darwin' ] && [ "$TERM" = "screen" ] && [ -n "$TMUX" ]; then
-  if [ -f /etc/profile ]; then
+export EDITOR=vim
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+### OS X
+if [ "$PLATFORM" = 'Darwin' ]; then
+  export COPYFILE_DISABLE=true
+  export GOPATH=~/Documents/gosrc
+  mkdir -p $GOPATH
+  if [ -f /etc/profile ] && [-n "$TMUX" ]; then
     PATH=""
     PATH_EXPANDED=""
     source /etc/profile
   fi
+  if [ -z "$PATH_EXPANDED" ]; then
+    export PATH=~/.local/bin:/usr/local/opt/python/libexec/bin:$GOPATH/bin:/usr/local/opt/go/libexec/bin:$PATH
+    export PATH_EXPANDED=1
+  fi
 fi
-export GOPATH=~/Documents/gosrc
-mkdir -p $GOPATH
-if [ -z "$PATH_EXPANDED" ]; then
-  export PATH=~/.local/bin:/usr/local/opt/python/libexec/bin:$GOPATH/bin:/usr/local/opt/go/libexec/bin:$PATH
-  export PATH_EXPANDED=1
-fi
-export EDITOR=vim
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-[ "$PLATFORM" = 'Darwin' ] ||
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:/usr/local/lib
 
-### OS X
-export COPYFILE_DISABLE=true
+### Linux
+if [ "$PLATFORM" = 'Linux' ]; then
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:/usr/local/lib
+  if [ -z "$PATH_EXPANDED" ]; then
+    export PATH=~/.local/bin:$GOPATH/bin:$PATH
+    export PATH_EXPANDED=1
+  fi
+fi
 
 # Aliases
 # --------------------------------------------------------------------
