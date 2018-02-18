@@ -55,7 +55,7 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   export COPYFILE_DISABLE=true
   export GOPATH=~/Documents/gosrc
   mkdir -p $GOPATH
-  if [ -f /etc/profile ] && [-n "$TMUX" ]; then
+  if [ -f /etc/profile ] && [ -n "$TMUX" ]; then
     PATH=""
     PATH_EXPANDED=""
     source /etc/profile
