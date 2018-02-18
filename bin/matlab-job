@@ -1,7 +1,34 @@
 #!/usr/bin/env bash
 
-m_file=$1
-if [ -f "$m_file" ]; then
-  unset DISPLAY
-  nohup matlab -r $m_file;quit -nodisplay -nosplash -nojvm -nodesktop > & ! matlab.out < matlab_job_log.txt &
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    -f|--file)
+    FILE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -e|--email)
+    EMAIL="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [ -f "$FILE" ]; then
+  if [ -z "$EMAIL" ]; then
+    cmd="matlab -nodisplay -nosplash -nojvm -nodesktop -r \"try, run('$(basename $FILE)'), cach exit(1), end, exit(0);\" > matlab.out 2> matlab.err"
+  else
+    cmd="matlab -nodisplay -nosplash -nojvm -nodesktop -r \"try, run('$(basename $FILE)'), cach exit(1), end, exit(0);\" > matlab.out 2> matlab.err; echo \"\" | mutt -s \"The job $FILE finishes\" -i matlab.out $EMAIL"
+  fi
+  cd $(dirname $FILE) && nohup bash -c "${cmd}" < /dev/null > /dev/null 2>&1 &
 fi

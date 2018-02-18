@@ -9,24 +9,13 @@ if has('nvim')
   let g:python_host_prog = $HOME.'/.local/share/virtualenvs/neovim2/bin/python'
   let g:python3_host_prog = $HOME.'/.local/share/virtualenvs/neovim3/bin/python'
   let g:ruby_host_prog = 'rvm system do neovim-ruby-host'
-  set clipboard+=unnamedplus
 endif
 
 " ----------------------------------------------------------------------------
 " ssh
 " ----------------------------------------------------------------------------
-let g:remoteSession = ($SSH_CLIENT != "")
-if g:remoteSession
-  let g:clipboard = {
-        \   'name': 'myClipboard',
-        \   'copy': {
-        \      '+': 'tmux load-buffer -',
-        \      '*': 'tmux load-buffer -',
-        \    },
-        \   'paste': {
-        \      '+': 'tmux save-buffer -',
-        \      '*': 'tmux save-buffer -',
-        \   },
-        \   'cache_enabled': 1,
-        \ }
+if !empty($SSH_CLIENT)
+  if !empty($DISPLAY)
+  set clipboard=unnamedplus
+  endif
 endif
