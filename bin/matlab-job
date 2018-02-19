@@ -26,9 +26,12 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 if [ -f "$FILE" ]; then
   if [ -z "$EMAIL" ]; then
-    cmd="matlab -nodisplay -nosplash -nojvm -nodesktop -r \"try, run('$(basename $FILE)'), cach exit(1), end, exit(0);\" > matlab.out 2> matlab.err"
+    cmd="matlab -nodisplay -nosplash -nojvm -nodesktop -r \"try, run('$FILE'), cach exit(1), end, exit(0);\" > $(dirname $FILE)/matlab.out 2> $(dirname $FILE)/matlab.err"
   else
-    cmd="matlab -nodisplay -nosplash -nojvm -nodesktop -r \"try, run('$(basename $FILE)'), cach exit(1), end, exit(0);\" > matlab.out 2> matlab.err; echo \"\" | mutt -s \"The job $FILE finishes\" -i matlab.out $EMAIL"
+    cmd="matlab -nodisplay -nosplash -nojvm -nodesktop -r \"try, run('$FILE'), cach exit(1), end, exit(0);\" > $(dirname $FILE)/matlab.out 2> $(dirname $FILE)/matlab.err; echo \"\" | mutt -s \"The job $FILE finishes\" -i $(dirname $FILE)/matlab.out $EMAIL"
   fi
-  cd $(dirname $FILE) && nohup bash -c "${cmd}" < /dev/null > /dev/null 2>&1 &
+  echo "Run job: \"${cmd}\""
+  nohup bash -c "${cmd}" < /dev/null > /dev/null 2>&1 &
+else
+  echo "$FILE does not exist."
 fi
