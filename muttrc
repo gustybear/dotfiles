@@ -27,8 +27,6 @@ set thorough_search      # strip headers and eval mimes before searching
 # Section: Sidebar Patch {{{1 --------------------------------------
 set sidebar_visible = yes
 set sidebar_width   = 24
-set sidebar_format = "%B%?F? [%F]?%* %?N?%N/?%S"
-set mail_check_stats
 color sidebar_new color221 color233
 
 # Section: Status Bar {{{1 -----------------------------------------
