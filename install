@@ -44,6 +44,8 @@ if [ "$(uname -s)" = 'Darwin' ]; then
     fd ag ripgrep ant cmus coreutils cscope exiftool doxygen liboauth \
     fish git graphviz imagemagick leiningen sbt \
     hugo bash-completion html2text \
+    isync msmtp notmuch lbdb terminal-notifier stow lmdb \
+    neomutt/homebrew-neomutt/neomutt --with-sidebar-patch --with-notmuch-patch --HEAD \
     maven ranger tree neovim wget zsh jq ruby python go highlight reattach-to-user-namespace
   brew install gnuplot --with-qt@5.7
 
