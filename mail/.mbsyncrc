@@ -60,12 +60,14 @@ Channel personal-folders
 Master :personal-remote:
 Slave :personal-local:
 # All folders except those defined above
-Patterns * !INBOX !Drafts !Archive !Sent !"Sent Messages" !Spam !Junk !Trash !"Deleted Messages"
+Patterns * !INBOX !Drafts !Archive !Sent !"Sent Messages" !Spam !Junk !Trash !"Deleted Messages" !Notes !"Deleted Items" !"Sent Items" Notes
+
 
 # Group the channels, so that all channels can be sync'd with `mbsync personal`
 Group personal
 Channel personal-inbox
 Channel personal-drafts
+Channel personal-archive
 Channel personal-sent
 Channel personal-spam
 Channel personal-trash
@@ -126,6 +128,7 @@ Patterns * !INBOX !Drafts !Archive !"[Gmail]/All Mail" !Sent !"[Gmail]/Sent Mail
 Group work
 Channel work-inbox
 Channel work-drafts
+Channel work-archive
 Channel work-sent
 Channel work-spam
 Channel work-trash
