@@ -13,14 +13,14 @@ Expunge Both
 SyncState *
 
 ########################################
-# FastMail
+# Personal
 ########################################
 IMAPAccount personal
-Host mail.messagingengine.com
-User alexpearce@fastmail.com
+Host imap.mail.me.com
+User markxlii@icloud.com
 # Get the account password from the system Keychain
-PassCmd "security find-generic-password -s isync-alexpearce-fastmail-com -w"
-AuthMechs *
+PassCmd "security find-generic-password -s isync-markxlii-icloud-com -w"
+AuthMechs LOGIN
 SSLType IMAPS
 
 # Remote storage (where the mail is retrieved from)
@@ -40,23 +40,27 @@ Channel personal-drafts
 Master :personal-remote:Drafts
 Slave :personal-local:Drafts
 
+Channel personal-archive
+Master :personal-remote:Archive
+Slave :personal-local:Archive
+
 Channel personal-sent
-Master :personal-remote:Sent
+Master :personal-remote:"Sent Messages"
 Slave :personal-local:Sent
 
 Channel personal-spam
-Master :personal-remote:Spam
+Master :personal-remote:Junk
 Slave :personal-local:Spam
 
 Channel personal-trash
-Master :personal-remote:Trash
+Master :personal-remote:"Deleted Messages"
 Slave :personal-local:Trash
 
 Channel personal-folders
 Master :personal-remote:
 Slave :personal-local:
 # All folders except those defined above
-Patterns * !INBOX !Archive !Drafts !Sent !Spam !Trash
+Patterns * !INBOX !Drafts !Archive !Sent !"Sent Messages" !Spam !Junk !Trash !"Deleted Messages"
 
 # Group the channels, so that all channels can be sync'd with `mbsync personal`
 Group personal
@@ -68,56 +72,61 @@ Channel personal-trash
 Channel personal-folders
 
 ########################################
-# CERN
+# Work
 ########################################
-IMAPAccount cern
-Host imap.cern.ch
-User apearce
+IMAPAccount work
+Host imap.gmail.com
+User yaozheng@hawaii.edu
 # Get the account password from the system Keychain
-PassCmd "security find-generic-password -s isync-alex-pearce-cern-ch -w"
-AuthMechs *
+PassCmd "security find-generic-password -s isync-yaozheng-hawaii-edu -w"
+AuthMechs LOGIN
 SSLType IMAPS
 
-IMAPStore cern-remote
-Account cern
+# Remote storage (where the mail is retrieved from)
+IMAPStore work-remote
+Account work
 
-MaildirStore cern-local
-Path ~/.mail/cern/
-Inbox ~/.mail/cern/Inbox
-SubFolders Verbatim
+# Local storage (where the mail is retrieved to)
+MaildirStore work-local
+Path ~/.mail/work/
+Inbox ~/.mail/work/Inbox
 
-Channel cern-inbox
-Master :cern-remote:INBOX
-Slave :cern-local:Inbox
+Channel work-inbox
+Master :work-remote:INBOX
+Slave :work-local:Inbox
 
-Channel cern-drafts
-Master :cern-remote:Drafts
-Slave :cern-local:Drafts
+Channel work-drafts
+Master :work-remote:Drafts
+Slave :work-local:Drafts
 
-Channel cern-sent
-Master :cern-remote:"Sent Items"
-Slave :cern-local:Sent
+Channel work-archive
+Master :work-remote:"[Gmail]/All Mail"
+Slave :work-local:Archive
 
-Channel cern-spam
-Master :cern-remote:"Junk E-Mail"
-Slave :cern-local:Spam
+Channel work-sent
+Master :work-remote:"[Gmail]/Sent Mail"
+Slave :work-local:Sent
 
-Channel cern-trash
-Master :cern-remote:"Deleted Items"
-Slave :cern-local:Trash
+Channel work-spam
+Master :work-remote:"[Gmail]/Spam"
+Slave :work-local:Spam
 
-Channel cern-folders
-Master :cern-remote:
-Slave :cern-local:
+Channel work-trash
+Master :work-remote:"[Gmail]/Trash"
+Slave :work-local:Trash
+
+Channel work-folders
+Master :work-remote:
+Slave :work-local:
 # All other folders, except those already defined above and special Outlook 
 # folders like Tasks
-Patterns * !INBOX !Archive !Calendar !Contacts* !"Conversation History" !"Deleted Items" !Drafts !Journal !"Junk E-Mail" !Notes !Outbox !Sent* !Spam !Tasks !Trash
+Patterns * !INBOX !Drafts !Archive !"[Gmail]/All Mail" !Sent !"[Gmail]/Sent Mail" !Spam !"[Gmail]/Spam" !Trash !"[Gmail]/Trash"
 
-# Group the channels, so that all channels can be sync'd with `mbsync cern`
-Group cern
-Channel cern-inbox
-Channel cern-drafts
-Channel cern-sent
-Channel cern-spam
-Channel cern-trash
-Channel cern-folders
+# Group the channels, so that all channels can be sync'd with `mbsync work`
+Group work
+Channel work-inbox
+Channel work-drafts
+Channel work-sent
+Channel work-spam
+Channel work-trash
+Channel work-folders
