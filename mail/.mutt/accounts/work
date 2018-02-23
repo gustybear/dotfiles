@@ -1,11 +1,11 @@
-set spoolfile = "+cern/Inbox"
-set from      = "alex.pearce@cern.ch"
+set spoolfile = "+work/Inbox"
+set from      = "yaozheng@hawaii.edu"
 unalternates    "*"
 set sendmail  = "/usr/local/bin/msmtp -a cern"
-set postponed = "+cern/Drafts"
+set postponed = "+work/Drafts"
 # Record outgoing emails
-set record    = "+cern/Sent"
-set trash     = "+cern/Trash"
+set record    = "+work/Sent"
+set trash     = "+work/Trash"
 
 macro index ,c "<change-folder>+personal/Inbox<enter>" "change accounts"
 
@@ -17,11 +17,12 @@ unmailboxes *
 # This command returning folders also in the above list is OK, mutt ignores
 # them
 mailboxes \
-  "+cern/Inbox" \
-  "+cern/Drafts" \
-  "+cern/Sent" \
-  "+cern/Spam" \
-  "+cern/Trash" \
-  `tree ~/.mail -d -I "cur|new|tmp|certs|.notmuch" -a -f -i | sed -n -E -e "s|^/Users/apearce/.mail/?||" -e "/^(cern|personal)(\/[a-z].+)?$/d" -e "/^(cern)/{p;}" | sed -E -e 's/(.*)/+"\1"/' | tr '\n' ' '`
+  "+work/Inbox" \
+  "+work/Drafts" \
+  "+work/Archive" \
+  "+work/Sent" \
+  "+work/Spam" \
+  "+work/Trash" \
+  `tree ~/.mail -d -I "cur|new|tmp|certs|.notmuch" -a -f -i | sed -n -E -e "s|^'$HOME'/.mail/?||" -e "/^(work|personal)(\/[a-z].+)?$/d" -e "/^(work)/{p;}" | sed -E -e 's/(.*)/+"\1"/' | tr '\n' ' '`
 
 # vi:syntax=muttrc
