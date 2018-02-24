@@ -140,7 +140,7 @@ unhdr_order *
 # Display headers in this order
 hdr_order from: to: cc: date: subject:
 
-set nm_default_uri = "notmuch:///Users/yao/.mail"
+set nm_default_uri = "notmuch://~/.mail"
 
 # Try plaintext first, but auto-open HTML if it's the only option
 alternative_order text/plain text/enriched text/html

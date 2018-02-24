@@ -5,12 +5,33 @@
 import json
 import sys
 import subprocess
+import os
+
+
+# find the path to the external exetutable
+def is_exe(fpath):
+    return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+
+def which(program):
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None
+
 
 # Tag given to new mail that not notification has been created for
 NEW_TAG = 'unnotified'
-MBSYNC = '/usr/local/bin/mbsync'
-NOTMUCH = '/usr/local/bin/notmuch'
-TERMINAL_NOTIFIER = '/usr/local/bin/terminal-notifier'
+MBSYNC = which('mbsync')
+NOTMUCH = which('notmuch')
+TERMINAL_NOTIFIER = which('terminal-notifier')
 
 
 # https://stackoverflow.com/a/10824420/596068
@@ -59,9 +80,9 @@ def notifications():
         message = first_line(m['body'], truncate=120)
         subprocess.call([
             TERMINAL_NOTIFIER,
+            '-message', '"{0}"'.format(message),
             '-title', '"{0}"'.format(title),
             '-subtitle', '"{0}"'.format(subtitle),
-            '-message', '"{0}"'.format(message),
             '-group', 'neomutt',
             '-appIcon', '/Applications/Mail.app/Contents/Resources/ApplicationIcon.icns',
             '-timeout', '5'
@@ -78,13 +99,16 @@ def new_mail(mailboxes):
         4. Assign all new messages the 'new' tag in the notmuch DB
         5. Display notifications for all 'new'-tagged messages in all inboxx
     """
-    subprocess.call('killall mbsync', shell=True)
-    subprocess.call([MBSYNC] + mailboxes)
-    subprocess.call([NOTMUCH, 'tag',
-                     '-{0}'.format(NEW_TAG),
-                     'tag:{0}'.format(NEW_TAG)])
-    subprocess.call([NOTMUCH, 'new'])
-    notifications()
+    if MBSYNC:
+        subprocess.call('killall mbsync', shell=True)
+        subprocess.call([MBSYNC] + mailboxes)
+    if NOTMUCH:
+        subprocess.call([NOTMUCH, 'tag',
+                         '-{0}'.format(NEW_TAG),
+                         'tag:{0}'.format(NEW_TAG)])
+        subprocess.call([NOTMUCH, 'new'])
+    if TERMINAL_NOTIFIER:
+        notifications()
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

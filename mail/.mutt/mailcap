@@ -1,8 +1,8 @@
 # Images
-image/*; $HOME/.local/bin/view_attachment.sh %s
+image/*; $HOME/.local/bin/view-attachment %s
 
 # PDFs
-application/pdf; $HOME/.local/bin/view_attachment.sh %s
+application/pdf; $HOME/.local/bin/view-attachment %s
 
 # HTML
 text/html; lynx -display_charset=utf-8 -dump %s; nametemplate=%s.html; copiousoutput

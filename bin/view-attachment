@@ -31,23 +31,23 @@
 #
 # Examples:  These are typical .mailcap entries which use this program.
 #
-#     Image/JPEG; /Users/vdanen/.mutt/view_attachment %s
-#     Image/PNG; /Users/vdanen/.mutt/view_attachment %s
-#     Image/GIF; /Users/vdanen/.mutt/view_attachment %s
+#     Image/JPEG; /Users/vdanen/.mutt/view-attachment %s
+#     Image/PNG; /Users/vdanen/.mutt/view-attachment %s
+#     Image/GIF; /Users/vdanen/.mutt/view-attachment %s
 #
-#     Application/PDF; /Users/vdanen/.mutt/view_attachment %s
+#     Application/PDF; /Users/vdanen/.mutt/view-attachment %s
 #
 #         #This HTML example passes the type because file doesn't always work and
 #         #there aren't always extensions.
 #
-#     text/html; /Users/vdanen/.mutt/view_attachment %s html
+#     text/html; /Users/vdanen/.mutt/view-attachment %s html
 #
 #         # If your Start OpenOffice.org.app is spelled with a space like this one, <--
 #         # then you'll need to precede the space with a \ .  I found that too painful
 #         # and renamed it with an _.
 #
-#     Application/vnd.ms-excel; /Users/vdanen/.mutt/view_attachment %s "-" '/Applications/OpenOffice.org1.1.2/Start_OpenOffice.org.app'
-#     Application/msword; /Users/vdanen/.mutt/view_attachment %s "-" '/Applications/OpenOffice.org1.1.2/Start_OpenOffice.org.app'
+#     Application/vnd.ms-excel; /Users/vdanen/.mutt/view-attachment %s "-" '/Applications/OpenOffice.org1.1.2/Start_OpenOffice.org.app'
+#     Application/msword; /Users/vdanen/.mutt/view-attachment %s "-" '/Applications/OpenOffice.org1.1.2/Start_OpenOffice.org.app'
 #
 #
 # Debugging:  If you have problems set debug to 'yes'.  That will cause a debug file
