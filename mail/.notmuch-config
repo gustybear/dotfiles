@@ -6,12 +6,12 @@
 # Root Maildir path
 
 [database]
-path=$HOME/.mail
+# use the default: $MAILDIR, set in bashrc
 
 [user]
 name=Yao Zheng
-primary_email=yaozheng@hawaii.edu
-other_email=zheng.iao@icloud.com;
+primary_email=zheng.iao@icloud.com
+other_email=yaozheng@hawaii.edu
 
 # Tag all new messages with 'unnotified'
 # Our notifier script will remove this tag once a notification has been made
