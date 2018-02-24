@@ -6,9 +6,9 @@
 # System default
 # --------------------------------------------------------------------
 
-export PLATFORM=$(uname -s)
+[ -f /etc/profile ] && PATH=""; PATH_EXPANDED=""; source /etc/profile
 [ -f /etc/bashrc ] && . /etc/bashrc
-
+export PLATFORM=$(uname -s)
 BASE=$(dirname $(readlink $BASH_SOURCE))
 
 # Options
@@ -24,9 +24,13 @@ shopt -s checkwinsize
 [ -x /usr/bin/lesspipe    ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 ### Bash completion
+### OS X
 if [ "$PLATFORM" = 'Darwin' ]; then
   [ -f $(brew --prefix)/etc/bash_completion ] && . $(brew --prefix)/etc/bash_completion
-else
+fi
+
+### Linux
+if [ "$PLATFORM" = 'Linux' ]; then
   [ -f /etc/bash_completion ] && . /etc/bash_completion
 fi
 
@@ -42,7 +46,7 @@ export HISTCONTROL=ignoreboth:erasedups
 export HISTSIZE=
 export HISTFILESIZE=
 export HISTTIMEFORMAT="%Y/%m/%d %H:%M:%S:   "
-# export MAILDIR=$HOME/.mail
+export MAILDIR=$HOME/.mail/personal
 [ -z "$TMPDIR" ] && TMPDIR=/tmp
 
 ### Global
@@ -56,14 +60,8 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   export COPYFILE_DISABLE=true
   export GOPATH=~/Documents/gosrc
   mkdir -p $GOPATH
-  if [ -f /etc/profile ] && [ -n "$TMUX" ]; then
-    PATH=""
-    PATH_EXPANDED=""
-    source /etc/profile
-  fi
   if [ -z "$PATH_EXPANDED" ]; then
-    export PATH=~/.local/bin:/usr/local/opt/python/libexec/bin:$GOPATH/bin:/usr/local/opt/go/libexec/bin:$PATH
-    export PATH_EXPANDED=1
+    export PATH=~/.local/bin:$(brew --prefix)/opt/python/libexec/bin:$GOPATH/bin:$(brew --prefix)/opt/go/libexec/bin:$PATH
   fi
 fi
 
@@ -72,9 +70,9 @@ if [ "$PLATFORM" = 'Linux' ]; then
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:/usr/local/lib
   if [ -z "$PATH_EXPANDED" ]; then
     export PATH=~/.local/bin:$GOPATH/bin:$PATH
-    export PATH_EXPANDED=1
   fi
 fi
+export PATH_EXPANDED=1
 
 # Aliases
 # --------------------------------------------------------------------

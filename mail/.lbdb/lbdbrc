@@ -2,8 +2,8 @@
 # Search for an address with `lbdbq <name>`
 METHODS="m_inmail m_ldap"
 
-# Use the `cern` LDAP database
-LDAP_NICKS="cern"
+# Use the `work` LDAP database
+LDAP_NICKS="work"
 
 # Sort the search results by name
 SORT_OUTPUT="name"
