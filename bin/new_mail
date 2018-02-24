@@ -47,7 +47,7 @@ def notifications():
             '--format=json',
             '--entire-thread=false',
             'tag:{0}'.format(NEW_TAG),
-            'folder:cern/Inbox',
+            'folder:work/Inbox',
             'folder:personal/Inbox'
         ])
     )

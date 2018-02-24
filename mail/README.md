@@ -48,7 +48,7 @@ in the `.mbsyncrc` file.
 ## Indexing
 
 To search in mutt with `<Esc>X`, the `notmuch` index needs to be built.
-Run `notmuch setup`, point it to `~/.mail/cern`, and then run `notmuch new`.
+Run `notmuch setup`, point it to `~/.mail/work`, and then run `notmuch new`.
 
 ## Synchronising periodically
 

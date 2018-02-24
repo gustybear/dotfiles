@@ -31,7 +31,7 @@ macro index,pager s "<save-message>?<toggle-mailboxes>" "move a message to a mai
 # Send the pager contents to urlview
 macro index,pager \cb <pipe-entry>"urlview"<enter> "Follow links with urlview"
 
-macro index O "<shell-escape>mbsync personal-inbox cern-inbox<return>" "Run mbsync for inboxes"
+macro index O "<shell-escape>mbsync personal-inbox work-inbox<return>" "Run mbsync for inboxes"
 # On my computer, the key combination ctrl+shift+o gives the character Ø
 macro index Ø "<shell-escape>mbsync -a<return>" "Run mbsync for everything"
 

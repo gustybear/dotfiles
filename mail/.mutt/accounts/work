@@ -1,7 +1,7 @@
 set spoolfile = "+work/Inbox"
 set from      = "yaozheng@hawaii.edu"
 unalternates    "*"
-set sendmail  = "/usr/local/bin/msmtp -a cern"
+set sendmail  = "/usr/local/bin/msmtp -a work"
 set postponed = "+work/Drafts"
 # Record outgoing emails
 set record    = "+work/Sent"
@@ -11,7 +11,7 @@ macro index ,c "<change-folder>+personal/Inbox<enter>" "change accounts"
 
 # Clear any previously defined mailboxes
 unmailboxes *
-# Use all folder names that begin with cern/<capital letter>, prefixing them
+# Use all folder names that begin with work/<capital letter>, prefixing them
 # with a plus sign and formatting them on a single line as that's the format
 # `mailboxes` expects
 # This command returning folders also in the above list is OK, mutt ignores
