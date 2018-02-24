@@ -6,8 +6,9 @@
 # System default
 # --------------------------------------------------------------------
 
-[ -f /etc/profile ] && PATH=""; PATH_EXPANDED=""; source /etc/profile
+[ -f /etc/profile ] && [ "$PLATFORM" != 'Darwin' ] || PATH="" && source /etc/profile
 [ -f /etc/bashrc ] && . /etc/bashrc
+export PATH_EXPANDED=""
 export PLATFORM=$(uname -s)
 BASE=$(dirname $(readlink $BASH_SOURCE))
 
@@ -21,7 +22,7 @@ shopt -s histappend
 shopt -s checkwinsize
 
 ### Better-looking less for binary files
-[ -x /usr/bin/lesspipe    ] && eval "$(SHELL=/bin/sh lesspipe)"
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 ### Bash completion
 ### OS X
@@ -46,7 +47,7 @@ export HISTCONTROL=ignoreboth:erasedups
 export HISTSIZE=
 export HISTFILESIZE=
 export HISTTIMEFORMAT="%Y/%m/%d %H:%M:%S:   "
-export MAILDIR=$HOME/.mail/personal
+export MAILDIR=$HOME/.mail
 [ -z "$TMPDIR" ] && TMPDIR=/tmp
 
 ### Global
