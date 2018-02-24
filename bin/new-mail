@@ -80,9 +80,9 @@ def notifications():
         message = first_line(m['body'], truncate=120)
         subprocess.call([
             TERMINAL_NOTIFIER,
-            '-message', '"{0}"'.format(message),
-            '-title', '"{0}"'.format(title),
-            '-subtitle', '"{0}"'.format(subtitle),
+            '-message', '"{0}"'.format(message.encode('utf-8')),
+            '-title', '"{0}"'.format(title.encode('utf-8')),
+            '-subtitle', '"{0}"'.format(subtitle.encode('utf-8')),
             '-group', 'neomutt',
             '-appIcon', '/Applications/Mail.app/Contents/Resources/ApplicationIcon.icns',
             '-timeout', '5'
