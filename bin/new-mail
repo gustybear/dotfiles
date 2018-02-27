@@ -100,7 +100,7 @@ def new_mail(mailboxes):
         5. Display notifications for all 'new'-tagged messages in all inboxx
     """
     if MBSYNC:
-        subprocess.call('killall mbsync', shell=True)
+        subprocess.call('if pgrep mysync &> /dev/null ; then killall mysync ; fi', shell=True)
         subprocess.call([MBSYNC] + mailboxes)
     if NOTMUCH:
         subprocess.call([NOTMUCH, 'tag',

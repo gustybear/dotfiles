@@ -2,7 +2,7 @@ set spoolfile = "+personal/Inbox"
 set from      = "zheng.iao@icloud.com"
 # Can also recieve mail for these addresses
 alternates      ^markxlii@icloud.com$
-set sendmail  = "/usr/local/bin/msmtp -a personal"
+set sendmail  = "`which msmtp` -a personal"
 set mbox      = "+personal/Archive"
 set postponed = "+personal/Drafts"
 # Record outgoing emails

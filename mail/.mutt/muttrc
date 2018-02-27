@@ -22,6 +22,9 @@ set attribution = "On %d, %n <%a> wrote:"
 
 # Use notmuch-addrlookup to query for contacts
 set query_command = "notmuch-addrlookup --mutt '%s'"
+# Use tab to complete query
+bind editor <Tab> complete-query
+bind editor ^T    complete
 # Don't mark unread messages as 'old' when leaving a mailbox
 unset mark_old
 # Don't confirm deletions
@@ -140,7 +143,7 @@ unhdr_order *
 # Display headers in this order
 hdr_order from: to: cc: date: subject:
 
-set nm_default_uri = "notmuch://~/.mail"
+set nm_default_uri = "notmuch://${HOME}/.mail"
 
 # Try plaintext first, but auto-open HTML if it's the only option
 alternative_order text/plain text/enriched text/html

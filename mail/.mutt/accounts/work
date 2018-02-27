@@ -1,7 +1,7 @@
 set spoolfile = "+work/Inbox"
 set from      = "yaozheng@hawaii.edu"
 unalternates    "*"
-set sendmail  = "/usr/local/bin/msmtp -a work"
+set sendmail  = "`which msmtp` -a work"
 set postponed = "+work/Drafts"
 # Record outgoing emails
 set record    = "+work/Sent"
