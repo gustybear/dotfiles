@@ -6,7 +6,8 @@
 # Root Maildir path
 
 [database]
-# use the default: $MAILDIR, set in bashrc
+# if not set, use the default: $MAILDIR
+path=/Users/yao/.mail
 
 [user]
 name=Yao Zheng
