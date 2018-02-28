@@ -47,7 +47,7 @@ export HISTCONTROL=ignoreboth:erasedups
 export HISTSIZE=
 export HISTFILESIZE=
 export HISTTIMEFORMAT="%Y/%m/%d %H:%M:%S:   "
-# export MAILDIR=$HOME/.mail
+export MAILDIR=$HOME/.mail
 [ -z "$TMPDIR" ] && TMPDIR=/tmp
 
 ### Global
