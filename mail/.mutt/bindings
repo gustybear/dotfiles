@@ -40,6 +40,6 @@ macro index ,o "<shell-escape>mbsync personal-inbox work-inbox<return>" "Run mbs
 macro index ,O "<shell-escape>mbsync -a<return>" "Run mbsync for everything"
 
 # notmuch search
-macro index ,x "<vfolder-from-query>"
+macro index ,/ "<vfolder-from-query>"
 
 # vi:syntax=muttrc
