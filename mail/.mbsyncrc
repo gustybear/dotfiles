@@ -98,7 +98,7 @@ Master :work-remote:INBOX
 Slave :work-local:Inbox
 
 Channel work-drafts
-Master :work-remote:Drafts
+Master :work-remote:"[Gmail]/Drafts"
 Slave :work-local:Drafts
 
 Channel work-archive
@@ -122,7 +122,7 @@ Master :work-remote:
 Slave :work-local:
 # All other folders, except those already defined above and special Outlook 
 # folders like Tasks
-Patterns * !INBOX !Drafts !Archive !"[Gmail]/All Mail" !Sent !"[Gmail]/Sent Mail" !Spam !"[Gmail]/Spam" !Trash !"[Gmail]/Trash"
+Patterns * !INBOX !Drafts !"[Gmail]/Drafts" !Archive !"[Gmail]/All Mail" !Sent !"[Gmail]/Sent Mail" !Spam !"[Gmail]/Spam" !Trash !"[Gmail]/Trash"
 
 # Group the channels, so that all channels can be sync'd with `mbsync work`
 Group work

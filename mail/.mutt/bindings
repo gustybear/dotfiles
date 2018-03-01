@@ -29,7 +29,7 @@ bind attach <return> view-mailcap
 macro index ,a "<tag-pattern>~N<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" "mark all new as read"
 
 # Mark messages as read and 'Save' messages to another mailbox (what mutt calls 'moving')
-macro index,pager s "<tag-pattern>~N<enter><tag-prefix><clear-flag>N<untag-pattern>?<enter><save-message>?<toggle-mailboxes>" "move a message to a mailbox"
+macro index,pager s "<save-message>?<toggle-mailboxes>" "move a message to a mailbox"
 
 # Send the pager contents to urlview
 macro index,pager ,b <pipe-entry>"urlview"<enter> "Follow links with urlview"
