@@ -15,6 +15,12 @@ BASE=$(dirname $(readlink $BASH_SOURCE))
 # Options
 # --------------------------------------------------------------------
 
+### Change directory without cd (only available in bash 4)
+shopt -s autocd
+
+### Autocorrect directory name when cd
+shopt -s cdspell
+
 ### Append to the history file
 shopt -s histappend
 

@@ -19,3 +19,8 @@ if !empty($SSH_CLIENT)
   set clipboard=unnamedplus
   endif
 endif
+
+" ----------------------------------------------------------------------------
+" for demo
+" ----------------------------------------------------------------------------
+autocmd BufRead *.v set foldmethod=marker | normal zM

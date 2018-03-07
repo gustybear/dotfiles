@@ -36,6 +36,24 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   stsagent
 fi
 
+# Alias
+#-------------------------------------------------------------------------------
+
+if [ "$PLATFORM" = 'Darwin' ]; then
+# Desktop Programs
+  alias photoshop="open -a /Applications/Adobe\ Photoshop\ CC\ 2018/Adobe\ Photoshop\ CC\ 2018.app"
+  alias acrobat="open -a /Applications/Adobe\ Acrobat\ DC/Adobe\ Acrobat.app"
+
+# Show/hide hidden files (for Mac OS X Mavericks)
+  alias showhidden="defaults write com.apple.finder AppleShowAllFiles TRUE"
+  alias hidehidden="defaults write com.apple.finder AppleShowAllFiles FALSE"
+
+# Get rid of those pesky .DS_Store files recursively
+  alias dsclean='find . -type f -name .DS_Store -delete'
+
+# Flush your dns cache
+  alias flush='dscacheutil -flushcache'
+fi
 # Repository management
 #-------------------------------------------------------------------------------
 # Given a path to a folder containing some git repos, compute the
