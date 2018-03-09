@@ -49,7 +49,10 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   alias hidehidden="defaults write com.apple.finder AppleShowAllFiles FALSE"
 
 # Get rid of those pesky .DS_Store files recursively
-  alias dsclean='find . -type f -name .DS_Store -delete'
+  alias dsclean='find . -type f -name .DS_Store -exec rm -f {} \;'
+
+# Get rid of those pesky .DS_Store files recursively
+  alias dlclean='rm -rf ~/Downloads/*'
 
 # Flush your dns cache
   alias flush='dscacheutil -flushcache'
