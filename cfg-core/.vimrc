@@ -1753,7 +1753,7 @@ autocmd vimrc BufEnter *.txt call s:helptab()
 " ============================================================================
 " LOCAL VIMRC {{{
 " ============================================================================
-let s:local_vimrc = fnamemodify(resolve(expand('<sfile>')), ':p:h').'/vimrc-extra'
+let s:local_vimrc = fnamemodify(resolve(expand('<sfile>')), ':p:h').'../cfg-local/vimrc-local'
 if filereadable(s:local_vimrc)
   execute 'source' s:local_vimrc
 endif

@@ -486,7 +486,7 @@ fs() {
 }
 
 # Z integration
-source "$BASE/z.sh"
+source "$HOME/.local/bin/z.sh"
 unalias z 2> /dev/null
 z() {
   [ $# -gt 0 ] && _z "$*" && return
@@ -592,5 +592,5 @@ fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-EXTRA=$BASE/bashrc-extra
-[ -f "$EXTRA" ] && source "$EXTRA"
+LOCAL=$BASE/cfg-local/bashrc-local
+[ -f "$LOCAL" ] && source "$LOCAL"

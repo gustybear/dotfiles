@@ -31,10 +31,15 @@ if [ "$(uname -s)" = 'Darwin' ]; then
 
   # FZF
   brew install fd ag ripgrep jq highlight html2text
+  brew install --HEAD https://raw.githubusercontent.com/junegunn/blsd/master/blsd.rb
   brew cask install pdftotext
+  if [ ! -e ~/.local/bin/z.sh ]; then
+    curl https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.local/bin/z.sh
+  fi
 
   # VIM
-  brew install neovim cscope universal-ctags --HEAD
+  brew install neovim cscope
+  brew install --HEAD universal-ctags
   gem install gem-ctags
   gem ctags
 
@@ -51,43 +56,27 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew cask install iterm2 xquartz dropbox spectacle flycut keycastr flux
 fi
 
-# blsd
-command -v blsd > /dev/null ||
-  (bash <(curl -fL https://raw.githubusercontent.com/junegunn/blsd/master/install) && mv blsd ~/.local/bin)
+# bin
+mkdir -p ~/.local/bin
+stow --no-folding -t ~/.local/bin -d $BASE/bin
+
+# cfg-core
+stow --no-folding -t $BASE/cfg-core
 
 # git-prompt
 if [ ! -e ~/.git-prompt.sh ]; then
   curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
 fi
 
-# RC files
-touch bashrc-extra
-for rc in *rc *profile tmux.conf agignore Renviron rubocop.yml; do
-  mkdir -pv bak
-  [ -e ~/."$rc" ] && mv -v ~/."$rc" bak/."$rc"
-  ln -sfv "$BASE/$rc" ~/."$rc"
-done
+# vim and nvim
+export GIT_SSL_NO_VERIFY=true
+mkdir -p ~/.vim/autoload
+curl --insecure -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
 
-# todo
-mkdir -p ~/.todo
-ln -svf $BASE/todoconfig ~/.todo/config
+mkdir -p ~/.config/nvim/autoload
+ln -sf ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/
 
-# scripts
-mkdir -p ~/.local/bin
-for bin in $BASE/bin/*; do
-  ln -svf "$bin" ~/.local/bin
-done
+vim +PlugInstall +qall
 
-# leiningen
-mkdir -p ~/.lein
-ln -sfv "$BASE/profiles.clj" ~/.lein/
-
-
-if [ "$(uname -s)" = 'Linux' ]; then
-  rm -f ~/.tmux.conf
-  grep -v reattach-to-user-namespace tmux.conf > ~/.tmux.conf
-fi
-
+# tmux
 tmux source-file ~/.tmux.conf
-
-./install-vim
