@@ -73,7 +73,7 @@ def notifications():
         ])
     )
     for message in messages:
-        m = filter(lambda x: x and 'headers' in x, flatten(message))[0]
+        m = next(filter(lambda x: x and 'headers' in x, flatten(message)))
         title = m['headers']['Subject']
         # Get the name from the 'First Last <user@email.tld>' format
         subtitle = m['headers']['From'].split('<')[0]
