@@ -315,12 +315,10 @@ fpr() {
 ftodo() {
   local out task key email
   todo.sh ls | awk '$1~/^[0-9]+$/' |
-  fzf-tmux --ansi --multi --no-sort --reverse \
-    --bind "ctrl-o:execute:
-        (sed 's#.*(\(message://[^)]\{0,\}\)).*#\1#' <<< {} |
-        xargs open -a Mail) << 'FZF-EOF'
-        {}
-        FZF-EOF"
+  fzf-tmux --ansi --multi --no-sort --reverse |
+  sed 's#.*: \(message://[^ ]\{0,\}\) .*#\1#' |
+  xargs open -a "Mail"
+          # xargs $open -a Mail
 }
 
 # Safari history search

@@ -1,24 +1,72 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Yao Zheng (zheng.iao@icloud.com)
 # 2011/05/25-
 
-# RC files
-
 cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
-
 BASE=$(pwd)
+
+if [ "$(uname -s)" = 'Darwin' ]; then
+  # Homebrew
+  [ -z "$(which brew)" ] &&
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+  # Taps (third-party repositories)
+  brew tap waltarix/homebrew-customs
+  brew tap universal-ctags/universal-ctags
+
+  # Languages
+  brew install ruby python go
+
+  # Shells
+  brew install zsh fish bash-completion
+
+  # Terminal
+  brew install waltarix/homebrew-customs/tmux reattach-to-user-namespace
+
+  # Email
+  brew install neomutt/homebrew-neomutt/neomutt \
+                 --with-sidebar-patch --with-notmuch-patch --HEAD \
+               isync msmtp notmuch lbdb terminal-notifier lmdb
+
+  # FZF
+  brew install fd ag ripgrep jq highlight html2text
+  brew cask install pdftotext
+
+  # VIM
+  brew install neovim cscope universal-ctags --HEAD
+  gem install gem-ctags
+  gem ctags
+
+  # Libraries
+  brew install liboauth
+
+  # Commandline software
+  brew install coreutils wget tree git stow dtrx \
+       ant leigingen sbt maven hugo \
+       exiftool doxygen graphviz imagemagick gnuplot --with-qt@5.7 \
+       ranger cmus
+
+  # Apps
+  brew cask install iterm2 xquartz dropbox spectacle flycut keycastr flux
+fi
+
+# blsd
+command -v blsd > /dev/null ||
+  (bash <(curl -fL https://raw.githubusercontent.com/junegunn/blsd/master/install) && mv blsd ~/.local/bin)
+
+# git-prompt
+if [ ! -e ~/.git-prompt.sh ]; then
+  curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
+fi
+
+# RC files
 touch bashrc-extra
 for rc in *rc *profile tmux.conf agignore Renviron rubocop.yml; do
   mkdir -pv bak
   [ -e ~/."$rc" ] && mv -v ~/."$rc" bak/."$rc"
   ln -sfv "$BASE/$rc" ~/."$rc"
 done
-
-# git-prompt
-if [ ! -e ~/.git-prompt.sh ]; then
-  curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
-fi
 
 # todo
 mkdir -p ~/.todo
@@ -34,49 +82,11 @@ done
 mkdir -p ~/.lein
 ln -sfv "$BASE/profiles.clj" ~/.lein/
 
-if [ "$(uname -s)" = 'Darwin' ]; then
-  # Homebrew
-  [ -z "$(which brew)" ] &&
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-  echo "Updating homebrew"
-  brew install \
-    fd ag ripgrep ant cmus coreutils cscope exiftool doxygen liboauth \
-    fish git graphviz imagemagick leiningen sbt \
-    hugo bash-completion html2text \
-    isync msmtp notmuch lbdb terminal-notifier stow lmdb \
-    neomutt/homebrew-neomutt/neomutt --with-sidebar-patch --with-notmuch-patch --HEAD \
-    maven ranger tree neovim wget zsh jq ruby python go highlight reattach-to-user-namespace
-  brew install gnuplot --with-qt@5.7
-
-  # Patched version of tmux
-  brew tap waltarix/homebrew-customs
-  brew install waltarix/homebrew-customs/tmux
-
-  command -v blsd > /dev/null ||
-    (bash <(curl -fL https://raw.githubusercontent.com/junegunn/blsd/master/install) && mv blsd ~/.local/bin)
-
-  # Create
-  gem install gem-ctags
-  gem ctags
-
-  brew tap universal-ctags/universal-ctags
-  brew install --HEAD universal-ctags
-
-  brew cask install iterm2 xquartz dropbox spectacle flycut keycastr flux pdftotext
-  
-  echo 'if [ -n "$SSH_AGENT_PID" ]; then
-    ssh-add -D
-    ssh-agent -k > /dev/null 2>&1
-    unset SSH_AGENT_PID
-    unset SSH_AUTH_SOCK
-  fi' > ~/.bash_logout
-else
+if [ "$(uname -s)" = 'Linux' ]; then
   rm -f ~/.tmux.conf
   grep -v reattach-to-user-namespace tmux.conf > ~/.tmux.conf
 fi
-
-git config --global user.name "Yao Zheng"
 
 tmux source-file ~/.tmux.conf
 
