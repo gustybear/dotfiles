@@ -526,7 +526,7 @@ c() {
 
 # so - my stackoverflow favorites
 so() {
-  $BASE/.local/bin/stackoverflow-favorites |
+  $BASE/../bin/stackoverflow-favorites |
     fzf --ansi --reverse --with-nth ..-2 --tac --tiebreak index |
     awk '{print $NF}' | while read -r line; do
       open "$line"
@@ -592,5 +592,5 @@ fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-LOCAL=$BASE/cfg-local/bashrc-local
+LOCAL=$BASE/../cfg-local/bashrc-local
 [ -f "$LOCAL" ] && source "$LOCAL"
