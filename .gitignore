@@ -31,3 +31,6 @@ Temporary Items
 cache
 cache-lock
 tmp
+
+# local configuration for bash an vim
+cfg-local/*
