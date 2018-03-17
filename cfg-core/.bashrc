@@ -78,19 +78,26 @@ export LC_ALL=en_US.UTF-8
 ### OS X
 if [ "$PLATFORM" = 'Darwin' ]; then
   export COPYFILE_DISABLE=true
-  export GOPATH=~/Documents/gosrc
+  export LOCALBIN=${HOME}/.local/bin
+  export GOPATH=${HOME}/.local/share/go
+  export GOROOT=$(brew --prefix)/opt/go
+  export PYTHONROOT=$(brew --prefix)/opt/python
+  export DROPBOX_DIR=${HOME}/Cloud/Dropbox
   mkdir -p $GOPATH
   if [ -z "$PATH_EXPANDED" ]; then
-    export PATH=~/.local/bin:$(brew --prefix)/opt/python/libexec/bin:$GOPATH/bin:$(brew --prefix)/opt/go/libexec/bin:$PATH
+    export PATH=${LOCALBIN}:$PYTHONROOT/libexec/bin:$GOPATH/bin:$GOROOT/libexec/bin:$PATH
   fi
 fi
 
 ### Linux
 if [ "$PLATFORM" = 'Linux' ]; then
-  export GOPATH=~/Documents/gosrc
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:/usr/local/lib
+  export LOCALBIN=${HOME}/.local/bin
+  export GOPATH=${HOME}/.local/share/go
+  export DROPBOX_DIR=${HOME}/Dropbox
+  mkdir -p $GOPATH
   if [ -z "$PATH_EXPANDED" ]; then
-    export PATH=~/.local/bin:$GOPATH/bin:/usr/lib/go-1.9/bin:$PATH
+    export PATH=~/.local/bin:$GOPATH/bin:$PATH
   fi
 fi
 export PATH_EXPANDED=1
