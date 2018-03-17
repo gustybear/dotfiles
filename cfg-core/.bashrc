@@ -103,6 +103,16 @@ if [ "$PLATFORM" = 'Linux' ]; then
 fi
 export PATH_EXPANDED=1
 
+# Prompt
+# --------------------------------------------------------------------
+### git-prompt
+__git_ps1() { :;}
+if [ -e ~/.git-prompt.sh ]; then
+  source ~/.git-prompt.sh
+fi
+PS1='\[\e[34m\]\u\[\e[1;32m\]@\[\e[0;33m\]\h\[\e[35m\]:\[\e[m\]\W\[\e[1;30m\]$(__git_ps1)\[\e[1;31m\]> \[\e[0m\]'
+
+
 # Aliases
 # --------------------------------------------------------------------
 
@@ -122,44 +132,15 @@ alias which='type -p'
 alias k5='kill -9 %%'
 alias gs='git status'
 alias gv='vim +GV +"autocmd BufWipeout <buffer> qall"'
-ext() {
-  ext-all --exclude .git --exclude target --exclude "*.log"
-}
-ext-all() {
-  local name=$(basename $(pwd))
-  cd ..
-  tar -cvzf "$name.tgz" $* --exclude "$name.tgz" "$name"
-  cd -
-  mv ../"$name".tgz .
-}
-temp() {
-  vim +"set buftype=nofile bufhidden=wipe nobuflisted noswapfile tw=${1:-0}"
-}
+alias gl='git log --graph --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
 
 if [ "$PLATFORM" = 'Darwin' ]; then
   alias tac='tail -r'
-  o() {
-    open --reveal "${1:-.}"
-  }
 fi
 
 ### Tmux
 alias tmux="tmux -2"
 alias tmuxls="ls $TMPDIR/tmux*/"
-tping() {
-  for p in $(tmux list-windows -F "#{pane_id}"); do
-    tmux send-keys -t $p Enter
-  done
-}
-tpingping() {
-  [ $# -ne 1 ] && return
-  while true; do
-    echo -n '.'
-    tmux send-keys -t $1 ' '
-    sleep 10
-  done
-}
-
 
 ### Colored ls
 if [ -x /usr/bin/dircolors ]; then
@@ -175,18 +156,55 @@ alias ber='bundle exec rake'
 alias be='bundle exec'
 
 
-# Prompt
+# Helper functions
 # --------------------------------------------------------------------
-### git-prompt
-__git_ps1() { :;}
-if [ -e ~/.git-prompt.sh ]; then
-  source ~/.git-prompt.sh
+### Prompt
+miniprompt() {
+  unset PROMPT_COMMAND
+  PS1="\[\e[38;5;168m\]> \[\e[0m\]"
+}
+
+### Navigation
+..cd() {
+  cd ..
+  cd "$@"
+}
+
+_parent_dirs() {
+  COMPREPLY=( $(cd ..; find . -mindepth 1 -maxdepth 1 -type d -print | cut -c3- | grep "^${COMP_WORDS[COMP_CWORD]}") )
+}
+
+complete -F _parent_dirs -o default -o bashdefault ..cd
+
+### File
+ext() {
+  ext-all --exclude .git --exclude target --exclude "*.log"
+}
+
+ext-all() {
+  local name=$(basename $(pwd))
+  cd ..
+  tar -cvzf "$name.tgz" $* --exclude "$name.tgz" "$name"
+  cd -
+  mv ../"$name".tgz .
+}
+
+if [ "$PLATFORM" = 'Darwin' ]; then
+  o() {
+    open --reveal "${1:-.}"
+  }
 fi
-PS1='\[\e[34m\]\u\[\e[1;32m\]@\[\e[0;33m\]\h\[\e[35m\]:\[\e[m\]\W\[\e[1;30m\]$(__git_ps1)\[\e[1;31m\]> \[\e[0m\]'
 
-# Tmux tile
-# --------------------------------------------------------------------
+### Vim
+viw() {
+  vim "$(which "$1")"
+}
 
+temp() {
+  vim +"set buftype=nofile bufhidden=wipe nobuflisted noswapfile tw=${1:-0}"
+}
+
+### Tmux
 tt() {
   if [ $# -lt 1 ]; then
     echo 'usage: tt <commands...>'
@@ -206,23 +224,25 @@ tt() {
   $SHELL -ci "$head; $tail"
 }
 
-
-# Shortcut functions
-# --------------------------------------------------------------------
-
-..cd() {
-  cd ..
-  cd "$@"
+tx() {
+  tmux splitw "$*; echo -n Press enter to finish.; read"
+  tmux select-layout tiled
+  tmux last-pane
 }
 
-_parent_dirs() {
-  COMPREPLY=( $(cd ..; find . -mindepth 1 -maxdepth 1 -type d -print | cut -c3- | grep "^${COMP_WORDS[COMP_CWORD]}") )
+tping() {
+  for p in $(tmux list-windows -F "#{pane_id}"); do
+    tmux send-keys -t $p Enter
+  done
 }
 
-complete -F _parent_dirs -o default -o bashdefault ..cd
-
-viw() {
-  vim "$(which "$1")"
+tpingping() {
+  [ $# -ne 1 ] && return
+  while true; do
+    echo -n '.'
+    tmux send-keys -t $1 ' '
+    sleep 10
+  done
 }
 
 csbuild() {
@@ -235,12 +255,6 @@ csbuild() {
   echo ${cmd: 0: ${#cmd} - 3}
   eval "${cmd: 0: ${#cmd} - 3}" > cscope.files &&
   cscope -b -q && rm cscope.files
-}
-
-tx() {
-  tmux splitw "$*; echo -n Press enter to finish.; read"
-  tmux select-layout tiled
-  tmux last-pane
 }
 
 gitzip() {
@@ -259,13 +273,6 @@ gitdiffb() {
   git log --graph \
   --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' \
   --abbrev-commit --date=relative $1..$2
-}
-
-alias gitv='git log --graph --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
-
-miniprompt() {
-  unset PROMPT_COMMAND
-  PS1="\[\e[38;5;168m\]> \[\e[0m\]"
 }
 
 repeat() {
