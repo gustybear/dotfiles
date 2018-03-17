@@ -593,7 +593,280 @@ if [[ $- =~ i ]]; then
   bind '"\C-g\C-r": "$(gr)\e\C-e\er"'
 fi
 
+# Creating or append git ignore by query gitignore.io
+git-add-ignore() {
+  result=$(curl "https://www.gitignore.io/api/$1" 2>/dev/null)
+
+  if [[ $result =~ ERROR ]]; then
+    echo "Query '$1' has no match. See a list of possible queries with 'gi list'"
+  elif [[ $1 == list ]]; then
+    echo "Possible search keywords: "
+    echo "$result"
+  else
+    echo "Iterms to add:"
+    echo "$result"
+    if [[ -f .gitignore ]]; then
+      result=`echo "$result" | \
+              grep -v -e "# Created by https://www.gitignore.io" \
+                      -e "# End of https://www.gitignore.io" `
+      echo ".gitignore already exists, appending"
+      echo "$result" >> .gitignore
+    else
+      echo "$result" > .gitignore
+    fi
+  fi
+}
+
+# Project Repository Management
+#-------------------------------------------------------------------------------
+# Given a path to a folder containing some git repos, compute the
+# names of the folders which actually do contain git repos.
+repo-find() {
+  local dirname_cmd
+  if [ "$PLATFORM" == "Darwin" ]; then  # macOS
+    dirname_cmd="gdirname"
+  elif [ "$PLATFORM" == "Linux" ]; then  # Linux
+    dirname_cmd="dirname"
+  fi
+	# https://stackoverflow.com/questions/23356779/how-can-i-store-find-command-result-as-arrays-in-bash
+	git_directories=()
+	while IFS=  read -r -d $'\0'; do
+		git_directories+=("$REPLY")
+	done < <(find $1 -maxdepth 2 -type 'd' -name ".git" -print0 2>/dev/null)
+
+	for i in ${git_directories[*]}; do
+		if [[ ! -z $i ]]; then
+    		$dirname_cmd -z $i | xargs -0 -L1
+    fi
+  done
+}
+
+# List all the git repos in the path.
+repo-ls() {
+    local path=$1
+    local repo
+    for repo in $(repo-find $path) ; do
+        echo ${repo} ":" $(git -C ${repo} symbolic-ref HEAD | sed -e "s/^refs\/heads\///")
+    done
+}
+
+# Make a automatic commit if within a git repo.
+# The commitment message can be from the stdin or generated from git status.
+repo-commit() {
+  local commit_message
+  is_in_git_repo || return
+  if ! git diff-index --quiet $(git write-tree) -- || [ -n "$(git status --porcelain)" ]; then
+    echo "Attempt automatic commit ... ";
+    git add -A;
+    git status -sb;
+    echo -n "Input the commit message: ";
+    read commit_message;
+    if [[ ! -n "$commit_message" ]]; then
+      commit_message=$(LANG=C git -c color.status=false status -s);
+    fi;
+    echo "Commit message: "; echo "$commit_message"; echo;
+    echo "$commit_message" | git commit -F -;
+  fi
+  git push -v
+}
+
+# Create a prject folder based on the input information
+prj-init() {
+  local answer project_type
+  local project_name person_name
+  local course_number course_semester course_year
+  local dir_name
+  local proj_path
+
+  echo -n "Is this a (r)esearch/(a)ward/(t)alk/s(e)rvice/(c)ourse/(s)tudent/(p)ersonal? "
+  old_stty_cfg=$(stty -g)
+  stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
+
+  if echo "$answer" | grep -iq "^r" ;then
+    project_type="project"
+  elif echo "$answer" | grep -iq "^a" ;then
+    project_type="award"
+  elif echo "$answer" | grep -iq "^t" ;then
+    project_type="talk"
+  elif echo "$answer" | grep -iq "^e" ;then
+    project_type="service"
+  elif echo "$answer" | grep -iq "^c" ;then
+    project_type="course"
+  elif echo "$answer" | grep -iq "^s" ;then
+    project_type="student"
+  elif echo "$answer" | grep -iq "^p" ;then
+    project_type="personal"
+  else
+    echo "invalid semester"
+    exit 1
+  fi
+
+  if echo "$answer" | grep -Eiq "^s|^p" ;then
+    echo -n "\nType in the name of the person(s): "
+    read person_name
+    person_name="${person_name// /_}"
+
+    echo -n "Type in the name of the project: "
+    read project_name
+    project_name="${project_name// /_}"
+
+  elif echo "$answer" | grep -Eiq "^c" ;then
+    echo -n "\nType in the course number: "
+    read course_name
+    course_name="${course_name// /_}"
+
+    echo -n "Type in the year: "
+    read course_year
+    course_year="${course_year// /_}"
+
+    echo -n "Is this a (s)pring/s(u)mmer/(f)all course? "
+    old_stty_cfg=$(stty -g)
+    stty raw -echo ; semester=$(head -c 1) ; stty $old_stty_cfg
+
+    if echo "$semester" | grep -iq "^s" ;then
+      course_semester="spring"
+    elif echo "$semester" | grep -iq "^u" ;then
+      course_semester="summer"
+    elif echo "$semester" | grep -iq "^f" ;then
+      course_semester="fall"
+    else
+      echo "invalid semester"
+      exit 1
+    fi
+  elif echo "$answer" | grep -Eiq "^r|^a|^t" ;then
+    echo -n "\nType in the name of the project: "
+    read project_name
+    project_name="${project_name// /_}"
+  fi
+
+  if [[ -n "$course_name" ]]; then
+    dir_name="$project_type"_"$course_name"_"$course_year"_"$course_semester"
+  elif [[ -n "$person_name" ]]; then
+    dir_name="$project_type"_`date +%Y_%m_%d`_"$person_name"_"$project_name"
+  else
+    dir_name="$project_type"_`date +%Y_%m_%d`_"$project_name"
+  fi
+  dir_name="${dir_name%_}"
+
+  if [[ "$project_type" == "course" ]]; then
+    proj_path=$HOME/Documents/teaching/"$dir_name"
+    git_branch="course"
+  elif [[ "$project_type" == "personal" ]]; then
+    proj_path=$HOME/Documents/personal/"$dir_name"
+    git_branch="project"
+  elif [[ "$project_type" == "student" ]]; then
+    proj_path=$HOME/Documents/students/"$dir_name"
+    git_branch="project"
+  elif [[ "$project_type" == "services" ]]; then
+    proj_path=$HOME/Documents/services/"$dir_name"
+    git_branch="project"
+  elif [[ ("$project_type" == "project") || ("$project_type" == "award") || ("$project_type" == "talk") ]]; then
+    proj_path=$HOME/Documents/research/"$dir_name"
+    git_branch="project"
+  fi
+
+  if [[ "$project_type" == "personal" ]]; then
+    mkdir -p "$proj_path"
+  else
+    git_repo="https://github.com/gustybear/templates.git"
+    git clone --depth=1 -b "$git_branch" "$git_repo" "$proj_path"
+    make --directory="$proj_path" init
+  fi
+}
+
+# Check project status in a batch
+prj-status() {
+  local current_dir=${PWD}
+  local repos=$(repo-find "${HOME}/Documents/* ${HOME}/.dotfiles")
+  for dir in ${repos};
+  do
+      echo "Checking status of ${dir}...";
+      cd ${dir} && git status -sb;
+  done
+  cd ${current_dir}
+}
+
+# Pull projects from remote
+prj-pull() {
+  local current_dir=${PWD}
+  local repos=$(repo-find "${HOME}/Documents/* ${HOME}/.dotfiles")
+  for dir in ${repos};
+  do
+      echo "Pulling updates of ${dir} from remote...";
+      cd ${dir} && git pull;
+  done
+  cd ${current_dir}
+}
+
+# Update projects to remote
+prj-update() {
+  local current_dir=${PWD}
+  local repos=$(repo-find "${HOME}/Documents/* ${HOME}/.dotfiles")
+  for dir in ${repos};
+  do
+      echo "Updating ${dir} to remote...";
+      cd ${dir} && cmrepo;
+  done
+  cd ${current_dir}
+}
+
+# Change to project directory using fzf
+prj-fzf() {
+  local dir
+  dir=$(repo-find "${HOME}/Documents/* ${HOME}/.dotfiles" |
+  fzf-tmux --preview-window up:75% \
+    --preview 'cd {}; echo "git summary";
+              LANG=C git -c color.status=false status -sb; 
+              echo;
+              tree -C {} | head -200' \
+    --select-1) &&
+  cd ${dir}
+}
+
+# Todo.sh task search
+todo-fzf() {
+  local todo_cmd
+  if [ "$PLATFORM" == "Darwin" ]; then  # macOS
+    todo_cmd="todo.sh"
+  elif [ "$PLATFORM" == "Linux" ]; then  # Linux
+    todo_cmd="todo-txt"
+  fi
+  local task
+  task=$($todo_cmd ls | awk '$1~/^[0-9]+$/' | 
+        fzf-tmux --ansi --select-1 --exit-0 \
+            --bind "alt-enter:execute:
+            (sed 's#.*: \(message://[^ ]\{0,\}\) .*#\1#' <<< {} |
+              xargs open -a Mail) << 'FZF-EOF'
+                                      {}
+                                      FZF-EOF")
+  echo $task
+}
+
+# Update website {{{3
+site-update() {
+  local current_dir=${PWD}
+  local web="${HOME}/Documents/__websites"
+  local repos=$(repo-find "${HOME}/Documents/*")
+  if [ -z  ${web} ]; then
+    echo "No website folder"
+    for dir in ${repos};
+    do
+      (echo "Updating materials..."; make -C ${dir} publish_s3)
+    done
+  else
+    echo "Updating website...";
+    make -C ${web} publish;
+  fi
+  cd ${current_dir}
+}
+
+
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 LOCAL=$BASE/../cfg-local/bashrc-local
 [ -f "$LOCAL" ] && source "$LOCAL"
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
