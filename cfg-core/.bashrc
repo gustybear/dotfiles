@@ -69,13 +69,11 @@ export HISTTIMEFORMAT="%Y/%m/%d %H:%M:%S:   "
 export MAILDIR=$HOME/.mail
 [ -z "$TMPDIR" ] && TMPDIR=/tmp
 
-### Global
-# --------------------------------------------------------------------
 export EDITOR=vim
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-### OS X
+### OS X PATH
 if [ "$PLATFORM" = 'Darwin' ]; then
   export COPYFILE_DISABLE=true
   export LOCALBIN=${HOME}/.local/bin
@@ -89,7 +87,7 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   fi
 fi
 
-### Linux
+### Linux PATH
 if [ "$PLATFORM" = 'Linux' ]; then
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:/usr/local/lib
   export LOCALBIN=${HOME}/.local/bin
@@ -103,15 +101,40 @@ if [ "$PLATFORM" = 'Linux' ]; then
 fi
 export PATH_EXPANDED=1
 
-# Prompt
-# --------------------------------------------------------------------
-### git-prompt
+### Prompt
 __git_ps1() { :;}
 if [ -e ~/.git-prompt.sh ]; then
   source ~/.git-prompt.sh
 fi
 PS1='\[\e[34m\]\u\[\e[1;32m\]@\[\e[0;33m\]\h\[\e[35m\]:\[\e[m\]\W\[\e[1;30m\]$(__git_ps1)\[\e[1;31m\]> \[\e[0m\]'
 
+### FZF
+csi() {
+  echo -en "\x1b[$*"
+}
+
+fzf-down() {
+  fzf --height 50% "$@" --border
+}
+
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+export FZF_CTRL_T_COMMAND='fd --type f --type d --hidden --follow --exclude .git'
+[ -n "$NVIM_LISTEN_ADDRESS" ] && export FZF_DEFAULT_OPTS='--no-height'
+
+if [ -x ~/.vim/plugged/fzf.vim/bin/preview.rb ]; then
+  export FZF_CTRL_T_OPTS="--preview '~/.vim/plugged/fzf.vim/bin/preview.rb {} | head -200'"
+fi
+
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview' --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort' --header 'Press CTRL-Y to copy command into clipboard' --border"
+
+command -v blsd > /dev/null && export FZF_ALT_C_COMMAND='blsd $dir'
+command -v tree > /dev/null && export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
+
+# Key Bindings
+# --------------------------------------------------------------------
+# Bind CTRL-X-CTRL-T to tmuxwords.sh
+[ -n "$TMUX_PANE" ] && bind '"\C-x\C-t": "$(fzf_tmux_words)\e\C-e\er"'
 
 # Aliases
 # --------------------------------------------------------------------
@@ -134,9 +157,7 @@ alias gs='git status'
 alias gv='vim +GV +"autocmd BufWipeout <buffer> qall"'
 alias gl='git log --graph --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
 
-if [ "$PLATFORM" = 'Darwin' ]; then
-  alias tac='tail -r'
-fi
+[ "$PLATFORM" = 'Darwin' ] && alias tac='tail -r'
 
 ### Tmux
 alias tmux="tmux -2"
@@ -158,10 +179,31 @@ alias be='bundle exec'
 
 # Helper functions
 # --------------------------------------------------------------------
-### Prompt
+### Control
 miniprompt() {
   unset PROMPT_COMMAND
   PS1="\[\e[38;5;168m\]> \[\e[0m\]"
+}
+
+tail-until() {
+  pattern=$1
+  shift
+  grep -m 1 "$pattern" <(exec tail -F "$@"); kill $!
+}
+
+repeat() {
+  local _
+  for _ in $(seq $1); do
+    eval "$2"
+  done
+}
+
+ftheme() {
+  [ -d ~/Documents/github/iTerm2-Color-Schemes/ ] || return
+  local base
+  base=~/Documents/github/iTerm2-Color-Schemes
+  $base/tools/preview.rb "$(
+    ls {$base/schemes,~/.vim/plugged/seoul256.vim/iterm2}/*.itermcolors | fzf)"
 }
 
 ### Navigation
@@ -195,13 +237,79 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   }
 fi
 
-### Vim
+### Search
+csbuild() {
+  [ $# -eq 0 ] && return
+
+  cmd="find `pwd`"
+  for ext in $@; do
+    cmd=" $cmd -name '*.$ext' -o"
+  done
+  echo ${cmd: 0: ${#cmd} - 3}
+  eval "${cmd: 0: ${#cmd} - 3}" > cscope.files &&
+  cscope -b -q && rm cscope.files
+}
+
+# ftags - search ctags
+ftags() {
+  local line
+  [ -e tags ] &&
+  line=$(
+    awk 'BEGIN { FS="\t" } !/^!/ {print toupper($4)"\t"$1"\t"$2"\t"$3}' tags |
+    cut -c1-$COLUMNS | fzf --nth=2 --tiebreak=begin
+  ) && $EDITOR $(cut -f3 <<< "$line") -c "set nocst" \
+                                      -c "silent tag $(cut -f2 <<< "$line")"
+}
+
+### Edit
 viw() {
   vim "$(which "$1")"
 }
 
 temp() {
   vim +"set buftype=nofile bufhidden=wipe nobuflisted noswapfile tw=${1:-0}"
+}
+
+# v - open files in ~/.viminfo
+v() {
+  local files
+  files=$(grep '^>' ~/.viminfo | cut -c3- |
+          while read line; do
+            [ -f "${line/\~/$HOME}" ] && echo "$line"
+          done | fzf -d -m -q "$*" -1) && vim ${files//\~/$HOME}
+}
+
+# https://github.com/wellle/tmux-complete.vim
+fzf_tmux_words() {
+[ -n "$TMUX_PANE" ] || return
+  tmuxwords.rb --all --scroll 500 --min 5 | fzf-down --multi | paste -sd" " -
+}
+
+
+# fe [FUZZY PATTERN] - Open the selected file with the default editor
+#   - Bypass fuzzy finder if there's only one match (--select-1)
+#   - Exit if there's no match (--exit-0)
+fe() {
+  local file
+  file=$(fzf-tmux --query="$1" --select-1 --exit-0)
+  [ -n "$file" ] && ${EDITOR:-vim} "$file"
+}
+
+# Modified version where you can press
+#   - CTRL-O to open with `open` command,
+#   - CTRL-E or Enter key to open with the $EDITOR
+fo() {
+  local out file key
+  IFS=$'\n' read -d '' -r -a out < <(fzf-tmux --query="$1" --exit-0 --expect=ctrl-o,ctrl-e)
+  key=${out[0]}
+  file=${out[1]}
+  if [ -n "$file" ]; then
+    if [ "$key" = ctrl-o ]; then
+      open "$file"
+    else
+      ${EDITOR:-vim} "$file"
+    fi
+  fi
 }
 
 ### Tmux
@@ -245,18 +353,36 @@ tpingping() {
   done
 }
 
-csbuild() {
-  [ $# -eq 0 ] && return
-
-  cmd="find `pwd`"
-  for ext in $@; do
-    cmd=" $cmd -name '*.$ext' -o"
-  done
-  echo ${cmd: 0: ${#cmd} - 3}
-  eval "${cmd: 0: ${#cmd} - 3}" > cscope.files &&
-  cscope -b -q && rm cscope.files
+# Switch tmux-sessions
+fs() {
+  local session
+  session=$(tmux list-sessions -F "#{session_name}" | \
+    fzf --height 40% --reverse --query="$1" --select-1 --exit-0) &&
+  tmux switch-client -t "$session"
 }
 
+# ftpane - switch pane (@george-b)
+ftpane() {
+  [ -n "$TMUX_PANE" ] || return
+  local panes current_window current_pane target target_window target_pane
+  panes=$(tmux list-panes -s -F '#I:#P - #{pane_current_path} #{pane_current_command}')
+  current_pane=$(tmux display-message -p '#I:#P')
+  current_window=$(tmux display-message -p '#I')
+
+  target=$(echo "$panes" | grep -v "$current_pane" | fzf +m --reverse) || return
+
+  target_window=$(echo $target | awk 'BEGIN{FS=":|-"} {print$1}')
+  target_pane=$(echo $target | awk 'BEGIN{FS=":|-"} {print$2}' | cut -c 1)
+
+  if [[ $current_window -eq $target_window ]]; then
+    tmux select-pane -t ${target_window}.${target_pane}
+  else
+    tmux select-pane -t ${target_window}.${target_pane} &&
+    tmux select-window -t $target_window
+  fi
+}
+
+### Git
 gitzip() {
   git archive -o $(basename $PWD).zip HEAD
 }
@@ -273,13 +399,6 @@ gitdiffb() {
   git log --graph \
   --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' \
   --abbrev-commit --date=relative $1..$2
-}
-
-repeat() {
-  local _
-  for _ in $(seq $1); do
-    eval "$2"
-  done
 }
 
 acdul() {
@@ -359,37 +478,6 @@ jfr-remote() (
   scp "$1:$path" /tmp && open "$path"
 )
 
-tail-until() (
-  pattern=$1
-  shift
-  grep -m 1 "$pattern" <(exec tail -F "$@"); kill $!
-)
-
-# fzf (https://github.com/junegunn/fzf)
-# --------------------------------------------------------------------
-
-csi() {
-  echo -en "\x1b[$*"
-}
-
-fzf-down() {
-  fzf --height 50% "$@" --border
-}
-
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
-export FZF_CTRL_T_COMMAND='fd --type f --type d --hidden --follow --exclude .git'
-[ -n "$NVIM_LISTEN_ADDRESS" ] && export FZF_DEFAULT_OPTS='--no-height'
-
-if [ -x ~/.vim/plugged/fzf.vim/bin/preview.rb ]; then
-  export FZF_CTRL_T_OPTS="--preview '~/.vim/plugged/fzf.vim/bin/preview.rb {} | head -200'"
-fi
-
-export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview' --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort' --header 'Press CTRL-Y to copy command into clipboard' --border"
-
-command -v blsd > /dev/null && export FZF_ALT_C_COMMAND='blsd $dir'
-command -v tree > /dev/null && export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
-
 # Figlet font selector => copy to clipboard
 fgl() (
   [ $# -eq 0 ] && return
@@ -412,88 +500,6 @@ fco() {
   git checkout $(echo "$target" | awk '{print $2}')
 }
 
-# ftags - search ctags
-ftags() {
-  local line
-  [ -e tags ] &&
-  line=$(
-    awk 'BEGIN { FS="\t" } !/^!/ {print toupper($4)"\t"$1"\t"$2"\t"$3}' tags |
-    cut -c1-$COLUMNS | fzf --nth=2 --tiebreak=begin
-  ) && $EDITOR $(cut -f3 <<< "$line") -c "set nocst" \
-                                      -c "silent tag $(cut -f2 <<< "$line")"
-}
-
-# fe [FUZZY PATTERN] - Open the selected file with the default editor
-#   - Bypass fuzzy finder if there's only one match (--select-1)
-#   - Exit if there's no match (--exit-0)
-fe() {
-  local file
-  file=$(fzf-tmux --query="$1" --select-1 --exit-0)
-  [ -n "$file" ] && ${EDITOR:-vim} "$file"
-}
-
-# Modified version where you can press
-#   - CTRL-O to open with `open` command,
-#   - CTRL-E or Enter key to open with the $EDITOR
-fo() {
-  local out file key
-  IFS=$'\n' read -d '' -r -a out < <(fzf-tmux --query="$1" --exit-0 --expect=ctrl-o,ctrl-e)
-  key=${out[0]}
-  file=${out[1]}
-  if [ -n "$file" ]; then
-    if [ "$key" = ctrl-o ]; then
-      open "$file"
-    else
-      ${EDITOR:-vim} "$file"
-    fi
-  fi
-}
-
-if [ -n "$TMUX_PANE" ]; then
-  # https://github.com/wellle/tmux-complete.vim
-  fzf_tmux_words() {
-    tmuxwords.rb --all --scroll 500 --min 5 | fzf-down --multi | paste -sd" " -
-  }
-
-  # ftpane - switch pane (@george-b)
-  ftpane() {
-    local panes current_window current_pane target target_window target_pane
-    panes=$(tmux list-panes -s -F '#I:#P - #{pane_current_path} #{pane_current_command}')
-    current_pane=$(tmux display-message -p '#I:#P')
-    current_window=$(tmux display-message -p '#I')
-
-    target=$(echo "$panes" | grep -v "$current_pane" | fzf +m --reverse) || return
-
-    target_window=$(echo $target | awk 'BEGIN{FS=":|-"} {print$1}')
-    target_pane=$(echo $target | awk 'BEGIN{FS=":|-"} {print$2}' | cut -c 1)
-
-    if [[ $current_window -eq $target_window ]]; then
-      tmux select-pane -t ${target_window}.${target_pane}
-    else
-      tmux select-pane -t ${target_window}.${target_pane} &&
-      tmux select-window -t $target_window
-    fi
-  }
-
-  # Bind CTRL-X-CTRL-T to tmuxwords.sh
-  bind '"\C-x\C-t": "$(fzf_tmux_words)\e\C-e\er"'
-
-elif [ -d ~/Documents/github/iTerm2-Color-Schemes/ ]; then
-  ftheme() {
-    local base
-    base=~/Documents/github/iTerm2-Color-Schemes
-    $base/tools/preview.rb "$(
-      ls {$base/schemes,~/.vim/plugged/seoul256.vim/iterm2}/*.itermcolors | fzf)"
-  }
-fi
-
-# Switch tmux-sessions
-fs() {
-  local session
-  session=$(tmux list-sessions -F "#{session_name}" | \
-    fzf --height 40% --reverse --query="$1" --select-1 --exit-0) &&
-  tmux switch-client -t "$session"
-}
 
 # Z integration
 source "$HOME/.local/bin/z.sh"
@@ -501,15 +507,6 @@ unalias z 2> /dev/null
 z() {
   [ $# -gt 0 ] && _z "$*" && return
   cd "$(_z -l 2>&1 | fzf --height 40% --nth 2.. --reverse --inline-info +s --tac --query "${*##-* }" | sed 's/^[0-9,.]* *//')"
-}
-
-# v - open files in ~/.viminfo
-v() {
-  local files
-  files=$(grep '^>' ~/.viminfo | cut -c3- |
-          while read line; do
-            [ -f "${line/\~/$HOME}" ] && echo "$line"
-          done | fzf -d -m -q "$*" -1) && vim ${files//\~/$HOME}
 }
 
 # c - browse chrome history
@@ -876,4 +873,5 @@ LOCAL=$BASE/../cfg-local/bashrc-local
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+# Load RVM into a shell session *as a function*
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" 
