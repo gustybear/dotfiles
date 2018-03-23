@@ -207,9 +207,9 @@ repeat() {
 }
 
 ftheme() {
-  [ -d ~/Projects/github/iTerm2-Color-Schemes/ ] || return
+  [ -d ~/Cloud/Github/iTerm2-Color-Schemes/ ] || return
   local base
-  base=~/Projects/github/iTerm2-Color-Schemes
+  base=~/Cloud/Github/iTerm2-Color-Schemes
   $base/tools/preview.rb "$(
     ls {$base/schemes,~/.vim/plugged/seoul256.vim/iterm2}/*.itermcolors | fzf)"
 }
