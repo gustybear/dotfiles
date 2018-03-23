@@ -10,7 +10,15 @@
 [ -f /etc/bashrc ] && . /etc/bashrc
 export PATH_EXPANDED=""
 export PLATFORM=$(uname -s)
-BASE=$(dirname $(readlink $BASH_SOURCE))
+
+# Get the BASE dir
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+BASE="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 # Options
 # --------------------------------------------------------------------
@@ -199,9 +207,9 @@ repeat() {
 }
 
 ftheme() {
-  [ -d ~/Documents/github/iTerm2-Color-Schemes/ ] || return
+  [ -d ~/Projects/github/iTerm2-Color-Schemes/ ] || return
   local base
-  base=~/Documents/github/iTerm2-Color-Schemes
+  base=~/Projects/github/iTerm2-Color-Schemes
   $base/tools/preview.rb "$(
     ls {$base/schemes,~/.vim/plugged/seoul256.vim/iterm2}/*.itermcolors | fzf)"
 }
@@ -753,19 +761,19 @@ prj-init() {
   dir_name="${dir_name%_}"
 
   if [[ "$project_type" == "course" ]]; then
-    proj_path=$HOME/Documents/teaching/"$dir_name"
+    proj_path=$HOME/Projects/teaching/"$dir_name"
     git_branch="course"
   elif [[ "$project_type" == "personal" ]]; then
-    proj_path=$HOME/Documents/personal/"$dir_name"
+    proj_path=$HOME/Projects/personal/"$dir_name"
     git_branch="project"
   elif [[ "$project_type" == "student" ]]; then
-    proj_path=$HOME/Documents/students/"$dir_name"
+    proj_path=$HOME/Projects/students/"$dir_name"
     git_branch="project"
   elif [[ "$project_type" == "services" ]]; then
-    proj_path=$HOME/Documents/services/"$dir_name"
+    proj_path=$HOME/Projects/services/"$dir_name"
     git_branch="project"
   elif [[ ("$project_type" == "project") || ("$project_type" == "award") || ("$project_type" == "talk") ]]; then
-    proj_path=$HOME/Documents/research/"$dir_name"
+    proj_path=$HOME/Projects/research/"$dir_name"
     git_branch="project"
   fi
 
@@ -781,7 +789,7 @@ prj-init() {
 # Check project status in a batch
 prj-status() {
   local current_dir=${PWD}
-  local repos=$(repo-find "${HOME}/Documents/* ${HOME}/.dotfiles")
+  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/.dotfiles")
   for dir in ${repos};
   do
       echo "Checking status of ${dir}...";
@@ -793,7 +801,7 @@ prj-status() {
 # Pull projects from remote
 prj-pull() {
   local current_dir=${PWD}
-  local repos=$(repo-find "${HOME}/Documents/* ${HOME}/.dotfiles")
+  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/.dotfiles")
   for dir in ${repos};
   do
       echo "Pulling updates of ${dir} from remote...";
@@ -805,11 +813,11 @@ prj-pull() {
 # Update projects to remote
 prj-update() {
   local current_dir=${PWD}
-  local repos=$(repo-find "${HOME}/Documents/* ${HOME}/.dotfiles")
+  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/.dotfiles")
   for dir in ${repos};
   do
       echo "Updating ${dir} to remote...";
-      cd ${dir} && cmrepo;
+      cd ${dir} && repo-commit;
   done
   cd ${current_dir}
 }
@@ -817,7 +825,7 @@ prj-update() {
 # Change to project directory using fzf
 prj-fzf() {
   local dir
-  dir=$(repo-find "${HOME}/Documents/* ${HOME}/.dotfiles" |
+  dir=$(repo-find "${HOME}/Projects/* ${HOME}/.dotfiles" |
   fzf-tmux --preview-window up:75% \
     --preview 'cd {}; echo "git summary";
               LANG=C git -c color.status=false status -sb; 
@@ -849,8 +857,8 @@ todo-fzf() {
 # Update website {{{3
 site-update() {
   local current_dir=${PWD}
-  local web="${HOME}/Documents/__websites"
-  local repos=$(repo-find "${HOME}/Documents/*")
+  local web="${HOME}/Projects/__websites"
+  local repos=$(repo-find "${HOME}/Projects/*")
   if [ -z  ${web} ]; then
     echo "No website folder"
     for dir in ${repos};
