@@ -34,3 +34,4 @@ tmp
 
 # local configuration for bash an vim
 cfg-local/*
+.stow-local-ignore
