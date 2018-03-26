@@ -49,9 +49,11 @@ if [ "$PLATFORM" = 'Linux' ]; then
   [ -f /etc/bash_completion ] && . /etc/bash_completion
 fi
 
-### Disable CTRL-S and CTRL-Q
+### Disable CTRL-S and CTRL-Q for interactive shell
 [[ $- =~ i ]] && stty -ixoff -ixon
 
+### Keybinding for interactive shell
+if [ $- =~ i ]
 # If there are multiple matches for completion, Tab should cycle through them
 
 bind 'TAB':menu-complete
@@ -64,6 +66,8 @@ bind "set show-all-if-ambiguous on"
 # only start cycling full results on the second Tab press
 
 bind "set menu-complete-display-prefix on"
+
+fi
 
 
 # Environment variables
