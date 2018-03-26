@@ -53,7 +53,7 @@ fi
 [[ $- =~ i ]] && stty -ixoff -ixon
 
 ### Keybinding for interactive shell
-if [ $- =~ i ]; then
+if [[ $- =~ i ]]; then
 # If there are multiple matches for completion, Tab should cycle through them
 
 bind 'TAB':menu-complete
