@@ -694,7 +694,7 @@ prj-init() {
   local dir_name
   local proj_path
 
-  echo -n "Is this a (r)esearch/(a)ward/(t)alk/s(e)rvice/(c)ourse/(s)tudent/(p)ersonal? "
+  printf "Is this a (r)esearch/(a)ward/(t)alk/s(e)rvice/(c)ourse/(s)tudent/(p)ersonal? "
   old_stty_cfg=$(stty -g)
   stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
 
@@ -718,24 +718,24 @@ prj-init() {
   fi
 
   if echo "$answer" | grep -Eiq "^s|^p" ;then
-    echo -n "\nType in the name of the person(s): "
+    printf "\nType in the name of the person(s): "
     read person_name
     person_name="${person_name// /_}"
 
-    echo -n "Type in the name of the project: "
+    printf "\nType in the name of the project: "
     read project_name
     project_name="${project_name// /_}"
 
   elif echo "$answer" | grep -Eiq "^c" ;then
-    echo -n "\nType in the course number: "
+    printf "\nType in the course number: "
     read course_name
     course_name="${course_name// /_}"
 
-    echo -n "Type in the year: "
+    printf "\nType in the year: "
     read course_year
     course_year="${course_year// /_}"
 
-    echo -n "Is this a (s)pring/s(u)mmer/(f)all course? "
+    printf "\nIs this a (s)pring/s(u)mmer/(f)all course? "
     old_stty_cfg=$(stty -g)
     stty raw -echo ; semester=$(head -c 1) ; stty $old_stty_cfg
 
@@ -750,7 +750,7 @@ prj-init() {
       exit 1
     fi
   elif echo "$answer" | grep -Eiq "^r|^a|^t" ;then
-    echo -n "\nType in the name of the project: "
+    printf "\nType in the name of the project: "
     read project_name
     project_name="${project_name// /_}"
   fi
@@ -782,11 +782,11 @@ prj-init() {
   fi
 
   if [[ "$project_type" == "personal" ]]; then
-    mkdir -p "$proj_path"
+    mkdir -p "$proj_path" && printf "\nProject is initialized"
   else
     git_repo="https://github.com/gustybear/templates.git"
     git clone --depth=1 -b "$git_branch" "$git_repo" "$proj_path"
-    make --directory="$proj_path" init
+    make --directory="$proj_path" init && printf "\nProject is initialized"
   fi
 }
 

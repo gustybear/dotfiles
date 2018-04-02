@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#
+# Open new Terminal window from the command line
+#
+# Author: Yao Zheng
+#
+# Installation:
+#     Add the following function to your `.bashrc` or `.bash_profile`,
+#     or save it somewhere (e.g. `~/.tab.bash`) and source it in `.bashrc`
+#
+# Usage:
+#     iterm-new-window                   Opens the current directory in a new tab
+#     iterm-new-window [PATH]            Open PATH in a new tab
+#     iterm-new-window [CMD]             Open a new tab and execute CMD
+#     iterm-new-window [PATH] [CMD] ...  You can prob'ly guess
+
+# Only for teh Mac users
+[ `uname -s` != "Darwin" ] && return
+
+cmd=""
+cdto="$PWD"
+args="$@"
+
+if [ -d "$1" ]; then
+  cdto=`cd "$1"; pwd`
+  args="${@:2}"
+fi
+
+if [ -n "$args" ]; then
+    cmd="; $args"
+fi
+
+osascript -i <<EOF
+tell application "iTerm2"
+        tell current window
+                create tab with default profile
+                tell the current session
+                        write text "cd \"$cdto\" $cmd"
+                end tell
+        end tell
+end tell
+EOF
