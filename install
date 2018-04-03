@@ -61,7 +61,7 @@ mkdir -p ~/.local/bin
 stow --no-folding -t ~/.local/bin -d $BASE/bin
 
 # cfg-core
-stow --no-folding -t $BASE/cfg-core
+stow --no-folding -d $BASE/cfg-core
 
 # git-prompt
 if [ ! -e ~/.git-prompt.sh ]; then
