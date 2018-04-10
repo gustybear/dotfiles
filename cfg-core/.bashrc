@@ -92,10 +92,11 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   export GOPATH=${HOME}/.local/share/go
   export GOROOT=$(brew --prefix)/opt/go
   export PYTHONROOT=$(brew --prefix)/opt/python
+  export JAVA_HOME=$(/usr/libexec/java_home)
   export DROPBOX_DIR=${HOME}/Cloud/Dropbox
   mkdir -p $GOPATH
   if [ -z "$PATH_EXPANDED" ]; then
-    export PATH=$LOCALBIN:$PYTHONROOT/libexec/bin:$GOPATH/bin:$GOROOT/libexec/bin:$PATH
+    export PATH=$LOCALBIN:$PYTHONROOT/libexec/bin:$JAVA_HOME/bin:$GOPATH/bin:$GOROOT/libexec/bin:$PATH
   fi
 fi
 
@@ -118,7 +119,7 @@ __git_ps1() { :;}
 if [ -e ~/.git-prompt.sh ]; then
   source ~/.git-prompt.sh
 fi
-PS1='\[\e[34m\]\u\[\e[1;32m\]@\[\e[0;33m\]\h\[\e[35m\]:\[\e[m\]\W\[\e[1;30m\]$(__git_ps1)\[\e[1;31m\]> \[\e[0m\]'
+PS1='\[\e[34m\]\u\[\e[1;32m\]@\[\e[0;33m\]\h\[\e[35m\]:\[\e[m\]\W\[\e[1;30m\]$(__git_ps1)\[\e[1;31m\]\n$ \[\e[0m\]'
 
 ### FZF
 csi() {
