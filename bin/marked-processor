@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+VALUE=$(cat)
+
+cd $MARKED_ORIGIN && echo "$VALUE" | pandoc --filter=pandoc-citeproc
