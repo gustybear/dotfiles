@@ -2,4 +2,4 @@
 
 VALUE=$(cat)
 
-cd $MARKED_ORIGIN && echo "$VALUE" | pandoc --filter=pandoc-citeproc
+cd $MARKED_ORIGIN && echo "$VALUE" | pandoc --filter=pandoc-citeproc -f markdown+yaml_metadata_block+smart
