@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+
+import sys
+import os
+import re
+from urllib.request import urlopen
+from urllib.parse import urlencode
+import json
+
+re_url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+
+def shorten_url(url):
+    print("Shortening url {} ...".format(url))
+    api_url = "http://tinyurl.com/api-create.php"
+    url_data = urlencode(dict(url=url))
+    byte_data = str.encode(url_data)
+    ret = urlopen(api_url, data=byte_data).read()
+    result = str(ret).replace('b', '').replace("\'", '')
+    return result
+
+
+def shorten_urls_in_text(text):
+    """Shorten URLs in given text.
+
+    :param text: A text that might contain long URLs
+    :type text: str
+    :return: If URLs were founda and the text with the URLs shortened
+    :rtype: tuple(bool, str)
+    """
+    urls = set(re_url_pattern.findall(text))
+    for url in urls:
+        short_url = shorten_url(url)
+        text = text.replace(url, short_url)
+
+    return bool(urls), text
+
+def shorten_urls_in_file(path):
+    text = read_file(path)
+    found_urls, text = shorten_urls_in_text(text)
+
+    if found_urls:
+        write_file(path, text)
+
+
+def shorten_urls_in_files(*paths):
+    for path in paths:
+        if os.path.isfile(path):
+            print('Shortening urls in file {} ...'.format(path))
+            shorten_urls_in_file(path)
+        else:
+            print('No such file: {}'.format(path))
+
+
+def read_file(path):
+    with open(path) as fh:
+        return fh.read()
+
+
+def write_file(path, text):
+    with open(path, 'w') as fh:
+        fh.write(text)
+
+if __name__ == '__main__':
+    shorten_urls_in_files(*sys.argv[1:])
