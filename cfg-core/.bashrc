@@ -787,7 +787,7 @@ prj-init() {
   else
     git_repo="https://github.com/gustybear/templates.git"
     git clone --depth=1 -b "$git_branch" "$git_repo" "$proj_path"
-    make --directory="$proj_path" init && printf "\nProject is initialized"
+    make --directory="$proj_path" init && printf "\nProject is initialized\n"
   fi
 }
 
