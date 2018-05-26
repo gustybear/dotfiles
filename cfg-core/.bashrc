@@ -232,6 +232,12 @@ _parent_dirs() {
 complete -F _parent_dirs -o default -o bashdefault ..cd
 
 ### File
+swap()
+{
+  local TMPFILE=tmp.$$
+  mv "$1" $TMPFILE && mv "$2" "$1" && mv $TMPFILE $2
+}
+
 ext() {
   ext-all --exclude .git --exclude target --exclude "*.log"
 }
@@ -838,22 +844,6 @@ prj-fzf() {
               tree -C {} | head -200' \
     --select-1) &&
   cd ${dir}
-}
-
-# Todo.sh task search
-todo-fzf() {
-  local todo_cmd
-  if [ "$PLATFORM" == "Darwin" ]; then  # macOS
-    todo_cmd="todo.sh"
-  elif [ "$PLATFORM" == "Linux" ]; then  # Linux
-    todo_cmd="todo-txt"
-  fi
-  local task
-  task=$($todo_cmd ls | awk '$1~/^[0-9]+$/' |
-        fzf-tmux --ansi --select-1 --exit-0 \
-            --bind "ctrl-m:execute-silent(sed 's#.*: \(message://[^ ]\{0,\}%3e\).*#\1#' <<< {} | xargs open -a Mail)+abort" \
-            --bind "ctrl-x:execute-silent(sed 's#^\([0-9]\{1,\}\) .*#\1#' <<< {} |xargs $todo_cmd -f del)")
-  echo $task
 }
 
 # Update website {{{3
