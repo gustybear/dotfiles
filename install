@@ -14,6 +14,10 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   # Taps (third-party repositories)
   brew tap waltarix/homebrew-customs
   brew tap universal-ctags/universal-ctags
+  brew tap domt4/autoupdate
+
+  # Automatic update/upgrade/cleanup homebrew
+ brew autoupdate --start --upgrade --cleanup --enable-notification 
 
   # Languages
   brew install ruby python go
@@ -57,10 +61,13 @@ fi
 
 # bin
 mkdir -p ~/.local/bin
-stow --no-folding -t ~/.local/bin -d $BASE/bin
+stow --no-folding -t ~/.local/bin -d $BASE bin
 
 # cfg-core
-stow --no-folding -d $BASE/cfg-core
+stow --no-folding -d $BASE cfg-core
+
+# scpt
+defaults write com.red-sweater.FastScripts ScriptTreePathsKey '("$BASE/scpt")'
 
 # git-prompt
 if [ ! -e ~/.git-prompt.sh ]; then
