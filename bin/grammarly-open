@@ -1,0 +1,10 @@
+#!/bin/bash
+TMPFILE="/tmp/$(basename $0).$RANDOM.txt"
+touch $TMPFILE
+
+while IFS= read -r line; do
+  printf '%s\n' "$line" >> $TMPFILE
+done
+
+open -a "Grammarly.app" $TMPFILE
+osascript -e 'tell application "Grammarly" to activate'
