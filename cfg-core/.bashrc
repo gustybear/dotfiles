@@ -800,7 +800,7 @@ prj-init() {
 # Check project status in a batch
 prj-status() {
   local current_dir=${PWD}
-  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/.dotfiles ${HOME}/Cloud/Github/*")
+  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/Cloud/Github/*")
   for dir in ${repos};
   do
       echo "Checking status of ${dir}...";
@@ -812,7 +812,7 @@ prj-status() {
 # Pull projects from remote
 prj-pull() {
   local current_dir=${PWD}
-  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/.dotfiles ${HOME}/Cloud/Github/*")
+  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/Cloud/Github/*")
   for dir in ${repos};
   do
       echo "Pulling updates of ${dir} from remote...";
@@ -824,7 +824,7 @@ prj-pull() {
 # Update projects to remote
 prj-update() {
   local current_dir=${PWD}
-  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/.dotfiles ${HOME}/Cloud/Github/*")
+  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/Cloud/Github/*")
   for dir in ${repos};
   do
       echo "Updating ${dir} to remote...";
@@ -836,7 +836,7 @@ prj-update() {
 # Change to project directory using fzf
 prj-fzf() {
   local dir
-  dir=$(repo-find "${HOME}/Projects/* ${HOME}/.dotfiles ${HOME}/Cloud/Github/*" |
+  dir=$(repo-find "${HOME}/Projects/* ${HOME}/Cloud/Github/*" |
   fzf-tmux --preview-window up:75% \
     --preview 'cd {}; echo "git summary";
               LANG=C git -c color.status=false status -sb; 

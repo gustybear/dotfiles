@@ -61,10 +61,10 @@ fi
 
 # bin
 mkdir -p ~/.local/bin
-stow --no-folding -t ~/.local/bin -d $BASE bin
+stow --no-folding -d $BASE bin -t$HOME/.local/bin/
 
 # cfg-core
-stow --no-folding -d $BASE cfg-core
+stow --no-folding -d $BASE cfg-core -t $HOME/
 
 # scpt
 defaults write com.red-sweater.FastScripts ScriptTreePathsKey '("$BASE/scpt")'
