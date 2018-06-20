@@ -849,7 +849,7 @@ prj-fzf() {
 # Update website {{{3
 site-update() {
   local current_dir=${PWD}
-  local web="${HOME}/Projects/__websites"
+  local web="${HOME}/Projects/__websites__"
   local repos=$(repo-find "${HOME}/Projects/*")
   if [ -z  ${web} ]; then
     echo "No website folder"
