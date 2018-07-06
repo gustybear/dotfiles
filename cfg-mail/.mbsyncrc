@@ -19,7 +19,7 @@ IMAPAccount personal
 Host imap.mail.me.com
 User markxlii@icloud.com
 # Get the account password from the system Keychain
-PassCmd "security find-generic-password -s isync-markxlii-icloud-com -w"
+PassCmd "imap-pass -g markxlii@icloud.com"
 AuthMechs LOGIN
 SSLType IMAPS
 
@@ -80,7 +80,7 @@ IMAPAccount work
 Host imap.gmail.com
 User yaozheng@hawaii.edu
 # Get the account password from the system Keychain
-PassCmd "security find-generic-password -s isync-yaozheng-hawaii-edu -w"
+PassCmd "imap-pass -g yaozheng@hawaii.edu"
 AuthMechs LOGIN
 SSLType IMAPS
 
