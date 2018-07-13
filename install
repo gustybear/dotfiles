@@ -41,7 +41,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   fi
 
   # VIM
-  brew install neovim cscope
+  brew install cscope
   brew install --HEAD universal-ctags
   gem install gem-ctags
   gem ctags
@@ -74,7 +74,11 @@ if [ ! -e ~/.git-prompt.sh ]; then
   curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
 fi
 
-# vim and nvim
+# nvim
+mkdir -p ~/Applications/Neovim/
+curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz | tar xzf -C ~/Applications/Neovim/
+ln -sf ~/Applications/Neovim/nvim-osx64/bin/nvim ~/.local/bin/vim
+
 export GIT_SSL_NO_VERIFY=true
 mkdir -p ~/.vim/autoload
 curl --insecure -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
