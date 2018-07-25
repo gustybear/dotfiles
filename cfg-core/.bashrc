@@ -93,7 +93,6 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   export GOROOT=$(brew --prefix)/opt/go
   export PYTHONROOT=$(brew --prefix)/opt/python
   export JAVA_HOME=$(/usr/libexec/java_home)
-  export DROPBOX_DIR=${HOME}/Cloud/Dropbox
   mkdir -p $GOPATH
   if [ -z "$PATH_EXPANDED" ]; then
     export PATH=$LOCALBIN:$PYTHONROOT/libexec/bin:$JAVA_HOME/bin:$GOPATH/bin:$GOROOT/libexec/bin:$PATH
@@ -106,12 +105,12 @@ if [ "$PLATFORM" = 'Linux' ]; then
   export LOCALBIN=${HOME}/.local/bin
   export GOPATH=${HOME}/.local/share/go
   export GOROOT=/usr/local/go
-  export DROPBOX_DIR=${HOME}/Dropbox
   mkdir -p $GOPATH
   if [ -z "$PATH_EXPANDED" ]; then
     export PATH=$LOCALBIN:$GOPATH/bin:$GOROOT/bin:$PATH
   fi
 fi
+export DROPBOX_DIR=${HOME}/Cloud/Dropbox
 export PATH_EXPANDED=1
 
 ### Prompt
