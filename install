@@ -61,7 +61,7 @@ fi
 
 # bin
 mkdir -p ~/.local/bin
-stow --no-folding -d $BASE bin -t$HOME/.local/bin/
+stow --no-folding -d $BASE bin -t $HOME/.local/bin/
 
 # cfg-core
 stow --no-folding -d $BASE cfg-core -t $HOME/
