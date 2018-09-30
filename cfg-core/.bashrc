@@ -6,19 +6,22 @@
 # System default
 # --------------------------------------------------------------------
 
+export PLATFORM=$(uname -s)
 [ -f /etc/profile ] && [ "$PLATFORM" != 'Darwin' ] || PATH="" && source /etc/profile
 [ -f /etc/bashrc ] && . /etc/bashrc
 export PATH_EXPANDED=""
-export PLATFORM=$(uname -s)
 
-# Get the BASE dir
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+# Get the DOTFILES_DIR
+CURRENT_FILE_PATH="${BASH_SOURCE[0]}"
+while [ -h "$CURRENT_FILE_PATH" ]; do # resolve $CURRENT_FILE_PATH until the file is no longer a symlink
+  CURRENT_FILE_DIR="$( cd -P "$( dirname "$CURRENT_FILE_PATH" )" && pwd )"
+  CURRENT_FILE_PATH="$(readlink "$CURRENT_FILE_PATH")"
+  [[ $CURRENT_FILE_PATH != /* ]] && CURRENT_FILE_PATH="$CURRENT_FILE_DIR/$CURRENT_FILE_PATH" # if $CURRENT_FILE_PATH was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
-BASE="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+DOTFILES_DIR="$( cd -P "$( dirname "$CURRENT_FILE_PATH" )" && cd .. && pwd )"
+
+unset CURRENT_FILE_PATH
+unset CURRENT_FILE_DIR
 
 # Options
 # --------------------------------------------------------------------
@@ -110,8 +113,12 @@ if [ "$PLATFORM" = 'Linux' ]; then
     export PATH=$LOCALBIN:$GOPATH/bin:$GOROOT/bin:$PATH
   fi
 fi
+
 export DROPBOX_DIR=${HOME}/Cloud/Dropbox
+export BASH_LOCAL_CONFIG=$DOTFILES_DIR/cfg-local/bashrc-local
+export TMUX_LOCAL_CONFIG=$DOTFILES_DIR/cfg-local/tmux-local
 export PATH_EXPANDED=1
+
 
 ### Prompt
 __git_ps1() { :;}
@@ -551,7 +558,7 @@ c() {
 
 # so - my stackoverflow favorites
 so() {
-  $BASE/../bin/stackoverflow-favorites |
+    ${LOCALBIN}/stackoverflow-favorites |
     fzf --ansi --reverse --with-nth ..-2 --tac --tiebreak index |
     awk '{print $NF}' | while read -r line; do
       open "$line"
@@ -866,8 +873,7 @@ site-update() {
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-LOCAL=$BASE/../cfg-local/bashrc-local
-[ -f "$LOCAL" ] && source "$LOCAL"
+[ -f "$BASH_LOCAL_CONFIG" ] && source "$BASH_LOCAL_CONFIG"
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
