@@ -25,7 +25,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew install waltarix/homebrew-customs/tmux reattach-to-user-namespace
 
   # FZF
-  brew install fd ag ripgrep jq highlight
+  brew install fd ag ripgrep
   brew install --HEAD https://raw.githubusercontent.com/junegunn/blsd/master/blsd.rb
   if [ ! -e ~/.local/bin/z.sh ]; then
     curl https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.local/bin/z.sh
