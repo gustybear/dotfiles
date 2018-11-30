@@ -56,7 +56,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
        ranger cmus
 
   # Apps
-  brew cask install iterm2 xquartz dropbox spectacle flycut keycastr flux
+  brew cask install iterm2 firefox atom dropbox alfred bartender 1password spectacle flycut keycastr
 fi
 
 # bin
