@@ -20,18 +20,13 @@ if [ "$(uname -s)" = 'Darwin' ]; then
  brew autoupdate --start --upgrade --cleanup --enable-notification 
 
   # Languages
-  brew install ruby python go
+  brew install python
 
   # Shells
-  brew install zsh fish bash-completion
+  brew install bash-completion
 
   # Terminal
   brew install waltarix/homebrew-customs/tmux reattach-to-user-namespace
-
-  # Email
-  brew install neomutt/homebrew-neomutt/neomutt \
-                 --with-sidebar-patch --with-notmuch-patch --HEAD \
-               isync msmtp notmuch lbdb terminal-notifier lmdb
 
   # FZF
   brew install fd ag ripgrep jq highlight
@@ -43,20 +38,13 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   # VIM
   brew install cscope
   brew install --HEAD universal-ctags
-  gem install gem-ctags
-  gem ctags
-
-  # Libraries
-  brew install liboauth
 
   # Commandline software
-  brew install coreutils wget tree git stow dtrx \
-       ant leigingen sbt maven hugo \
-       exiftool doxygen graphviz imagemagick gnuplot --with-qt@5.7 \
-       ranger cmus
+  brew install coreutils wget tree git stow dtrx hugo
 
   # Apps
-  brew cask install iterm2 spotify firefox atom dropbox alfred bartender 1password fastscripts spectacle flycut keycastr
+  brew cask install iterm2 spotify firefox atom dropbox alfred \
+       bartender 1password superduper fastscripts spectacle flycut keycastr
 fi
 
 # bin
