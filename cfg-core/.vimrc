@@ -55,6 +55,9 @@ Plug 'tyrannicaltoucan/vim-deep-space'
 Plug 'AlessandroYorba/Despacio'
 Plug 'cocopon/iceberg.vim'
 Plug 'w0ng/vim-hybrid'
+Plug 'nightsense/snow'
+Plug 'nightsense/stellarized'
+Plug 'arcticicestudio/nord-vim'
 
 " Edit
 Plug 'tpope/vim-repeat'
@@ -68,12 +71,12 @@ Plug 'AndrewRadev/switch.vim'
 Plug 'junegunn/vim-online-thesaurus'
 Plug 'sgur/vim-editorconfig'
 
-function! BuildYCM(info)
-  if a:info.status == 'installed' || a:info.force
-    !./install.py --clang-completer --gocode-completer
-  endif
-endfunction
-Plug 'Valloric/YouCompleteMe', { 'for': ['c', 'cpp'], 'do': function('BuildYCM') }
+"function! BuildYCM(info)
+"  if a:info.status == 'installed' || a:info.force
+"    !./install.py --clang-completer --gocode-completer
+"  endif
+"endfunction
+"Plug 'Valloric/YouCompleteMe', { 'for': ['c', 'cpp'], 'do': function('BuildYCM') }
 
 " Plug 'SirVer/ultisnips'
 " Plug 'honza/vim-snippets'
@@ -1420,6 +1423,9 @@ let g:indentLine_color_gui = '#616161'
 " ----------------------------------------------------------------------------
 let g:signify_vcs_list = ['git']
 let g:signify_skip_filetype = { 'journal': 1 }
+let g:signify_sign_add          = '│'
+let g:signify_sign_change       = '│'
+let g:signify_sign_changedelete = '│'
 
 " ----------------------------------------------------------------------------
 " vim-slash
@@ -1474,6 +1480,8 @@ nnoremap <Leader>G :Goyo<CR>
 let g:ale_linters = {'java': [], 'yaml': [], 'scala': [], 'clojure': []}
 let g:ale_fixers = {'ruby': ['rubocop']}
 let g:ale_lint_delay = 1000
+let g:ale_sign_warning = '──'
+let g:ale_sign_error = '══'
 nmap ]a <Plug>(ale_next_wrap)
 nmap [a <Plug>(ale_previous_wrap)
 
@@ -1614,8 +1622,8 @@ autocmd vimrc FileType vim inoremap <buffer> <c-x><c-v> <c-r>=VimAwesomeComplete
 " ----------------------------------------------------------------------------
 " YCM
 " ----------------------------------------------------------------------------
-autocmd vimrc FileType c,cpp,go nnoremap <buffer> ]d :YcmCompleter GoTo<CR>
-autocmd vimrc FileType c,cpp    nnoremap <buffer> K  :YcmCompleter GetType<CR>
+"autocmd vimrc FileType c,cpp,go nnoremap <buffer> ]d :YcmCompleter GoTo<CR>
+"autocmd vimrc FileType c,cpp    nnoremap <buffer> K  :YcmCompleter GetType<CR>
 
 " ----------------------------------------------------------------------------
 " gruvbox
@@ -1659,7 +1667,7 @@ command! -bang -nargs=? -complete=dir Files
 nnoremap <silent> <expr> <Leader><Leader> (expand('%') =~ 'NERD_tree' ? "\<c-w>\<c-w>" : '').":Files\<cr>"
 nnoremap <silent> <Leader>C        :Colors<CR>
 nnoremap <silent> <Leader><Enter>  :Buffers<CR>
-nnoremap <silent> <Leader>l        :Lines<CR>
+nnoremap <silent> <Leader>L        :Lines<CR>
 nnoremap <silent> <Leader>ag       :Ag <C-R><C-W><CR>
 nnoremap <silent> <Leader>AG       :Ag <C-R><C-A><CR>
 xnoremap <silent> <Leader>ag       y:Ag <C-R>"<CR>
