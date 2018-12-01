@@ -20,6 +20,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
 
   # Shells
   brew install bash bash-completion
+  chsh -s /usr/local/bin/bash
 
   # Terminal
   brew install waltarix/homebrew-customs/tmux reattach-to-user-namespace
