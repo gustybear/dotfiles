@@ -40,7 +40,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
 
   # Apps
   brew cask install iterm2 spotify firefox atom dropbox alfred \
-       bartender 1password superduper fastscripts spectacle flycut keycastr
+       bartender 1password superduper fastscripts vlc spectacle flycut keycastr
 fi
 
 # bin
