@@ -37,12 +37,12 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew install --HEAD universal-ctags
 
   # Commandline software
-  brew install coreutils wget tree git stow dtrx hugo
+  brew install coreutils wget tree git stow dtrx hugo neovim
 
   # Apps
   brew cask install iterm2 spotify firefox atom dropbox alfred \
        bartender 1password superduper fastscripts vlc spectacle \
-       zotero transmit flycut keycastr
+       zotero transmit vimr flycut keycastr
 fi
 
 # bin
@@ -56,7 +56,11 @@ stow --no-folding -d $BASE cfg-core -t $HOME/
 stow --no-folding -d $BASE cfg-term -t $HOME/
 
 # scpt
-defaults write com.red-sweater.FastScripts ScriptTreePathsKey '("$BASE/scpt")'
+defaults write com.red-sweater.fastscripts ScriptTreePathsKey '("$BASE/scpt")'
+
+# remove icons from desktop
+defaults write com.apple.finder CreateDesktop false
+killall Finder
 
 # git-prompt
 if [ ! -e ~/.git-prompt.sh ]; then
@@ -64,10 +68,7 @@ if [ ! -e ~/.git-prompt.sh ]; then
 fi
 
 # nvim
-mkdir -p ~/Applications/Neovim/
-curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz | tar -xz -C ~/Applications/Neovim/
-rm -rf ./nvim-macos.tar.gz
-ln -sf ~/Applications/Neovim/nvim-osx64/bin/nvim ~/.local/bin/vim
+ln -sf /usr/local/bin/nvim/ ~/.local/bin/vim
 
 mkdir -p ~/.vim/autoload
 curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim

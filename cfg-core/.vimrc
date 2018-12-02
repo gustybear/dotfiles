@@ -71,12 +71,12 @@ Plug 'AndrewRadev/switch.vim'
 Plug 'junegunn/vim-online-thesaurus'
 Plug 'sgur/vim-editorconfig'
 
-"function! BuildYCM(info)
-"  if a:info.status == 'installed' || a:info.force
-"    !./install.py --clang-completer --gocode-completer
-"  endif
-"endfunction
-"Plug 'Valloric/YouCompleteMe', { 'for': ['c', 'cpp'], 'do': function('BuildYCM') }
+" function! BuildYCM(info)
+"   if a:info.status == 'installed' || a:info.force
+"     !./install.py --clang-completer --gocode-completer
+"   endif
+" endfunction
+" Plug 'Valloric/YouCompleteMe', { 'for': ['c', 'cpp'], 'do': function('BuildYCM') }
 
 " Plug 'SirVer/ultisnips'
 " Plug 'honza/vim-snippets'
@@ -109,31 +109,31 @@ if v:version >= 703
 endif
 
 " Lang
-if v:version >= 703
-  Plug 'kovisoft/paredit', { 'for': 'clojure' }
-  Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
-  Plug 'guns/vim-clojure-static'
-  Plug 'guns/vim-clojure-highlight'
-  Plug 'guns/vim-slamhound'
-  Plug 'venantius/vim-cljfmt'
-endif
-Plug 'tpope/vim-bundler', { 'for': 'ruby' }
-Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-Plug 'groenewege/vim-less'
-Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
-Plug 'kchmck/vim-coffee-script'
-Plug 'slim-template/vim-slim'
-Plug 'Glench/Vim-Jinja2-Syntax'
-Plug 'rust-lang/rust.vim'
-Plug 'tpope/vim-rails', { 'for': [] }
-Plug 'derekwyatt/vim-scala'
-Plug 'honza/dockerfile.vim'
-Plug 'solarnz/thrift.vim'
-Plug 'dag/vim-fish'
-Plug 'chrisbra/unicode.vim', { 'for': 'journal' }
-Plug 'octol/vim-cpp-enhanced-highlight'
-Plug 'lyuts/vim-rtags', { 'for': ['c', 'cpp'] }
+" if v:version >= 703
+"   Plug 'kovisoft/paredit', { 'for': 'clojure' }
+"   Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
+"   Plug 'guns/vim-clojure-static'
+"   Plug 'guns/vim-clojure-highlight'
+"   Plug 'guns/vim-slamhound'
+"   Plug 'venantius/vim-cljfmt'
+" endif
+" Plug 'tpope/vim-bundler', { 'for': 'ruby' }
+" Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
+" Plug 'groenewege/vim-less'
+" Plug 'pangloss/vim-javascript'
+" Plug 'mxw/vim-jsx'
+" Plug 'kchmck/vim-coffee-script'
+" Plug 'slim-template/vim-slim'
+" Plug 'Glench/Vim-Jinja2-Syntax'
+" Plug 'rust-lang/rust.vim'
+" Plug 'tpope/vim-rails', { 'for': [] }
+" Plug 'derekwyatt/vim-scala'
+" Plug 'honza/dockerfile.vim'
+" Plug 'solarnz/thrift.vim'
+" Plug 'dag/vim-fish'
+" Plug 'chrisbra/unicode.vim', { 'for': 'journal' }
+" Plug 'octol/vim-cpp-enhanced-highlight'
+" Plug 'lyuts/vim-rtags', { 'for': ['c', 'cpp'] }
 
 " Lint
 Plug 'w0rp/ale'
@@ -1533,6 +1533,18 @@ function! s:figwheel()
   Piggieback (figwheel-sidecar.repl-api/repl-env)
 endfunction
 
+function! s:chestnut()
+  " https://github.com/clojure/clojurescript-site/blob/master/content/tools/repls.adoc
+  " nashorn / browser / node
+  new | setlocal buftype=nofile bufhidden=hide noswapfile filetype=clojure
+  Eval (go)
+  bd
+  call system('open --background http://localhost:10555/')
+  Piggieback (fw-sys/repl-env (:figwheel-system system))
+  call system('osascript -e ''activate application "iTerm2"''')
+  redraw!
+endfunction
+
 augroup vimrc
   autocmd FileType lisp,clojure,scheme RainbowParentheses
   autocmd FileType lisp,clojure,scheme call <sid>lisp_maps()
@@ -1545,8 +1557,8 @@ augroup vimrc
   " Ruby
   autocmd FileType ruby set iskeyword+=!
 
-  " Figwheel
-  autocmd BufReadPost *.cljs command! -buffer Figwheel call s:figwheel()
+  " Figwheel / Chestnut
+  autocmd BufReadPost *.cljs command! -buffer Chestnut call s:chestnut()
 augroup END
 
 let g:clojure_maxlines = 60
@@ -1622,8 +1634,8 @@ autocmd vimrc FileType vim inoremap <buffer> <c-x><c-v> <c-r>=VimAwesomeComplete
 " ----------------------------------------------------------------------------
 " YCM
 " ----------------------------------------------------------------------------
-"autocmd vimrc FileType c,cpp,go nnoremap <buffer> ]d :YcmCompleter GoTo<CR>
-"autocmd vimrc FileType c,cpp    nnoremap <buffer> K  :YcmCompleter GetType<CR>
+" autocmd vimrc FileType c,cpp,go nnoremap <buffer> ]d :YcmCompleter GoTo<CR>
+" autocmd vimrc FileType c,cpp    nnoremap <buffer> K  :YcmCompleter GetType<CR>
 
 " ----------------------------------------------------------------------------
 " gruvbox
