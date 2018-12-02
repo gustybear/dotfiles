@@ -42,7 +42,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   # Apps
   brew cask install iterm2 spotify firefox atom dropbox alfred \
        bartender 1password superduper fastscripts vlc spectacle \
-       zotero transmit vimr flycut keycastr
+       zotero transmit oni flycut keycastr
 fi
 
 # bin
@@ -68,7 +68,7 @@ if [ ! -e ~/.git-prompt.sh ]; then
 fi
 
 # nvim
-ln -sf /usr/local/bin/nvim/ ~/.local/bin/vim
+ln -sf /usr/local/bin/nvim ~/.local/bin/vim
 
 mkdir -p ~/.vim/autoload
 curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
