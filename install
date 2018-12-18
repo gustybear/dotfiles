@@ -42,7 +42,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   # Apps
   brew cask install iterm2 spotify firefox atom dropbox alfred \
        bartender 1password superduper fastscripts vlc spectacle \
-       zotero transmit oni flycut keycastr
+       zotero transmit oni grammarly scrivener todour tunnelblick
 fi
 
 # bin
@@ -55,12 +55,18 @@ stow --no-folding -d $BASE cfg-core -t $HOME/
 # cfg-term
 stow --no-folding -d $BASE cfg-term -t $HOME/
 
-# scpt
-defaults write com.red-sweater.fastscripts ScriptTreePathsKey '("$BASE/scpt")'
-
 # remove icons from desktop
 defaults write com.apple.finder CreateDesktop false
 killall Finder
+
+# disable inline attachment in mail
+defaults write com.apple.mail DisableInlineAttachmentViewing -bool YES
+
+# change screenshot location to ~/Pictures/Screenshots/
+defaults write com.apple.screencapture location ~/Pictures/Screenshots/
+
+# Change Script location to dotfiles
+defaults write com.red-sweater.fastscripts ScriptTreePathsKey '("$BASE/scpt")'
 
 # git-prompt
 if [ ! -e ~/.git-prompt.sh ]; then
