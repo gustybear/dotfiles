@@ -1,1 +1,0 @@
-Guifont Monaco:h18
