@@ -14,6 +14,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   # Taps (third-party repositories)
   brew tap waltarix/homebrew-customs
   brew tap universal-ctags/universal-ctags
+  brew tap gwerbin/tap
 
   # Languages
   brew install python
@@ -37,12 +38,14 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew install --HEAD universal-ctags
 
   # Commandline software
-  brew install coreutils wget tree git stow dtrx hugo neovim
+  brew install coreutils wget tree git stow dtrx hugo
+  brew install --HEAD neovim
+  brew install --HEAD gwerbin/tap/neovim-qt
 
   # Apps
   brew cask install iterm2 spotify firefox atom dropbox alfred \
        bartender 1password superduper fastscripts vlc spectacle \
-       zotero transmit oni grammarly scrivener todour tunnelblick
+       zotero transmit grammarly scrivener todour tunnelblick
 fi
 
 # bin

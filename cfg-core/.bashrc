@@ -84,7 +84,8 @@ export HISTTIMEFORMAT="%Y/%m/%d %H:%M:%S:   "
 export MAILDIR=$HOME/.mail
 [ -z "$TMPDIR" ] && TMPDIR=/tmp
 
-export EDITOR=vim
+export EDITOR=nvim
+export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
@@ -168,6 +169,8 @@ alias cd.='cd ..'
 alias cd..='cd ..'
 alias l='ls -alF'
 alias ll='ls -l'
+alias vim='nvim'
+alias vimr='nvr --remote'
 alias vi='vim'
 alias vi2='vi -O2 '
 alias hc="history -c"
