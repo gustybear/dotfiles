@@ -12,7 +12,6 @@ if [ "$(uname -s)" = 'Darwin' ]; then
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
   # Taps (third-party repositories)
-  brew tap waltarix/homebrew-customs
   brew tap universal-ctags/universal-ctags
   brew tap gwerbin/tap
 
@@ -24,7 +23,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   chsh -s /usr/local/bin/bash
 
   # Terminal
-  brew install waltarix/homebrew-customs/tmux reattach-to-user-namespace
+  brew install tmux reattach-to-user-namespace
 
   # FZF
   brew install fd ag ripgrep
