@@ -163,7 +163,7 @@ set visualbell
 set backspace=indent,eol,start
 set timeoutlen=500
 set whichwrap=b,s
-set shortmess=aIT
+set shortmess=atIT
 set hlsearch " CTRL-L / CTRL-R W
 set incsearch
 set hidden
