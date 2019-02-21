@@ -22,7 +22,7 @@ else
   let $GIT_SSL_NO_VERIFY = 'true'
 endif
 
-" My plugins
+" Junegunn's plugins
 Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/vim-github-dashboard'
 Plug 'junegunn/vim-emoji'
@@ -70,6 +70,9 @@ Plug 'AndrewRadev/splitjoin.vim'
 Plug 'AndrewRadev/switch.vim'
 Plug 'junegunn/vim-online-thesaurus'
 Plug 'sgur/vim-editorconfig'
+
+" Sessions
+Plug 'tpope/vim-obsession'
 
 " function! BuildYCM(info)
 "   if a:info.status == 'installed' || a:info.force

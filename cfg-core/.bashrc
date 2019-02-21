@@ -766,7 +766,7 @@ prj-init() {
       echo "invalid semester"
       exit 1
     fi
-  elif echo "$answer" | grep -Eiq "^r|^a|^t" ;then
+  elif echo "$answer" | grep -Eiq "^r|^a|^t|^e" ;then
     printf "\nType in the name of the project: "
     read project_name
     project_name="${project_name// /_}"
@@ -790,7 +790,7 @@ prj-init() {
   elif [[ "$project_type" == "student" ]]; then
     proj_path=$HOME/Projects/students/"$dir_name"
     git_branch="project"
-  elif [[ "$project_type" == "services" ]]; then
+  elif [[ "$project_type" == "service" ]]; then
     proj_path=$HOME/Projects/services/"$dir_name"
     git_branch="project"
   elif [[ ("$project_type" == "project") || ("$project_type" == "award") || ("$project_type" == "talk") ]]; then
@@ -865,7 +865,7 @@ site-update() {
     echo "No website folder"
     for dir in ${repos};
     do
-      (echo "Updating materials..."; make -C ${dir} publish_s3)
+      (echo "Updating materials..."; make -C ${dir} publish)
     done
   else
     echo "Updating website...";
