@@ -28,9 +28,6 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   # FZF
   brew install fd ag ripgrep
   brew install --HEAD https://raw.githubusercontent.com/junegunn/blsd/master/blsd.rb
-  if [ ! -e ~/.local/bin/z.sh ]; then
-    curl https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.local/bin/z.sh
-  fi
 
   # VIM
   brew install cscope
@@ -77,6 +74,13 @@ fi
 # bin
 mkdir -p ~/.local/bin
 stow --no-folding -d $BASE bin -t $HOME/.local/bin/
+
+command -v blsd > /dev/null ||
+  (bash <(curl -fL https://raw.githubusercontent.com/junegunn/blsd/master/install) && mv blsd ~/bin)
+
+if [ ! -e ~/.local/bin/z.sh ]; then
+  curl https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.local/bin/z.sh
+fi
 
 # cfg-core
 stow --no-folding -d $BASE cfg-core -t $HOME/
