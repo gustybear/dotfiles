@@ -46,6 +46,32 @@ if [ "$(uname -s)" = 'Darwin' ]; then
        bartender 1password superduper fastscripts vlc spectacle \
        ansifilter fpp balenaetcher basictex \
        zotero transmit grammarly scrivener todour tunnelblick keyboard-maestro
+
+  # remove icons from desktop
+  defaults write com.apple.finder CreateDesktop false
+  killall Finder
+  
+  # disable inline attachment in mail
+  defaults write com.apple.mail DisableInlineAttachmentViewing -bool YES
+  
+  # change screenshot location to ~/Pictures/Screenshots/
+  defaults write com.apple.screencapture location ~/Pictures/Screenshots/
+  
+  # Change Script location to dotfiles
+  defaults write com.red-sweater.fastscripts ScriptTreePathsKey '("$BASE/scpt")'
+
+  # nvim
+  ln -sf /usr/local/bin/nvim ~/.local/bin/vim
+
+  # fix hostname
+  sudo scutil --set HostName 'milano'
+
+  # cfg-term
+  stow --no-folding -d $BASE cfg-term -t $HOME/
+
+  # tmux
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  tmux source-file ~/.tmux.conf
 fi
 
 # bin
@@ -55,29 +81,10 @@ stow --no-folding -d $BASE bin -t $HOME/.local/bin/
 # cfg-core
 stow --no-folding -d $BASE cfg-core -t $HOME/
 
-# cfg-term
-stow --no-folding -d $BASE cfg-term -t $HOME/
-
-# remove icons from desktop
-defaults write com.apple.finder CreateDesktop false
-killall Finder
-
-# disable inline attachment in mail
-defaults write com.apple.mail DisableInlineAttachmentViewing -bool YES
-
-# change screenshot location to ~/Pictures/Screenshots/
-defaults write com.apple.screencapture location ~/Pictures/Screenshots/
-
-# Change Script location to dotfiles
-defaults write com.red-sweater.fastscripts ScriptTreePathsKey '("$BASE/scpt")'
-
 # git-prompt
 if [ ! -e ~/.git-prompt.sh ]; then
   curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
 fi
-
-# nvim
-ln -sf /usr/local/bin/nvim ~/.local/bin/vim
 
 mkdir -p ~/.vim/autoload
 curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
@@ -86,10 +93,3 @@ mkdir -p ~/.config/nvim/autoload
 ln -sf ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/
 
 vim +PlugInstall +qall
-
-# tmux
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-tmux source-file ~/.tmux.conf
-
-# fix hostname
-sudo scutil --set HostName 'milano'
