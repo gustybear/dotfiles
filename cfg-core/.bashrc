@@ -807,6 +807,17 @@ prj-init() {
   fi
 }
 
+# List projects
+prj-list() {
+  local current_dir=${PWD}
+  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/Cloud/Github/*")
+  for dir in ${repos};
+  do
+      echo "${dir}...";
+  done
+  cd ${current_dir}
+}
+
 # Check project status in a batch
 prj-status() {
   local current_dir=${PWD}
@@ -854,6 +865,12 @@ prj-fzf() {
               tree -C {} | head -200' \
     --select-1) &&
   cd ${dir}
+}
+
+# Develop website {{{3
+site-server() {
+  local web="${HOME}/Projects/__websites__"
+  cd ${web} && hugo server -D
 }
 
 # Update website {{{3
