@@ -8,3 +8,5 @@
 	path = ~/.githubconfig
 [push]
 	default = simple
+[color]
+	ui = auto
