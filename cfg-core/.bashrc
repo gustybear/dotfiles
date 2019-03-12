@@ -119,6 +119,7 @@ fi
 export DROPBOX_DIR=${HOME}/Cloud/Dropbox
 export BASH_LOCAL_CONFIG=$DOTFILES_DIR/cfg-local/bashrc-local
 export TMUX_LOCAL_CONFIG=$DOTFILES_DIR/cfg-local/tmux-local
+export TMUX_REMOTE_CONFIG=$DOTFILES_DIR/cfg-term/.tmux.remote.conf
 export PATH_EXPANDED=1
 
 
