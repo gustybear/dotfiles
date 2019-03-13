@@ -666,7 +666,7 @@ repo-find() {
 	git_directories=()
 	while IFS=  read -r -d $'\0'; do
 		git_directories+=("$REPLY")
-	done < <(find $1 -maxdepth 2 -type 'd' -name ".git" -print0 2>/dev/null)
+	done < <(find -L $1 -maxdepth 2 -type 'd' -name ".git" -print0 2>/dev/null)
 
 	for i in ${git_directories[*]}; do
 		if [[ ! -z $i ]]; then
@@ -808,10 +808,10 @@ prj-init() {
   fi
 }
 
-# List projects
-prj-list() {
+# List repos within the Github folder 
+github-list() {
   local current_dir=${PWD}
-  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/Cloud/Github/*")
+  local repos=$(repo-find "${HOME}/Cloud/Github/*")
   for dir in ${repos};
   do
       echo "${dir}...";
@@ -819,10 +819,10 @@ prj-list() {
   cd ${current_dir}
 }
 
-# Check project status in a batch
-prj-status() {
+# Check github repo status in a batch
+github-status() {
   local current_dir=${PWD}
-  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/Cloud/Github/*")
+  local repos=$(repo-find "${HOME}/Cloud/Github/*")
   for dir in ${repos};
   do
       echo "Checking status of ${dir}...";
@@ -831,10 +831,10 @@ prj-status() {
   cd ${current_dir}
 }
 
-# Pull projects from remote
-prj-pull() {
+# Pull github repos from remote
+github-pull() {
   local current_dir=${PWD}
-  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/Cloud/Github/*")
+  local repos=$(repo-find "${HOME}/Cloud/Github/*")
   for dir in ${repos};
   do
       echo "Pulling updates of ${dir} from remote...";
@@ -843,10 +843,10 @@ prj-pull() {
   cd ${current_dir}
 }
 
-# Update projects to remote
-prj-update() {
+# Update github repos to remote
+github-update() {
   local current_dir=${PWD}
-  local repos=$(repo-find "${HOME}/Projects/* ${HOME}/Cloud/Github/*")
+  local repos=$(repo-find "${HOME}/Cloud/Github/*")
   for dir in ${repos};
   do
       echo "Updating ${dir} to remote...";
@@ -856,9 +856,9 @@ prj-update() {
 }
 
 # Change to project directory using fzf
-prj-fzf() {
+github-fzf() {
   local dir
-  dir=$(repo-find "${HOME}/Projects/* ${HOME}/Cloud/Github/*" |
+  dir=$(repo-find "${HOME}/Cloud/Github/*" |
   fzf-tmux --preview-window up:75% \
     --preview 'cd {}; echo "git summary";
               LANG=C git -c color.status=false status -sb; 
