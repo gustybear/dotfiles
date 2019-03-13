@@ -68,7 +68,7 @@ fi
 
 # Prime linux
 if [ "$(uname -s)" = 'Linux' ]; then
-  sudo apt-get install build-essential git stow tmux
+  sudo apt-get install build-essential git stow tmux xdg-utils
 fi
 
 # bin
