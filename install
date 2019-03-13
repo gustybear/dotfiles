@@ -6,6 +6,7 @@
 cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 BASE=$(pwd)
 
+# Prime macos
 if [ "$(uname -s)" = 'Darwin' ]; then
   # Homebrew
   [ -z "$(which brew)" ] &&
@@ -63,12 +64,11 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   # fix hostname
   sudo scutil --set HostName 'milano'
 
-  # cfg-term
-  stow --no-folding -d $BASE cfg-term -t $HOME/
+fi
 
-  # tmux
-  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-  tmux source-file ~/.tmux.conf
+# Prime linux
+if [ "$(uname -s)" = 'Linux' ]; then
+  sudo apt-get install build-essential git stow tmux
 fi
 
 # bin
@@ -84,6 +84,13 @@ fi
 
 # cfg-core
 stow --no-folding -d $BASE cfg-core -t $HOME/
+
+# cfg-term
+stow --no-folding -d $BASE cfg-term -t $HOME/
+
+# tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+tmux source-file ~/.tmux.conf
 
 # git-prompt
 if [ ! -e ~/.git-prompt.sh ]; then
