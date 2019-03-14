@@ -72,7 +72,9 @@ if [ "$(uname -s)" = 'Linux' ]; then
 fi
 
 # bin
-mkdir -p ~/.local/bin
+if [ ! -d "~/.local/bin" ]; then
+  mkdir -p ~/.local/bin
+fi
 stow --no-folding -d $BASE bin -t $HOME/.local/bin/
 
 command -v blsd > /dev/null ||
@@ -89,19 +91,26 @@ stow --no-folding -d $BASE cfg-core -t $HOME/
 stow --no-folding -d $BASE cfg-term -t $HOME/
 
 # tmux
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-~/.tmux/plugins/tpm/bin/install_plugins
+if [ ! -d ~/.tmux/plugins/tpm ]; then
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
+
 tmux source-file ~/.tmux.conf
+~/.tmux/plugins/tpm/bin/install_plugins
 
 # git-prompt
 if [ ! -e ~/.git-prompt.sh ]; then
   curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
 fi
 
-mkdir -p ~/.vim/autoload
+if [ ! -d ~/.vim/autoload ]; then
+  mkdir -p ~/.vim/autoload
+fi
 curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
 
-mkdir -p ~/.config/nvim/autoload
+if [ ! -d ~/.config/nvim/autoload ]; then
+  mkdir -p ~/.config/nvim/autoload
+fi
 ln -sf ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/
 
 vim +PlugInstall +qall
