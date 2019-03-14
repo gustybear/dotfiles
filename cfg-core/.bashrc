@@ -124,11 +124,54 @@ export PATH_EXPANDED=1
 
 
 ### Prompt
+[ -z "$PS1" ] && return
+
 __git_ps1() { :;}
 if [ -e ~/.git-prompt.sh ]; then
   source ~/.git-prompt.sh
 fi
 PS1='\[\e[34m\]\u\[\e[1;32m\]@\[\e[0;33m\]\h\[\e[35m\]:\[\e[m\]\W\[\e[1;30m\]$(__git_ps1)\[\e[1;31m\]\n$ \[\e[0m\]'
+
+### TMUX and SSH
+# Source this just after the PS1-check to enable auto-tmuxing of your SSH
+# sessions. See https://github.com/spencertipping/bashrc-tmux for usage
+# information.
+
+TMUX_SESSION=ssh-$USER
+if [[ -n "$BASHRC_TMUX_SESSION" ]]; then
+  TMUX_SESSION="$TMUX_SESSION-$BASHRC_TMUX_SESSION"
+fi
+
+if [[ -z "$TMUX" && -n "$SSH_CONNECTION" ]] && which tmux >& /dev/null; then
+  if ! tmux ls -F '#{session_name}' | egrep -q "^$TMUX_SESSION$"; then
+    tmux new-session -s $TMUX_SESSION \; detach
+  fi
+
+  # Allocating a session ID: always just bump the counter. Because of
+  # differences between bash and zsh, working with arrays to densely pack
+  # session IDs is cumbersome.
+
+  session_max=$(tmux ls -F '#{session_name}' \
+                | egrep "^$TMUX_SESSION-[0-9]+$" \
+                | sed "s/^$TMUX_SESSION-//" \
+                | sort -rn \
+                | head -n1)
+  session_index=$((${session_max:--1} + 1))
+
+  exec tmux new-session -s $TMUX_SESSION-$session_index -t $TMUX_SESSION
+fi
+
+# Source this in your bashrc to automatically reroute non-X11 terminal sessions
+# into the same persistent xpra display.
+
+UID_XPRA_DISPLAY=$(( 100 + UID % 1000 ))
+
+if [[ -z "$DISPLAY" && -n "$SSH_CONNECTION" && -x /usr/bin/xpra ]]; then
+  XPRA_DISPLAY=${XPRA_DISPLAY:-:$UID_XPRA_DISPLAY}
+  xpra start $XPRA_DISPLAY ${XPRA_SERVER_OPTIONS:---sharing} >& /dev/null \
+    && echo "Using xpra display $XPRA_DISPLAY"
+  export DISPLAY=$XPRA_DISPLAY
+fi
 
 ### FZF
 csi() {
