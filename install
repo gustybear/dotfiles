@@ -43,7 +43,8 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   brew cask install iterm2 spotify firefox atom dropbox alfred \
        bartender 1password superduper fastscripts vlc spectacle \
        ansifilter fpp balenaetcher basictex \
-       zotero transmit grammarly scrivener todour tunnelblick keyboard-maestro
+       zotero transmit grammarly scrivener todour tunnelblick keyboard-maestro \
+       xpra
 
   # remove icons from desktop
   defaults write com.apple.finder CreateDesktop false
@@ -68,7 +69,7 @@ fi
 
 # Prime linux
 if [ "$(uname -s)" = 'Linux' ]; then
-  sudo apt-get install build-essential git stow tmux xdg-utils
+  sudo apt-get install build-essential git stow tmux xdg-utils xpra
 fi
 
 # bin
