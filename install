@@ -69,6 +69,8 @@ fi
 
 # Prime linux
 if [ "$(uname -s)" = 'Linux' ]; then
+  sudo add-apt-repository ppa:ubuntu-x-swat/updates
+  sudo apt-get dist-upgrade
   sudo apt-get install build-essential git stow tmux xdg-utils xpra
 fi
 
