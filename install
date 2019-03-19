@@ -70,8 +70,11 @@ fi
 # Prime linux
 if [ "$(uname -s)" = 'Linux' ]; then
   sudo add-apt-repository ppa:ubuntu-x-swat/updates
+  sudo add-apt-repository ppa:greymd/tmux-xpanes
+  sudo apt-get update
   sudo apt-get dist-upgrade
-  sudo apt-get install build-essential git stow tmux xdg-utils xpra mesa-utils
+  sudo apt-get install build-essential git stow tmux tmux-xpanes \
+    xdg-utils xpra mesa-utils
 fi
 
 # bin
