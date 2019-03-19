@@ -98,7 +98,7 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   export PYTHONROOT=$(brew --prefix)/opt/python
 #  export JAVA_HOME=$(/usr/libexec/java_home)
   mkdir -p $GOPATH
-  if [ -z "$PATH_EXPANDED" ]; then
+  if [ -z "$PATH_EXPANDED" ] && [ -z "$TMUX" ]; then
 #    export PATH=$LOCALBIN:$PYTHONROOT/libexec/bin:$JAVA_HOME/bin:$GOPATH/bin:$GOROOT/libexec/bin:$PATH
     export PATH=$LOCALBIN:$PYTHONROOT/libexec/bin:$GOPATH/bin:$GOROOT/libexec/bin:$PATH
   fi
@@ -111,7 +111,7 @@ if [ "$PLATFORM" = 'Linux' ]; then
   export GOPATH=${HOME}/.local/share/go
   export GOROOT=/usr/local/go
   mkdir -p $GOPATH
-  if [ -z "$PATH_EXPANDED" ]; then
+  if [ -z "$PATH_EXPANDED" ] && [ -z "$TMUX" ]; then
     export PATH=$LOCALBIN:$GOPATH/bin:$GOROOT/bin:$PATH
   fi
 fi
