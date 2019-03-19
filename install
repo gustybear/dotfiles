@@ -24,7 +24,7 @@ if [ "$(uname -s)" = 'Darwin' ]; then
   chsh -s /usr/local/bin/bash
 
   # Terminal
-  brew install tmux reattach-to-user-namespace
+  brew install tmux tmux-xpanes reattach-to-user-namespace
 
   # FZF
   brew install fd ag ripgrep
