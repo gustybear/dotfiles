@@ -4,12 +4,12 @@ action=$1
 shift
 
 [ "$action" = "usage" ] && {
-  echo "  Customized add:"
-  echo "    add pri PRIORITY \"THING I NEED TO DO +project @context\""
-  echo "    add p PRIORITY \"THING I NEED TO DO +project @context\""
-  echo "      add an item and prioritize it in one step"
-  echo "    add x \"THING I NEEDED TO DO RIGHT NOW\""
-  echo "      add an item and mark it as done in one step"
+  echo "  Customized addd:"
+  echo "    addd pri PRIORITY \"THING I NEED TO DO +project @context\""
+  echo "    addd p PRIORITY \"THING I NEED TO DO +project @context\""
+  echo "    addd an item and prioritize it in one step"
+  echo "    addd x \"THING I NEEDED TO DO RIGHT NOW\""
+  echo "    addd an item and mark it as done in one step"
   echo ""
   exit
 }
