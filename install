@@ -74,7 +74,7 @@ if [ "$(uname -s)" = 'Linux' ]; then
     xdg-utils xpra mesa-utils
   cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
   command -v blsd > /dev/null ||
-    (curl -o ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py); chmod +x ~/.local/bin/dropbox
+    (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py); chmod +x ~/.local/bin/dropbox
 fi
 
 # bin
