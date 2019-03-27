@@ -937,7 +937,7 @@ site-update() {
 
 # Attach to xpra server
 xpra-attach() {
-  xpra attach --opengl=no --ssh="ssh -Y" ssh:$1:100
+  xpra attach --opengl=no --dpi=108 --ssh="ssh -Y" ssh:$1:100
 }
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
