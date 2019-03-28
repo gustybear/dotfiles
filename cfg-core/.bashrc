@@ -109,10 +109,9 @@ if [ "$PLATFORM" = 'Linux' ]; then
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:/usr/local/lib
   export LOCALBIN=${HOME}/.local/bin
   export GOPATH=${HOME}/.local/share/go
-  export GOROOT=/usr/local/go
   mkdir -p $GOPATH
   if [ -z "$PATH_EXPANDED" ]; then
-    export PATH=$LOCALBIN:$GOPATH/bin:$GOROOT/bin:$PATH
+    export PATH=$LOCALBIN:$GOPATH/bin:$PATH
   fi
 fi
 

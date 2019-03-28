@@ -79,16 +79,16 @@ if [ "$(uname -s)" = 'Linux' ]; then
 
     sudo apt-get install build-essential golang-go git stow tree neovim \
       tmux tmux-xpanes \
-      xdg-utils xpra mesa-utils keychain
+      xdg-utils xpra mesa-utils
   fi
 
   # Dropbox
-  cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
-  command -v blsd > /dev/null ||
-    (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py); chmod +x ~/.local/bin/dropbox
+  [ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -)
 
-  ssh-keygen
-  keychain ~/.ssh/id_rsa
+  command -v dropbox > /dev/null ||
+    (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py; chmod +x ~/.local/bin/dropbox)
+
+  [ -f ~/.ssh/id_rsa ] || ssh-keygen
   # gnu-radio
   # sudo apt-get install python3-pip python-pip python-mako python-lxml
   # sudo pip3 install PyBOMBs
