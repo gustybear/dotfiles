@@ -91,9 +91,11 @@ if [ "$(uname -s)" = 'Linux' ]; then
   # gnu-radio
   # sudo apt-get install python3-pip python-pip python-mako python-lxml
   # sudo pip3 install PyBOMBs
+  
+  # for server: su to root and do the following
   # pybombs auto-config
   # pybombs recipes add-defaults
-  # sudo pybombs prefix init /usr/local/ -a system_prefix -R gnuradio-default
+  # pybombs prefix init /usr/local/ -a system_prefix -R gnuradio-default
 fi
 
 # bin
