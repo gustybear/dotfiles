@@ -29,6 +29,7 @@ Account personal
 
 # Local storage (where the mail is retrieved to)
 MaildirStore personal-local
+SubFolders Legacy
 Path ~/.mail/personal/
 Inbox ~/.mail/personal/Inbox
 
@@ -90,6 +91,7 @@ Account work
 
 # Local storage (where the mail is retrieved to)
 MaildirStore work-local
+SubFolders Legacy
 Path ~/.mail/work/
 Inbox ~/.mail/work/Inbox
 
