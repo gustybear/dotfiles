@@ -77,10 +77,19 @@ if [ "$(uname -s)" = 'Linux' ]; then
     sudo apt-get -y dist-upgrade
 
     sudo apt-get -y install build-essential golang-go curl git stow tree neovim \
+      i3 py3status rofi conky \
       tmux tmux-xpanes \
-      msmtp notmuch isync lbdb urlview\
-      xdg-utils xpra mesa-utils
+      msmtp notmuch isync lbdb urlview \
+      xdg-utils xpra mesa-utils \
   fi
+
+  # Python
+  sudo pip3 install tzlocal
+
+  # Kitty
+  curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+  ln -sf ~/.local/kitty.app/bin/kitty ~/.local/bin/
+
 
   # Dropbox
   [ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -)
