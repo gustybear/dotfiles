@@ -81,15 +81,30 @@ if [ "$(uname -s)" = 'Linux' ]; then
       tmux tmux-xpanes \
       msmtp notmuch isync lbdb urlview \
       xdg-utils xpra mesa-utils \
-  fi
+      libxcb1-dev libxcb-keysyms1-dev libpango1.0-dev libxcb-util0-dev libxcb-icccm4-dev libyajl-dev libstartup-notification0-dev libxcb-randr0-dev libev-dev libxcb-cursor-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev autoconf libxcb-xrm0 libxcb-xrm-dev automake
 
-  # Python
-  sudo pip3 install tzlocal
+    # clone the repository
+    git clone https://www.github.com/Airblader/i3 $HOME/Cloud/Github/i3-gaps
+    cd $HOME/Cloud/Github/i3-gaps
+
+    # compile & install
+    autoreconf --force --install
+    rm -rf build/
+    mkdir -p build && cd build/
+
+    # Disabling sanitizers is important for release versions!
+    # The prefix and sysconfdir are, obviously, dependent on the distribution.
+    ../configure --prefix=/usr --sysconfdir=/etc --disable-sanitizers
+    make
+    sudo make install
+
+    # Python
+    # sudo pip3 install tzlocal
+  fi
 
   # Kitty
   curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
   ln -sf ~/.local/kitty.app/bin/kitty ~/.local/bin/
-
 
   # Dropbox
   [ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -)
