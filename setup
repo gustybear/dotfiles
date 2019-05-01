@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#
+# Yao Zheng (zheng.iao@icloud.com)
+# 2011/05/25-
+
+script_name="$(basename "${BASH_SOURCE[0]}")"
+dotfiles_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)"
+cd "$dotfiles_dir"
+# cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
+
+# Prime Mac
+if [ "$(uname -s)" = 'Darwin' ]; then
+  ./setup-os/setup-macos
+# Prime Ubuntu
+elif [ "$(uname -s)" = 'Linux' ]; then
+  if cat /etc/*-release | grep 'ubuntu'; then
+    ./setup-os/setup-ubuntu
+  elif cat /etc/*-release | grep 'arch'; then
+    ./setup-os/setup-arch
+  fi
+fi

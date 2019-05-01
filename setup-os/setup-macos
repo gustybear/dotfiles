@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+echo ""
+echo "======================================="
+echo "Installing Software...                 "
+echo "======================================="
+
+# Homebrew
+[ -z "$(which brew)" ] &&
+  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+# Taps (third-party repositories)
+brew tap universal-ctags/universal-ctags
+brew tap gwerbin/tap
+
+# Languages
+brew install python ruby go
+
+# Shells
+brew install bash bash-completion
+chsh -s /usr/local/bin/bash
+
+# Terminal
+brew install tmux tmux-xpanes reattach-to-user-namespace
+
+# FZF
+brew install fd ag ripgrep
+brew install --HEAD https://raw.githubusercontent.com/junegunn/blsd/master/blsd.rb
+
+# VIM
+brew install cscope
+brew install --HEAD universal-ctags
+
+# Commandline software
+brew install coreutils wget tree git stow dtrx hugo
+brew install --HEAD neovim
+brew install --HEAD gwerbin/tap/neovim-qt
+
+# Apps
+brew cask install iterm2 spotify firefox atom dropbox alfred \
+     bartender 1password superduper fastscripts vlc amethyst \
+     ansifilter fpp balenaetcher basictex \
+     zotero transmit grammarly scrivener todour tunnelblick keyboard-maestro \
+     xpra
+
+command -v blsd > /dev/null ||
+  (bash <(curl -fL https://raw.githubusercontent.com/junegunn/blsd/master/install) && mv blsd ~/.local/bin)
+
+if [ ! -e ~/.local/bin/z.sh ]; then
+  curl https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.local/bin/z.sh
+fi
+
+# git-prompt
+if [ ! -e ~/.git-prompt.sh ]; then
+  curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
+fi
+
+echo "======================================="
+echo "Setting up dotfiles for current user..."
+echo "======================================="
+
+# bin
+if [ ! -d "~/.local/bin" ]; then
+  mkdir -p ~/.local/bin
+fi
+stow --no-folding -d $dotfiles_dir bin -t $HOME/.local/bin/
+
+# cfg-core
+stow --no-folding -d $dotfiles_dir cfg-core -t $HOME/
+
+# cfg-term
+stow --no-folding -d $dotfiles_dir cfg-term -t $HOME/
+
+echo ""
+echo "======================================="
+echo "Finishing various user configuration..."
+echo "======================================="
+
+# remove icons from desktop
+defaults write com.apple.finder CreateDesktop false
+killall Finder
+
+# disable inline attachment in mail
+defaults write com.apple.mail DisableInlineAttachmentViewing -bool YES
+
+# change screenshot location to ~/Pictures/Screenshots/
+defaults write com.apple.screencapture location ~/Pictures/Screenshots/
+
+# Change Script location to dotfiles
+defaults write com.red-sweater.fastscripts ScriptTreePathsKey "("$dotfiles_dir/scpt")"
+
+# fix hostname
+if [ $? -eq 0 ] || echo $prompt | grep -q '^sudo:'; then
+  sudo scutil --set HostName 'milano'
+fi
+
+# tmux
+if [ ! -d ~/.tmux/plugins/tpm ]; then
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
+
+tmux source-file ~/.tmux.conf
+~/.tmux/plugins/tpm/bin/install_plugins
+
+if [ ! -d ~/.vim/autoload ]; then
+  mkdir -p ~/.vim/autoload
+fi
+curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
+
+if [ ! -d ~/.config/nvim/autoload ]; then
+  mkdir -p ~/.config/nvim/autoload
+fi
+ln -sf ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/
+
+nvim +PlugInstall +qall
+
+# generate ssh key
+[ -f ~/.ssh/id_rsa ] || ssh-keygen

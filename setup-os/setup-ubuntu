@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+
+echo ""
+echo "====================================="
+echo "Switching to root user to continue..."
+echo "====================================="
+echo "..."
+sudo -s "$dotfiles_dir/$script_name"
+exit
+
+echo ""
+echo "======================================="
+echo "Installing Software...                 "
+echo "======================================="
+
+if [[ "$(whoami)" == "root" ]]; then
+  add-apt-repository -y ppa:ubuntu-x-swat/updates
+  add-apt-repository -y ppa:greymd/tmux-xpanes
+  add-apt-repository -y ppa:longsleep/golang-backports
+
+  apt-get -y update
+  apt-get -y dist-upgrade
+
+  apt-get -y install build-essential golang-go curl git stow tree neovim \
+    i3 py3status rofi conky \
+    tmux tmux-xpanes \
+    msmtp notmuch isync lbdb urlview \
+    xdg-utils xpra mesa-utils \
+
+  # clone the repository
+  apt-get -y install libxcb1-dev libxcb-keysyms1-dev libpango1.0-dev libxcb-util0-dev libxcb-icccm4-dev libyajl-dev libstartup-notification0-dev libxcb-randr0-dev libev-dev libxcb-cursor-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev autoconf libxcb-xrm0 libxcb-xrm-dev automake
+  cd /tmp
+  git clone https://www.github.com/Airblader/i3
+  cd i3
+
+  # compile & install
+  autoreconf --force --install
+  rm -rf build/
+  mkdir -p build && cd build/
+
+  # Disabling sanitizers is important for release versions!
+  # The prefix and sysconfdir are, obviously, dependent on the distribution.
+  ../configure --prefix=/usr --sysconfdir=/etc --disable-sanitizers
+  make
+  make install
+
+  # gnu-radio
+  # sudo apt-get install python3-pip python-pip python-mako python-lxml
+  # sudo pip3 install PyBOMBs
+
+  # for server: su to root and do the following
+  # pybombs auto-config
+  # pybombs recipes add-defaults
+  # pybombs prefix init /usr/local/ -a system_prefix -R gnuradio-default
+
+  cd dotfiles_dir
+  echo ""
+  echo "====================================="
+  echo "Switching back to user to continue..."
+  echo "====================================="
+  exit
+fi
+
+# Kitty
+curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+ln -sf ~/.local/kitty.app/bin/kitty ~/.local/bin/
+
+# Dropbox
+[ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -)
+
+command -v dropbox > /dev/null ||
+  (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py; chmod +x ~/.local/bin/dropbox)
+
+echo "======================================="
+echo "Setting up dotfiles for current user..."
+echo "======================================="
+
+# bin
+if [ ! -d "~/.local/bin" ]; then
+  mkdir -p ~/.local/bin
+fi
+stow --no-folding -d $dotfiles_dir bin -t $HOME/.local/bin/
+
+# cfg-core
+stow --no-folding -d $dotfiles_dir cfg-core -t $HOME/
+
+# cfg-term
+stow --no-folding -d $dotfiles_dir cfg-term -t $HOME/
+
+# cfg-mail
+mkdir -p ~/.mail/{personal, work}
+stow --no-folding -d $dotfiles_dir cfg-mail -t $HOME/
+keyring set mbsync zheng.iao@icloud.com 
+
+
+echo ""
+echo "======================================="
+echo "Finishing various user configuration..."
+echo "======================================="
+
+[ -f ~/.ssh/id_rsa ] || ssh-keygen
+
+# tmux
+if [ ! -d ~/.tmux/plugins/tpm ]; then
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
+
+tmux source-file ~/.tmux.conf
+~/.tmux/plugins/tpm/bin/install_plugins
+
+if [ ! -d ~/.vim/autoload ]; then
+  mkdir -p ~/.vim/autoload
+fi
+curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
+
+if [ ! -d ~/.config/nvim/autoload ]; then
+  mkdir -p ~/.config/nvim/autoload
+fi
+ln -sf ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/
+
+nvim +PlugInstall +qall
+
+# generate ssh key
+[ -f ~/.ssh/id_rsa ] || ssh-keygen
