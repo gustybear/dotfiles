@@ -2,7 +2,7 @@
 
 echo ""
 echo "======================================="
-echo "Installing Software...                 "
+echo "Installing Software with Homebrew      "
 echo "======================================="
 
 # Homebrew
@@ -14,7 +14,7 @@ brew tap universal-ctags/universal-ctags
 brew tap gwerbin/tap
 
 # Languages
-brew install python ruby go
+brew install python python3 ruby go
 
 # Shells
 brew install bash bash-completion
@@ -43,6 +43,28 @@ brew cask install iterm2 spotify firefox atom dropbox alfred \
      zotero transmit grammarly scrivener todour tunnelblick keyboard-maestro \
      xpra
 
+echo ""
+echo "======================================="
+echo "Installing Software with Pip           "
+echo "======================================="
+
+sudo pip3 install academic awscli pip_upgrade_outdated
+
+echo ""
+echo "======================================="
+echo "Installing Software from Source        "
+echo "======================================="
+
+# Local bin
+if [ ! -d "~/.local/bin" ]; then
+  mkdir -p ~/.local/bin
+fi
+
+# Github
+if [ ! -d "~/Cloud/Github" ]; then
+  mkdir -p ~/Cloud/Github
+fi
+
 command -v blsd > /dev/null ||
   (bash <(curl -fL https://raw.githubusercontent.com/junegunn/blsd/master/install) && mv blsd ~/.local/bin)
 
@@ -55,26 +77,9 @@ if [ ! -e ~/.git-prompt.sh ]; then
   curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
 fi
 
-echo "======================================="
-echo "Setting up dotfiles for current user..."
-echo "======================================="
-
-# bin
-if [ ! -d "~/.local/bin" ]; then
-  mkdir -p ~/.local/bin
-fi
-stow --no-folding -d $dotfiles_dir bin -t $HOME/.local/bin/
-
-# cfg-core
-rm $HOME/.bashrc $HOME/.bash_profile
-stow --no-folding -d $dotfiles_dir cfg-core -t $HOME/
-
-# cfg-term
-stow --no-folding -d $dotfiles_dir cfg-term -t $HOME/
-
 echo ""
 echo "======================================="
-echo "Finishing various user configuration..."
+echo "Configure OS specific software...      "
 echo "======================================="
 
 # remove icons from desktop
@@ -94,26 +99,3 @@ defaults write com.red-sweater.fastscripts ScriptTreePathsKey "("$dotfiles_dir/s
 if [ $? -eq 0 ] || echo $prompt | grep -q '^sudo:'; then
   sudo scutil --set HostName 'milano'
 fi
-
-# tmux
-if [ ! -d ~/.tmux/plugins/tpm ]; then
-  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-fi
-
-tmux source-file ~/.tmux.conf
-~/.tmux/plugins/tpm/bin/install_plugins
-
-if [ ! -d ~/.vim/autoload ]; then
-  mkdir -p ~/.vim/autoload
-fi
-curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
-
-if [ ! -d ~/.config/nvim/autoload ]; then
-  mkdir -p ~/.config/nvim/autoload
-fi
-ln -sf ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/
-
-nvim +PlugInstall +qall
-
-# generate ssh key
-[ -f ~/.ssh/id_rsa ] || ssh-keygen

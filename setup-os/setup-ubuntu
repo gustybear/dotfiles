@@ -2,7 +2,7 @@
 
 echo ""
 echo "======================================="
-echo "Installing Software...                 "
+echo "Installing Software with Apt           "
 echo "======================================="
 
 sudo add-apt-repository -y ppa:ubuntu-x-swat/updates
@@ -13,11 +13,18 @@ sudo apt-get -y update
 sudo apt-get -y dist-upgrade
 
 sudo apt-get -y install build-essential cmake cargo \
-    golang-go python python3 \
+    golang-go python-pip python3-pip \
     curl git stow tree neovim \
     tmux tmux-xpanes \
     msmtp notmuch isync lbdb urlview \
     xdg-utils xpra mesa-utils \
+
+echo ""
+echo "======================================="
+echo "Installing Software with Pip           "
+echo "======================================="
+
+sudo pip3 install academic awscli pip_upgrade_outdated
 
   # clone the repository
   # apt-get -y install libxcb1-dev libxcb-keysyms1-dev libpango1.0-dev libxcb-util0-dev libxcb-icccm4-dev libyajl-dev libstartup-notification0-dev libxcb-randr0-dev libev-dev libxcb-cursor-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev autoconf libxcb-xrm0 libxcb-xrm-dev automake
@@ -45,9 +52,19 @@ sudo apt-get -y install build-essential cmake cargo \
   # pybombs recipes add-defaults
   # pybombs prefix init /usr/local/ -a system_prefix -R gnuradio-default
 
-# bin
+echo ""
+echo "======================================="
+echo "Installing Software from Source        "
+echo "======================================="
+
+# Local bin
 if [ ! -d "~/.local/bin" ]; then
   mkdir -p ~/.local/bin
+fi
+
+# Github
+if [ ! -d "~/Cloud/Github" ]; then
+  mkdir -p ~/Cloud/Github
 fi
 
 command -v blsd > /dev/null ||
@@ -61,6 +78,7 @@ fi
 if [ ! -e ~/.git-prompt.sh ]; then
   curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
 fi
+
 # Kitty
 curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
 ln -sf ~/.local/kitty.app/bin/kitty ~/.local/bin/
@@ -71,66 +89,16 @@ ln -sf ~/.local/kitty.app/bin/kitty ~/.local/bin/
 command -v dropbox > /dev/null ||
   (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py; chmod +x ~/.local/bin/dropbox)
 
-
-if [ ! -d "~/Cloud/Github" ]; then
-  mkdir -p ~/Cloud/Github
-fi
-
+# fd
 cd ~/Cloud/Github
 git clone https://github.com/sharkdp/fd
 cd fd
 cargo build
 ln -sf ~/.cargo/bin/fd ~/.local/bin/
 
+# hugo
 cd ~/Cloud/Github
 git clone https://github.com/gohugoio/hugo.git
 cd hugo
 go install --tags extended
 ln -sf ~/.local/share/go/bin/hugo ~/.local/bin/
-
-echo "======================================="
-echo "Setting up dotfiles for current user..."
-echo "======================================="
-
-stow --no-folding -d $dotfiles_dir bin -t $HOME/.local/bin/
-
-# cfg-core
-rm $HOME/.bashrc $HOME/.bash_profile
-stow --no-folding -d $dotfiles_dir cfg-core -t $HOME/
-
-# cfg-term
-stow --no-folding -d $dotfiles_dir cfg-term -t $HOME/
-
-# cfg-mail
-# mkdir -p ~/.mail/{personal, work}
-# stow --no-folding -d $dotfiles_dir cfg-mail -t $HOME/
-# keyring set mbsync zheng.iao@icloud.com 
-
-
-echo ""
-echo "======================================="
-echo "Finishing various user configuration..."
-echo "======================================="
-
-# tmux
-if [ ! -d ~/.tmux/plugins/tpm ]; then
-  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-fi
-
-tmux source-file ~/.tmux.conf
-~/.tmux/plugins/tpm/bin/install_plugins
-
-if [ ! -d ~/.vim/autoload ]; then
-  mkdir -p ~/.vim/autoload
-fi
-curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
-
-if [ ! -d ~/.config/nvim/autoload ]; then
-  mkdir -p ~/.config/nvim/autoload
-fi
-ln -sf ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/
-
-nvim +PlugInstall +qall
-
-# generate ssh key
-[ -f ~/.ssh/id_rsa ] || ssh-keygen
