@@ -65,7 +65,7 @@ curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
 ln -sf ~/.local/kitty.app/bin/kitty ~/.local/bin/
 
 # Dropbox
-[ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -)
+[ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf - && cd $dotfiles_dir)
 
 command -v dropbox > /dev/null ||
   (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py; chmod +x ~/.local/bin/dropbox)
