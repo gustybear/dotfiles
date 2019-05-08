@@ -12,7 +12,8 @@ sudo add-apt-repository -y ppa:longsleep/golang-backports
 sudo apt-get -y update
 sudo apt-get -y dist-upgrade
 
-sudo apt-get -y install build-essential cmake golang-go python-dev \
+sudo apt-get -y install build-essential cmake cargo \
+    golang-go python python3 \
     curl git stow tree neovim \
     tmux tmux-xpanes \
     msmtp notmuch isync lbdb urlview \
@@ -69,6 +70,23 @@ ln -sf ~/.local/kitty.app/bin/kitty ~/.local/bin/
 
 command -v dropbox > /dev/null ||
   (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py; chmod +x ~/.local/bin/dropbox)
+
+
+if [ ! -d "~/Cloud/Github" ]; then
+  mkdir -p ~/Cloud/Github
+fi
+
+cd ~/Cloud/Github
+git clone https://github.com/sharkdp/fd
+cd fd
+cargo build
+ln -sf ~/.cargo/bin/fd ~/.local/bin/
+
+cd ~/Cloud/Github
+git clone https://github.com/gohugoio/hugo.git
+cd hugo
+go install --tags extended
+ln -sf ~/.local/share/go/bin/hugo ~/.local/bin/
 
 echo "======================================="
 echo "Setting up dotfiles for current user..."

@@ -83,7 +83,8 @@ function! BuildYCM(info)
     !./install.py --clang-completer --gocode-completer
   endif
 endfunction
-Plug 'Valloric/YouCompleteMe', { 'for': ['c', 'cpp'], 'do': function('BuildYCM') }
+" Plug 'Valloric/YouCompleteMe', { 'for': ['c', 'cpp'], 'do': function('BuildYCM') }
+Plug 'Valloric/YouCompleteMe', { 'for': ['python'], 'do': function('BuildYCM') }
 
 " Plug 'SirVer/ultisnips'
 " Plug 'honza/vim-snippets'
