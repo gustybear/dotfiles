@@ -80,7 +80,7 @@ Plug 'tpope/vim-obsession'
 
 function! BuildYCM(info)
   if a:info.status == 'installed' || a:info.force
-    !python3 ./install.py --clang-completer --gocode-completer
+    !./install.py --clang-completer --gocode-completer
   endif
 endfunction
 Plug 'Valloric/YouCompleteMe', { 'for': ['c', 'cpp'], 'do': function('BuildYCM') }
