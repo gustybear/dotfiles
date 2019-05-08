@@ -83,12 +83,6 @@ fi
 curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
 ln -sf ~/.local/kitty.app/bin/kitty ~/.local/bin/
 
-# Dropbox
-[ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf - && cd $dotfiles_dir)
-
-command -v dropbox > /dev/null ||
-  (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py; chmod +x ~/.local/bin/dropbox)
-
 # fd
 cd ~/Cloud/Github
 git clone https://github.com/sharkdp/fd
@@ -102,3 +96,18 @@ git clone https://github.com/gohugoio/hugo.git
 cd hugo
 go install --tags extended
 ln -sf ~/.local/share/go/bin/hugo ~/.local/bin/
+
+# Dropbox
+echo ""
+echo "======================================="
+echo "Do you want to stow cfg-mail? (y/n) "
+echo "======================================="
+stty raw -echo ; ans_cfg_mail=$(head -c 1) ; stty $old_stty_cfg
+
+if echo "$ans_cfg_term" | grep -iq "^y" ;then
+  [ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf - && cd $dotfiles_dir)
+
+  command -v dropbox > /dev/null ||
+    (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py; chmod +x ~/.local/bin/dropbox)
+fi
+
