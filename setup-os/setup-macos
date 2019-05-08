@@ -66,6 +66,7 @@ fi
 stow --no-folding -d $dotfiles_dir bin -t $HOME/.local/bin/
 
 # cfg-core
+rm $HOME/.bashrc $HOME/.bash_profile
 stow --no-folding -d $dotfiles_dir cfg-core -t $HOME/
 
 # cfg-term

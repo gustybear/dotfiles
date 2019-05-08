@@ -6,6 +6,7 @@
 script_name="$(basename "${BASH_SOURCE[0]}")"
 dotfiles_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)"
 cd "$dotfiles_dir"
+export script_name dotfiles_dir
 # cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 
 # Prime Mac
