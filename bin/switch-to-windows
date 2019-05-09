@@ -1,5 +1,21 @@
 #!/bin/bash
 
 WINDOWS_TITLE=`grep -i 'windows' /boot/grub/grub.cfg|cut -d"'" -f2` 
-sudo grub-reboot "$WINDOWS_TITLE" 
+# sudo sh -c `grep "^menuentry" /boot/grub2/grub.cfg | cut -d "'" -f2 > /autosave_boot_list`
+
+echo ""
+echo "======================================="
+echo "Is this just one time ?                "
+echo "Or do you want to switch for a (w)hile?"
+echo "======================================="
+
+old_stty_cfg=$(stty -g)
+stty raw -echo ; ans_switch=$(head -c 1) ; stty $old_stty_cfg
+if echo "$ans_switch" | grep -iq "^w" ;then
+  sudo grub-set-default "$WINDOWS_TITLE"
+else
+  sudo grub-reboot "$WINDOWS_TITLE" 
+# sudo grub-editenv /boot/grub/grubenv set next_entry="$WINDOWS_TITLE"
+fi
 sudo reboot
+
