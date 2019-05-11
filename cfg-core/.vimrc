@@ -1358,6 +1358,7 @@ let g:matchparen_insert_timeout=5
 " ----------------------------------------------------------------------------
 map  gc  <Plug>Commentary
 nmap gcc <Plug>CommentaryLine
+autocmd FileType matlab setlocal commentstring=%\ %s
 
 " ----------------------------------------------------------------------------
 " vim-fugitive
