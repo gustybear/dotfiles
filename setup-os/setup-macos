@@ -45,10 +45,18 @@ brew cask install iterm2 spotify firefox atom dropbox alfred \
 
 echo ""
 echo "======================================="
-echo "Installing Software with Pip           "
+echo "Installing Software with pip           "
 echo "======================================="
 
 sudo pip3 install academic awscli pip_upgrade_outdated
+
+echo ""
+echo "======================================="
+echo "Installing Software with tlmgr         "
+echo "======================================="
+
+sudo tlmgr install latexmk biblatex biber logreq \
+  lastpage enumitem collection-fontsrecommended
 
 echo ""
 echo "======================================="
