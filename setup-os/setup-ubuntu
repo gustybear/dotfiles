@@ -21,36 +21,34 @@ sudo apt-get -y install build-essential cmake cargo \
 
 echo ""
 echo "======================================="
+echo "Do you want Matlab Support (y/n) "
+echo "======================================="
+stty raw -echo ; ans_matlab_support=$(head -c 1) ; stty $old_stty_cfg
+
+if echo "$ans_matlab_support" | grep -iq "^y" ;then
+  sudo apt-get install matlab-support
+fi
+
+echo ""
+echo "======================================="
 echo "Installing Software with Pip           "
 echo "======================================="
 
 sudo pip3 install academic awscli pip_upgrade_outdated
 
-  # clone the repository
-  # apt-get -y install libxcb1-dev libxcb-keysyms1-dev libpango1.0-dev libxcb-util0-dev libxcb-icccm4-dev libyajl-dev libstartup-notification0-dev libxcb-randr0-dev libev-dev libxcb-cursor-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev autoconf libxcb-xrm0 libxcb-xrm-dev automake
-  # cd /tmp
-  # git clone https://www.github.com/Airblader/i3
-  # cd i3
+echo ""
+echo "======================================="
+echo "Do you want GNURadio? (y/n) "
+echo "======================================="
+stty raw -echo ; ans_gnuradio=$(head -c 1) ; stty $old_stty_cfg
 
-  # compile & install
-  # autoreconf --force --install
-  # rm -rf build/
-  # mkdir -p build && cd build/
-
-  # Disabling sanitizers is important for release versions!
-  # The prefix and sysconfdir are, obviously, dependent on the distribution.
-  # ../configure --prefix=/usr --sysconfdir=/etc --disable-sanitizers
-  # make
-  # make install
-
-  # gnu-radio
-  # sudo apt-get install python3-pip python-pip python-mako python-lxml
-  # sudo pip3 install PyBOMBs
-
-  # for server: su to root and do the following
-  # pybombs auto-config
-  # pybombs recipes add-defaults
-  # pybombs prefix init /usr/local/ -a system_prefix -R gnuradio-default
+if echo "$ans_gnuradio" | grep -iq "^y" ;then
+  sudo apt-get install python3-pip python-pip python-mako python-lxml
+  sudo pip3 install PyBOMBs
+  sudo pybombs auto-config
+  sudo pybombs recipes add-defaults
+  sudo pybombs prefix init /usr/local/ -a system_prefix -R gnuradio-default
+fi
 
 echo ""
 echo "======================================="
@@ -101,11 +99,11 @@ ln -sf ~/.local/share/go/bin/hugo ~/.local/bin/
 # Dropbox
 echo ""
 echo "======================================="
-echo "Do you want to stow cfg-mail? (y/n) "
+echo "Do you want dropbox? (y/n) "
 echo "======================================="
-stty raw -echo ; ans_cfg_mail=$(head -c 1) ; stty $old_stty_cfg
+stty raw -echo ; ans_dropbox=$(head -c 1) ; stty $old_stty_cfg
 
-if echo "$ans_cfg_term" | grep -iq "^y" ;then
+if echo "$ans_dropbox" | grep -iq "^y" ;then
   [ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf - && cd $dotfiles_dir)
 
   command -v dropbox > /dev/null ||
