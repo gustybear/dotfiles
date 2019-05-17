@@ -80,8 +80,9 @@ if [ ! -e ~/.git-prompt.sh ]; then
 fi
 
 # Kitty
-curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
-ln -sf ~/.local/kitty.app/bin/kitty ~/.local/bin/
+curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin \
+  dest=~/Cloud/Github
+stow --no-folding -d ~/Cloud/Github kitty.app/ -t ~/.local/
 
 # fd
 cd ~/Cloud/Github
