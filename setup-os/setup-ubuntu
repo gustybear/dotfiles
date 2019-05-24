@@ -43,7 +43,8 @@ echo "======================================="
 stty raw -echo ; ans_gnuradio=$(head -c 1) ; stty $old_stty_cfg
 
 if echo "$ans_gnuradio" | grep -iq "^y" ;then
-  sudo apt-get install python3-pip python-pip python-mako python-lxml
+  sudo apt-get -y install python3-pip python-pip python-mako python-lxml \
+                          python-numpy
   sudo pip3 install PyBOMBs
   sudo pybombs auto-config
   sudo pybombs recipes add-defaults

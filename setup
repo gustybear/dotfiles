@@ -81,6 +81,7 @@ echo "======================================="
 echo "Do you want to stow cfg-mail? (y/n) "
 echo "======================================="
 stty raw -echo ; ans_cfg_mail=$(head -c 1) ; stty $old_stty_cfg
+export ans_cfg_mail
 
 if echo "$ans_cfg_mail" | grep -iq "^y" ;then
   stow --no-folding -d $dotfiles_dir cfg-mail -t $HOME/
