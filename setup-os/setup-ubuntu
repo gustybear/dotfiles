@@ -109,6 +109,21 @@ if echo "$ans_site_gen" | grep -iq "^y" ;then
   ln -sf ~/.local/share/go/bin/hugo ~/.local/bin/
 fi
 
+# neomutt notmuch msmtp isync
+if echo "$ans_cfg_mail" | grep -iq "^y" ;then
+  sudo apt build-dep neomutt
+  sudo apt install -y libxml2-utils libssl-dev liblmdb-dev libdb-dev
+  sudo apt install -y notmuch msmtp isync
+
+  # sudo vim /etc/apt/sources.list
+  cd ~/Cloud/Github
+  git clone https://github.com/neomutt/neomutt
+  cd neomutt
+  ./configure --enable-gpgme --gss --lmdb --notmuch --sasl --tokyocabinet --with-ssl=openssl --with-ui=ncurses --lua --bdb
+  make
+  ln -sf ./neomutt ~/.local/bin/
+fi
+
 # Dropbox
 echo ""
 echo "======================================="
@@ -122,4 +137,3 @@ if echo "$ans_dropbox" | grep -iq "^y" ;then
   command -v dropbox > /dev/null ||
     (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py; chmod +x ~/.local/bin/dropbox)
 fi
-
