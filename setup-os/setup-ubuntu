@@ -34,7 +34,17 @@ echo "======================================="
 echo "Installing Software with Pip           "
 echo "======================================="
 
-sudo pip3 install academic awscli pip_upgrade_outdated
+sudo pip3 install pip_upgrade_outdated
+
+echo ""
+echo "======================================="
+echo "Do you want website generator? (y/n) "
+echo "======================================="
+stty raw -echo ; ans_site_gen=$(head -c 1) ; stty $old_stty_cfg
+
+if echo "$ans_site_gen" | grep -iq "^y" ;then
+  sudo pip3 install academic awscli
+fi
 
 echo ""
 echo "======================================="
@@ -91,11 +101,13 @@ cargo build
 ln -sf ~/.cargo/bin/fd ~/.local/bin/
 
 # hugo
-cd ~/Cloud/Github
-git clone https://github.com/gohugoio/hugo.git
-cd hugo
-go install --tags extended
-ln -sf ~/.local/share/go/bin/hugo ~/.local/bin/
+if echo "$ans_site_gen" | grep -iq "^y" ;then
+  cd ~/Cloud/Github
+  git clone https://github.com/gohugoio/hugo.git
+  cd hugo
+  go install --tags extended
+  ln -sf ~/.local/share/go/bin/hugo ~/.local/bin/
+fi
 
 # Dropbox
 echo ""
