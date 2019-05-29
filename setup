@@ -27,8 +27,8 @@ if echo "$ans_install_software" | grep -iq "^y" ;then
     if cat /etc/*-release | grep 'ubuntu'; then
       ./setup-os/setup-ubuntu
     # Arch
-    elif cat /etc/*-release | grep 'arch'; then
-      ./setup-os/setup-arch
+    # elif cat /etc/*-release | grep 'arch'; then
+    #   ./setup-os/setup-archlinux
     fi
   fi
 fi
@@ -112,6 +112,7 @@ if echo "$ans_cfg_core" | grep -iq "^y" ;then
 fi
 
 
+
 if echo "$ans_cfg_term" | grep -iq "^y" ;then
   # tmux
   if [ ! -d ~/.tmux/plugins/tpm ]; then
@@ -124,6 +125,7 @@ if echo "$ans_cfg_mail" | grep -iq "^y" ;then
   sudo pip3 install keyring
   mkdir -p ~/.mail/{personal, work}
   keyring set mbsync zheng.iao@icloud.com 
+  keyring set mbsync yaozheng@hawaii.edu
 fi
 
 # generate ssh key
