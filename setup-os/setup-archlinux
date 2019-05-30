@@ -167,6 +167,10 @@ fi
 mkdir -p ~/Cloud/Github
 cd ~/Cloud/Github
 
-git clone git@github.com:Jguer/yay.git
+git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
+
+# fix thermal throttle
+yay -S lenovo-throttling-fix-git
+sudo systemctl enable --now lenovo_fix.service
