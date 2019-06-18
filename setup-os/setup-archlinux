@@ -171,6 +171,16 @@ git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
 
-# fix thermal throttle
+# Thermal Throttling
 yay -S lenovo-throttling-fix-git
 sudo systemctl enable --now lenovo_fix.service
+
+# Thermal Modes / Fan profiles
+sudo pacman -Syu libsmbios
+
+# Post Installation
+# netctl
+sudo pacman -Syu netctl
+
+# Display
+sudo pacman -Syu wayland sway

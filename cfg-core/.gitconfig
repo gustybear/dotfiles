@@ -5,8 +5,10 @@
 	name = Yao Zheng
 	email = zheng.iao@icloud.com
 [include]
-	path = ~/.githubconfig
+  path = ~/Cloud/Github/dotfiles/cfg-local/gitconfig-local
 [push]
 	default = simple
 [color]
 	ui = auto
+[submodule]
+	recurse = true
