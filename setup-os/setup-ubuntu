@@ -26,12 +26,6 @@ stty raw -echo ; ans_dropbox=$(head -c 1) ; stty $old_stty_cfg
 
 echo ""
 echo "======================================="
-echo "Do you want email client? (y/n)        "
-echo "======================================="
-stty raw -echo ; ans_email=$(head -c 1) ; stty $old_stty_cfg
-
-echo ""
-echo "======================================="
 echo "Do you want website generator? (y/n)   "
 echo "======================================="
 stty raw -echo ; ans_site_gen=$(head -c 1) ; stty $old_stty_cfg
@@ -131,7 +125,7 @@ if echo "$ans_cfg_term" | grep -iq "^y" ;then
 fi
 
 # email
-if echo "$ans_email" | grep -iq "^y" ;then
+if echo "$ans_cfg_mail" | grep -iq "^y" ;then
   # sudo vim /etc/apt/sources.list
   sudo apt build-dep neomutt
   sudo apt install -y libxml2-utils libssl-dev liblmdb-dev libdb-dev
