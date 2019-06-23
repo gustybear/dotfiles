@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+old_stty_cfg=$(stty -g)
+
 echo ""
 echo "======================================="
 echo "Installing Software with Homebrew      "

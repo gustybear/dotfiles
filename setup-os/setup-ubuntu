@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+old_stty_cfg=$(stty -g)
+
 echo ""
 echo "======================================="
 echo "Do you want the usual with apt (y/n)   "
