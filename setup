@@ -67,6 +67,9 @@ if echo "$ans_install_software" | grep -iq "^y" ;then
     # Ubuntu
     if cat /etc/*-release | grep 'ubuntu'; then
       ./setup-os/setup-ubuntu
+    # debian
+    elif cat /etc/*-release | grep 'raspbian'; then
+      ./setup-os/setup-raspbian
     # Arch
     elif cat /etc/*-release | grep 'arch'; then
       ./setup-os/setup-arch
@@ -86,7 +89,7 @@ fi
 
 # cfg-core
 if echo "$ans_cfg_core" | grep -iq "^y" ;then
-  rm $HOME/.bashrc $HOME/.bash_profile
+  rm -rf $HOME/.bashrc $HOME/.bash_profile
   stow --no-folding -d $dotfiles_dir cfg-core -t $HOME/
 fi
 
