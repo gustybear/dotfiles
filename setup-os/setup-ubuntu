@@ -1,23 +1,36 @@
 #!/usr/bin/env bash
 
+old_stty_cfg=$(stty -g)
+
 echo ""
 echo "======================================="
-echo "Installing Software with Apt           "
+echo "Do you want the usual with apt (y/n)   "
 echo "======================================="
+stty raw -echo ; ans_apt=$(head -c 1) ; stty $old_stty_cfg
 
-sudo add-apt-repository -y ppa:ubuntu-x-swat/updates
-sudo add-apt-repository -y ppa:greymd/tmux-xpanes
-sudo add-apt-repository -y ppa:longsleep/golang-backports
+echo ""
+echo "======================================="
+echo "Do you want the usual with pip (y/n)   "
+echo "======================================="
+stty raw -echo ; ans_pip=$(head -c 1) ; stty $old_stty_cfg
 
-sudo apt-get -y update
-sudo apt-get -y dist-upgrade
+echo ""
+echo "======================================="
+echo "Do you want other usual (y/n)          "
+echo "======================================="
+stty raw -echo ; ans_source=$(head -c 1) ; stty $old_stty_cfg
 
-sudo apt-get -y install build-essential cmake cargo \
-    golang-go python-pip python3-pip \
-    curl git stow tree neovim \
-    tmux tmux-xpanes \
-    msmtp notmuch isync lbdb urlview \
-    xdg-utils xpra mesa-utils \
+echo ""
+echo "======================================="
+echo "Do you want dropbox? (y/n)             "
+echo "======================================="
+stty raw -echo ; ans_dropbox=$(head -c 1) ; stty $old_stty_cfg
+
+echo ""
+echo "======================================="
+echo "Do you want website generator? (y/n)   "
+echo "======================================="
+stty raw -echo ; ans_site_gen=$(head -c 1) ; stty $old_stty_cfg
 
 echo ""
 echo "======================================="
@@ -25,33 +38,125 @@ echo "Do you want Matlab Support (y/n) "
 echo "======================================="
 stty raw -echo ; ans_matlab_support=$(head -c 1) ; stty $old_stty_cfg
 
-if echo "$ans_matlab_support" | grep -iq "^y" ;then
-  sudo apt-get install matlab-support
-fi
-
-echo ""
-echo "======================================="
-echo "Installing Software with Pip           "
-echo "======================================="
-
-sudo pip3 install pip_upgrade_outdated
-
-echo ""
-echo "======================================="
-echo "Do you want website generator? (y/n) "
-echo "======================================="
-stty raw -echo ; ans_site_gen=$(head -c 1) ; stty $old_stty_cfg
-
-if echo "$ans_site_gen" | grep -iq "^y" ;then
-  sudo pip3 install academic awscli
-fi
-
 echo ""
 echo "======================================="
 echo "Do you want GNURadio? (y/n) "
 echo "======================================="
 stty raw -echo ; ans_gnuradio=$(head -c 1) ; stty $old_stty_cfg
 
+# usual apt
+if echo "$ans_apt" | grep -iq "^y" ;then
+  sudo add-apt-repository -y ppa:ubuntu-x-swat/updates
+  sudo add-apt-repository -y ppa:greymd/tmux-xpanes
+  sudo add-apt-repository -y ppa:longsleep/golang-backports
+
+  sudo apt-get -y update
+  sudo apt-get -y dist-upgrade
+
+  sudo apt-get -y install build-essential cmake cargo \
+      golang-go python-pip python3-pip \
+      curl git stow tree neovim \
+      tmux tmux-xpanes \
+      xdg-utils xpra mesa-utils
+fi
+
+# usual pip
+if echo "$ans_pip" | grep -iq "^y" ;then
+  sudo pip3 install pip_upgrade_outdated
+fi
+
+# other usual
+if echo "$ans_source" | grep -iq "^y" ;then
+  command -v blsd > /dev/null ||
+    (bash <(curl -fL https://raw.githubusercontent.com/junegunn/blsd/master/install) && mv blsd ~/.local/bin)
+
+  if [ ! -e ~/.local/bin/z.sh ]; then
+    curl https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.local/bin/z.sh
+  fi
+
+  # git-prompt
+  if [ ! -e ~/.git-prompt.sh ]; then
+    curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
+  fi
+
+  # Kitty
+  if [ ! -e ~/.local/bin/kitty ]; then
+    curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin \
+      dest=~/Cloud/Github
+    stow --no-folding -d ~/Cloud/Github kitty.app/ -t ~/.local/
+  fi
+
+  # fd
+  if [ ! -e ~/.local/bin/fd ]; then
+    cd ~/Cloud/Github
+    git clone https://github.com/sharkdp/fd
+    cd fd
+    cargo build --release
+    ln -rsf target/release/fd ~/.local/bin/
+  fi
+fi
+
+# dropbox
+if echo "$ans_dropbox" | grep -iq "^y" ;then
+  [ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf - && cd $dotfiles_dir)
+
+  command -v dropbox > /dev/null ||
+    (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py; chmod +x ~/.local/bin/dropbox)
+fi
+
+# vim/neovim plugins
+if echo "$ans_cfg_core" | grep -iq "^y" ;then
+  if [ ! -d ~/.vim/autoload ]; then
+    mkdir -p ~/.vim/autoload
+  fi
+  curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
+
+  if [ ! -d ~/.config/nvim/autoload ]; then
+    mkdir -p ~/.config/nvim/autoload
+  fi
+  ln -sf ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/
+
+fi
+
+# tmux plugins
+if echo "$ans_cfg_term" | grep -iq "^y" ;then
+  # tmux
+  if [ ! -d ~/.tmux/plugins/tpm ]; then
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  fi
+fi
+
+# email
+if echo "$ans_cfg_mail" | grep -iq "^y" ;then
+  # sudo vim /etc/apt/sources.list
+  sudo apt build-dep neomutt
+  sudo apt install -y libxml2-utils libssl-dev liblmdb-dev libdb-dev
+  sudo apt install -y notmuch msmtp isync urlview lbdb
+  sudo pip3 install keyring
+
+  if [ ! -e ~/.local/bin/neomutt ]; then
+    cd ~/Cloud/Github
+    git clone https://github.com/neomutt/neomutt
+    cd neomutt
+    ./configure --enable-gpgme --gss --lmdb --notmuch --sasl --tokyocabinet --with-ssl=openssl --with-ui=ncurses --lua --bdb
+    make
+    ln -rsf neomutt ~/.local/bin/
+  fi
+fi
+
+# site generator
+if echo "$ans_site_gen" | grep -iq "^y" ;then
+  sudo pip3 install academic awscli
+  if [ ! -e ~/.local/bin/hugo ]; then
+    cd ~/Cloud/Github
+    git clone https://github.com/gohugoio/hugo.git
+    cd hugo
+    go install --tags extended
+    ln -sf ~/.local/share/go/bin/hugo ~/.local/bin/
+  fi
+fi
+
+# gnuradio
 if echo "$ans_gnuradio" | grep -iq "^y" ;then
   sudo apt-get -y install python3-pip python-pip python-mako python-lxml \
                           python-numpy
@@ -61,79 +166,7 @@ if echo "$ans_gnuradio" | grep -iq "^y" ;then
   sudo pybombs prefix init /usr/local/ -a system_prefix -R gnuradio-default
 fi
 
-echo ""
-echo "======================================="
-echo "Installing Software from Source        "
-echo "======================================="
-
-# Local bin
-if [ ! -d "~/.local/bin" ]; then
-  mkdir -p ~/.local/bin
-fi
-
-# Github
-if [ ! -d "~/Cloud/Github" ]; then
-  mkdir -p ~/Cloud/Github
-fi
-
-command -v blsd > /dev/null ||
-  (bash <(curl -fL https://raw.githubusercontent.com/junegunn/blsd/master/install) && mv blsd ~/.local/bin)
-
-if [ ! -e ~/.local/bin/z.sh ]; then
-  curl https://raw.githubusercontent.com/rupa/z/master/z.sh -o ~/.local/bin/z.sh
-fi
-
-# git-prompt
-if [ ! -e ~/.git-prompt.sh ]; then
-  curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o ~/.git-prompt.sh
-fi
-
-# Kitty
-curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin \
-  dest=~/Cloud/Github
-stow --no-folding -d ~/Cloud/Github kitty.app/ -t ~/.local/
-
-# fd
-cd ~/Cloud/Github
-git clone https://github.com/sharkdp/fd
-cd fd
-cargo build
-ln -sf ~/.cargo/bin/fd ~/.local/bin/
-
-# hugo
-if echo "$ans_site_gen" | grep -iq "^y" ;then
-  cd ~/Cloud/Github
-  git clone https://github.com/gohugoio/hugo.git
-  cd hugo
-  go install --tags extended
-  ln -sf ~/.local/share/go/bin/hugo ~/.local/bin/
-fi
-
-# neomutt notmuch msmtp isync
-if echo "$ans_cfg_mail" | grep -iq "^y" ;then
-  sudo apt build-dep neomutt
-  sudo apt install -y libxml2-utils libssl-dev liblmdb-dev libdb-dev
-  sudo apt install -y notmuch msmtp isync
-
-  # sudo vim /etc/apt/sources.list
-  cd ~/Cloud/Github
-  git clone https://github.com/neomutt/neomutt
-  cd neomutt
-  ./configure --enable-gpgme --gss --lmdb --notmuch --sasl --tokyocabinet --with-ssl=openssl --with-ui=ncurses --lua --bdb
-  make
-  ln -sf ./neomutt ~/.local/bin/
-fi
-
-# Dropbox
-echo ""
-echo "======================================="
-echo "Do you want dropbox? (y/n) "
-echo "======================================="
-stty raw -echo ; ans_dropbox=$(head -c 1) ; stty $old_stty_cfg
-
-if echo "$ans_dropbox" | grep -iq "^y" ;then
-  [ -d ~/.dropbox-dist ] || (cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf - && cd $dotfiles_dir)
-
-  command -v dropbox > /dev/null ||
-    (curl -fLo ~/.local/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py; chmod +x ~/.local/bin/dropbox)
+# matlab
+if echo "$ans_matlab_support" | grep -iq "^y" ;then
+  sudo apt-get install matlab-support
 fi

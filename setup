@@ -6,18 +6,59 @@
 script_name="$(basename "${BASH_SOURCE[0]}")"
 dotfiles_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)"
 cd "$dotfiles_dir"
-export script_name dotfiles_dir
 # cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
+export script_name dotfiles_dir
+old_stty_cfg=$(stty -g)
 
 echo ""
 echo "======================================="
 echo "Do you want to install software? (y/n) "
 echo "======================================="
-
-old_stty_cfg=$(stty -g)
 stty raw -echo ; ans_install_software=$(head -c 1) ; stty $old_stty_cfg
+export ans_install_software
+
+echo ""
+echo "======================================="
+echo "Do you want to stow bin? (y/n) "
+echo "======================================="
+stty raw -echo ; ans_bin=$(head -c 1) ; stty $old_stty_cfg
+export ans_bin
+
+echo ""
+echo "======================================="
+echo "Do you want to stow cfg-core? (y/n) "
+echo "======================================="
+stty raw -echo ; ans_cfg_core=$(head -c 1) ; stty $old_stty_cfg
+export ans_cfg_core
+
+echo ""
+echo "======================================="
+echo "Do you want to stow cfg-term? (y/n) "
+echo "======================================="
+stty raw -echo ; ans_cfg_term=$(head -c 1) ; stty $old_stty_cfg
+export ans_cfg_term
+
+echo ""
+echo "======================================="
+echo "Do you want to stow cfg-mail? (y/n) "
+echo "======================================="
+stty raw -echo ; ans_cfg_mail=$(head -c 1) ; stty $old_stty_cfg
+export ans_cfg_mail
+
+# Local bin
+if [ ! -d "~/.local/bin" ]; then
+  mkdir -p ~/.local/bin
+fi
+
+# Github
+if [ ! -d "~/Cloud/Github" ]; then
+  mkdir -p ~/Cloud/Github
+fi
 
 if echo "$ans_install_software" | grep -iq "^y" ;then
+  echo "======================================="
+  echo "Installing software                    "
+  echo "======================================="
   # Mac
   if [ "$(uname -s)" = 'Darwin' ]; then
     ./setup-os/setup-macos
@@ -26,105 +67,60 @@ if echo "$ans_install_software" | grep -iq "^y" ;then
     # Ubuntu
     if cat /etc/*-release | grep 'ubuntu'; then
       ./setup-os/setup-ubuntu
+    # debian
+    elif cat /etc/*-release | grep 'raspbian'; then
+      ./setup-os/setup-raspbian
     # Arch
-    # elif cat /etc/*-release | grep 'arch'; then
-    #   ./setup-os/setup-archlinux
+    elif cat /etc/*-release | grep 'arch'; then
+      ./setup-os/setup-arch
     fi
   fi
 fi
+
 
 echo "======================================="
 echo "Setting up dotfiles for current user..."
 echo "======================================="
 
-
 # bin
-echo ""
-echo "======================================="
-echo "Do you want to stow bin? (y/n) "
-echo "======================================="
-stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
-
-if echo "$answer" | grep -iq "^y" ;then
-  if [ ! -d "~/.local/bin" ]; then
-    mkdir -p ~/.local/bin
-  fi
+if echo "$ans_bin" | grep -iq "^y" ;then
   stow --no-folding -d $dotfiles_dir bin -t $HOME/.local/bin/
 fi
 
 # cfg-core
-echo ""
-echo "======================================="
-echo "Do you want to stow cfg-core? (y/n) "
-echo "======================================="
-stty raw -echo ; ans_cfg_core=$(head -c 1) ; stty $old_stty_cfg
-
 if echo "$ans_cfg_core" | grep -iq "^y" ;then
-  rm $HOME/.bashrc $HOME/.bash_profile
+  rm -rf $HOME/.bashrc $HOME/.bash_profile
   stow --no-folding -d $dotfiles_dir cfg-core -t $HOME/
 fi
 
 # cfg-term
-echo ""
-echo "======================================="
-echo "Do you want to stow cfg-term? (y/n) "
-echo "======================================="
-stty raw -echo ; ans_cfg_term=$(head -c 1) ; stty $old_stty_cfg
-
 if echo "$ans_cfg_term" | grep -iq "^y" ;then
   stow --no-folding -d $dotfiles_dir cfg-term -t $HOME/
 fi
 
 # cfg-mail
-echo ""
-echo "======================================="
-echo "Do you want to stow cfg-mail? (y/n) "
-echo "======================================="
-stty raw -echo ; ans_cfg_mail=$(head -c 1) ; stty $old_stty_cfg
-export ans_cfg_mail
-
 if echo "$ans_cfg_mail" | grep -iq "^y" ;then
   stow --no-folding -d $dotfiles_dir cfg-mail -t $HOME/
 fi
 
-
 echo ""
 echo "======================================="
-echo "Finishing...                           "
+echo "Reloading environment...               "
 echo "======================================="
 
 if echo "$ans_cfg_core" | grep -iq "^y" ;then
-  # bash
   source $HOME/.bashrc
-
-  # vim/neovim
-  if [ ! -d ~/.vim/autoload ]; then
-    mkdir -p ~/.vim/autoload
-  fi
-  curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim
-
-  if [ ! -d ~/.config/nvim/autoload ]; then
-    mkdir -p ~/.config/nvim/autoload
-  fi
-  ln -sf ~/.vim/autoload/plug.vim ~/.config/nvim/autoload/
-
   nvim +PlugInstall +qall
 fi
 
-
-
 if echo "$ans_cfg_term" | grep -iq "^y" ;then
-  # tmux
-  if [ ! -d ~/.tmux/plugins/tpm ]; then
-    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-  fi
   tmux source-file ~/.tmux.conf && $HOME/.tmux/plugins/tpm/bin/install_plugins
 fi
 
 if echo "$ans_cfg_mail" | grep -iq "^y" ;then
-  sudo pip3 install keyring
-  mkdir -p ~/.mail/{personal, work}
-  keyring set mbsync zheng.iao@icloud.com 
+  mkdir -p ~/.mail/personal
+  mkdir -p ~/.mail/work
+  keyring set mbsync markxlii@icloud.com 
   keyring set mbsync yaozheng@hawaii.edu
 fi
 
