@@ -58,7 +58,8 @@ echo "Installing Software with tlmgr         "
 echo "======================================="
 
 sudo tlmgr install latexmk biblatex biber logreq \
-  lastpage enumitem collection-fontsrecommended
+  lastpage enumitem collection-fontsrecommended \
+  ifnextok soul titlecaps
 
 echo ""
 echo "======================================="
