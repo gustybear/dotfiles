@@ -776,7 +776,7 @@ prj-init() {
     project_type="personal"
   else
     echo "invalid semester"
-    exit 1
+    return 1
   fi
 
   if echo "$answer" | grep -Eiq "^s|^p" ;then
@@ -809,7 +809,7 @@ prj-init() {
       course_semester="fall"
     else
       echo "invalid semester"
-      exit 1
+      return 1
     fi
   elif echo "$answer" | grep -Eiq "^r|^a|^t|^e" ;then
     printf "\nType in the name of the project: "
@@ -915,7 +915,11 @@ github-fzf() {
 # Develop website {{{3
 site-server() {
   local web="${HOME}/Projects/__websites__"
-  cd ${web} && hugo server -D
+  if [ ! -z  ${web} ]; then
+    echo "Updating website...";
+    make -C ${web} build_webpages;
+  fi
+  cd ${web} && hugo server -D --disableFastRender --watch
 }
 
 # Update website {{{3
@@ -927,7 +931,7 @@ site-update() {
     echo "No website folder"
     for dir in ${repos};
     do
-      (echo "Updating materials..."; make -C ${dir} publish)
+      (echo "Updating documents only ..."; make -C ${dir} publish)
     done
   else
     echo "Updating website...";
