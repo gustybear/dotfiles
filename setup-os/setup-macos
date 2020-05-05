@@ -39,10 +39,10 @@ brew install --HEAD neovim
 brew install --HEAD gwerbin/tap/neovim-qt
 
 # Apps
-brew cask install iterm2 spotify firefox atom dropbox alfred \
-     bartender 1password superduper fastscripts vlc amethyst \
-     ansifilter fpp balenaetcher basictex \
-     zotero transmit grammarly scrivener todour tunnelblick keyboard-maestro \
+brew cask install iterm2 google-chrome dropbox alfred \
+     bartender 1password superduper fastscripts vlc \
+     balenaetcher basictex \
+     zotero transmit grammarly tunnelblick keyboard-maestro \
      xpra
 
 echo ""

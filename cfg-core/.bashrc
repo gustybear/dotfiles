@@ -919,7 +919,7 @@ site-server() {
     echo "Updating website...";
     make -C ${web} build_webpages;
   fi
-  cd ${web} && hugo server -D --disableFastRender --watch
+  cd ${web} && find . -name "Icon?" -exec rm {} \; && hugo server -D --disableFastRender --watch
 }
 
 # Update website {{{3
