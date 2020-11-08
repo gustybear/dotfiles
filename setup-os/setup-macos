@@ -21,6 +21,8 @@ brew install python python3 ruby go
 # Shells
 brew install bash bash-completion
 chsh -s /usr/local/bin/bash
+sudo bash -c 'echo /usr/local/bin/bash >> /etc/shells'
+ln -s /usr/local/bin/bash /usr/local/bin/bash-terminal-app
 
 # Terminal
 brew install tmux tmux-xpanes reattach-to-user-namespace
@@ -40,7 +42,7 @@ brew install --HEAD gwerbin/tap/neovim-qt
 
 # Apps
 brew cask install iterm2 google-chrome dropbox alfred \
-     bartender 1password superduper fastscripts vlc \
+     bartender 1password superduper fastscripts vlc discord \
      balenaetcher basictex \
      zotero transmit grammarly tunnelblick keyboard-maestro \
      xpra
@@ -57,9 +59,8 @@ echo "======================================="
 echo "Installing Software with tlmgr         "
 echo "======================================="
 
-sudo tlmgr install latexmk biblatex biber logreq \
-  lastpage enumitem collection-fontsrecommended \
-  ifnextok soul titlecaps
+sudo tlmgr install latexmk biblatex biber \
+    ifnextok soul titlecaps titlesec
 
 echo ""
 echo "======================================="
@@ -119,6 +120,6 @@ defaults write com.apple.screencapture location ~/Pictures/Screenshots/
 defaults write com.red-sweater.fastscripts ScriptTreePathsKey "("$dotfiles_dir/scpt")"
 
 # fix hostname
-if [ $? -eq 0 ] || echo $prompt | grep -q '^sudo:'; then
-  sudo scutil --set HostName 'milano'
-fi
+# if [ $? -eq 0 ] || echo $prompt | grep -q '^sudo:'; then
+#   sudo scutil --set HostName 'milano'
+# fi
